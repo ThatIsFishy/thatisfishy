@@ -1,20 +1,27 @@
 :root {
-  --bg: #eef5f4; --surface: #fbfdfd; --ink: #0e2f3a; --muted: #4d6b73;
-  --water: #1f6f8b; --plant: #2f8a5c; --sand: #e6d7ad; --line: #c8dcdc; --warn: #b5651d;
+  --bg: #e8f4fb;
+  --surface: #ffffff;
+  --ink: #0b2a4a;
+  --muted: #4a6580;
+  --water: #0a6aa6;
+  --plant: #1aa37a;
+  --sand: #ffd23f;
+  --line: #bcdcee;
+  --warn: #ff6b4a;
   --head: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
   --body: "Literata", Georgia, serif;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0a1f26; --surface: #102b34; --ink: #e3f0ef; --muted: #92b1b6;
-    --water: #5bb6d3; --plant: #5fc18c; --sand: #8a7c4f; --line: #1f4450; --warn: #e0a05a;
+    --bg: #071a2e; --surface: #0d2a45; --ink: #e6f3fb; --muted: #93b4cc;
+    --water: #4fc3f7; --plant: #3ddc97; --sand: #ffd23f; --warn: #ff8a6b; --line: #1b4466;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0a1f26; --surface: #102b34; --ink: #e3f0ef; --muted: #92b1b6;
-  --water: #5bb6d3; --plant: #5fc18c; --sand: #8a7c4f; --line: #1f4450; --warn: #e0a05a;
+  --bg: #071a2e; --surface: #0d2a45; --ink: #e6f3fb; --muted: #93b4cc;
+  --water: #4fc3f7; --plant: #3ddc97; --sand: #ffd23f; --warn: #ff8a6b; --line: #1b4466;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
