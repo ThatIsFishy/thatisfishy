@@ -1,0 +1,36 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
+const topics = [...new Set(guides.map((g) => g.data.topic))].sort();
+---
+<Base title="Learn" description="Short, beginner-friendly aquarium guides.">
+  <h1>Learn</h1>
+  <p class="lead">Short guides written as I learn them. Filter by topic.</p>
+  <div class="filters" role="group" aria-label="Filter guides by topic">
+    <button class="chip" type="button" data-filter="All" aria-pressed="true">All</button>
+    {topics.map((t) => <button class="chip" type="button" data-filter={t} aria-pressed="false">{t}</button>)}
+  </div>
+  <div class="grid" id="list">
+    {guides.map((g) => (
+      <a class="card" href={`/learn/${g.id}/`} data-topic={g.data.topic}>
+        <div class="tags"><span class="tag">{g.data.topic}</span><span class="tag">{g.data.level}</span></div>
+        <h3>{g.data.title}</h3>
+        <p>{g.data.description}</p>
+      </a>
+    ))}
+  </div>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-topic]');
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      const f = chip.dataset.filter;
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      cards.forEach((card) => { card.hidden = !(f === 'All' || card.dataset.topic === f); });
+    })
+  );
+</script>

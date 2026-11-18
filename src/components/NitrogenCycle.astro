@@ -1,0 +1,44 @@
+<div class="panel" id="cycle">
+  <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
+  <p>Fish make ammonia. Bacteria turn it into nitrite, then into nitrate. A new tank has no bacteria yet, so it takes about five weeks to grow them. Drag the slider to see what a typical cycle looks like.</p>
+  <div class="sim">
+    <label for="day"><strong>Day <span id="dayv">0</span></strong>: <span id="stage" aria-live="polite"></span></label>
+    <input id="day" type="range" min="0" max="42" value="0" />
+    <div class="row"><span>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><span id="v-nh3"></span></div>
+    <div class="row"><span>Nitrite</span><div class="track"><div class="fill" id="b-no2" style="background:var(--sand)"></div></div><span id="v-no2"></span></div>
+    <div class="row"><span>Nitrate</span><div class="track"><div class="fill" id="b-no3" style="background:var(--plant)"></div></div><span id="v-no3"></span></div>
+  </div>
+  <p class="note">This is an illustrative curve, not a measurement. Real tanks vary, so test with a liquid kit.</p>
+  <p class="more"><a href="/learn/what-is-the-nitrogen-cycle/">Read the full guide</a></p>
+</div>
+
+<script>
+  const g = (d: number, m: number, w: number) => Math.exp(-((d - m) ** 2) / (2 * w * w));
+  const sig = (d: number, m: number, w: number) => 1 / (1 + Math.exp(-(d - m) / w));
+  const slider = document.getElementById('day') as HTMLInputElement | null;
+  function set(k: string, v: number, label: string) {
+    const bar = document.getElementById('b-' + k);
+    const out = document.getElementById('v-' + k);
+    if (bar) bar.style.width = Math.min(100, v * 100) + '%';
+    if (out) out.textContent = label;
+  }
+  function update() {
+    if (!slider) return;
+    const d = +slider.value;
+    const nh3 = d < 3 ? (d / 3) * 0.3 : Math.max(0, g(d, 9, 5) * (1 - sig(d, 17, 2) * 0.98));
+    const no2 = Math.max(0, g(d, 19, 5) * sig(d, 9, 2) * (1 - sig(d, 31, 2) * 0.97));
+    const no3 = sig(d, 22, 5) * 0.9;
+    set('nh3', nh3, nh3 > 0.05 ? 'high' : '0');
+    set('no2', no2, no2 > 0.05 ? 'high' : '0');
+    set('no3', no3, no3 > 0.1 ? 'rising' : 'low');
+    const dayv = document.getElementById('dayv');
+    const stage = document.getElementById('stage');
+    if (dayv) dayv.textContent = String(d);
+    if (stage) stage.textContent =
+      d < 7 ? 'ammonia starts to build' :
+      d < 18 ? 'ammonia bacteria are growing' :
+      d < 32 ? 'nitrite peaks, then falls' : 'cycled and stable';
+  }
+  slider?.addEventListener('input', update);
+  update();
+</script>

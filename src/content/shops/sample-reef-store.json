@@ -1,0 +1,7 @@
+{
+  "name": "Sample Reef Store",
+  "city": "Rotterdam",
+  "types": ["Saltwater", "Equipment"],
+  "url": "https://example.com",
+  "note": "Sample entry. Delete it once you have added real shops."
+}

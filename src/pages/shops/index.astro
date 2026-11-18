@@ -1,0 +1,56 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+const shops = (await getCollection('shops')).sort((a, b) => a.data.name.localeCompare(b.data.name));
+const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
+---
+<Base title="Shops" description="A hand-picked list of aquarium shops.">
+  <h1>Shops</h1>
+  <p class="lead">A hand-picked list. I only add shops I have visited or ordered from.</p>
+  <div class="filters" role="group" aria-label="Filter shops by what they sell">
+    <button class="chip" type="button" data-filter="All" aria-pressed="true">All</button>
+    {types.map((t) => <button class="chip" type="button" data-filter={t} aria-pressed="false">{t}</button>)}
+  </div>
+  <label for="q" class="meta">Search by name or city</label><br />
+  <input type="search" id="q" placeholder="For example Eindhoven" />
+  <div class="grid" id="list" style="margin-top:1rem">
+    {shops.map((s) => (
+      <div class="card" data-types={s.data.types.join('|')} data-text={`${s.data.name} ${s.data.city}`.toLowerCase()}>
+        <h3>{s.data.url ? <a href={s.data.url} rel="noopener">{s.data.name}</a> : s.data.name}</h3>
+        <div>{s.data.city}</div>
+        <div class="tags">{s.data.types.map((t) => <span class="tag">{t}</span>)}</div>
+        {s.data.note && <p>{s.data.note}</p>}
+      </div>
+    ))}
+  </div>
+  <p id="empty" hidden>No shops match. Clear the search or pick another filter.</p>
+  <p class="note">Missing a shop you like? Add it in the CMS under Shops.</p>
+</Base>
+
+<script>
+  const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-types]');
+  const q = document.getElementById('q') as HTMLInputElement | null;
+  const empty = document.getElementById('empty');
+  let current = 'All';
+  function apply() {
+    const term = (q?.value ?? '').toLowerCase();
+    let shown = 0;
+    cards.forEach((card) => {
+      const typeOk = current === 'All' || (card.dataset.types ?? '').split('|').includes(current);
+      const textOk = (card.dataset.text ?? '').includes(term);
+      card.hidden = !(typeOk && textOk);
+      if (!card.hidden) shown++;
+    });
+    if (empty) empty.hidden = shown > 0;
+  }
+  chips.forEach((chip) =>
+    chip.addEventListener('click', () => {
+      current = chip.dataset.filter ?? 'All';
+      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
+      apply();
+    })
+  );
+  q?.addEventListener('input', apply);
+</script>

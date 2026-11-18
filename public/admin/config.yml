@@ -1,0 +1,59 @@
+# Sveltia CMS settings. The repo line below points to your GitHub repository.
+backend:
+  name: github
+  repo: ThatIsFishy/thatisfishy
+  branch: main
+
+site_url: https://thatisfishy.com
+display_url: https://thatisfishy.com
+locale: en
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: guides
+    label: Guides
+    label_singular: Guide
+    folder: src/content/guides
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    summary: "{{title}} ({{topic}})"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Topic, name: topic, widget: select, options: [Basics, Water, Equipment, Plants, Fish, Problems] }
+      - { label: Level, name: level, widget: select, options: [Beginner, Intermediate, Advanced], default: Beginner }
+      - { label: Short description, name: description, widget: text, hint: "One or two sentences shown in the guide list." }
+      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Guide text, name: body, widget: markdown }
+
+  - name: journal
+    label: Tank journal
+    label_singular: Journal entry
+    folder: src/content/journal
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    summary: "{{date}} {{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Short description, name: description, widget: text, required: false }
+      - { label: Entry, name: body, widget: markdown }
+
+  - name: shops
+    label: Shops
+    label_singular: Shop
+    folder: src/content/shops
+    extension: json
+    format: json
+    create: true
+    identifier_field: name
+    summary: "{{name}} ({{city}})"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: City, name: city, widget: string }
+      - { label: What they sell, name: types, widget: select, multiple: true, options: [Fish, Plants, Shrimp, Saltwater, Equipment, Food] }
+      - { label: Website, name: url, widget: string, required: false }
+      - { label: My notes, name: note, widget: text, required: false }

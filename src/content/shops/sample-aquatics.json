@@ -1,0 +1,7 @@
+{
+  "name": "Sample Aquatics",
+  "city": "Eindhoven",
+  "types": ["Fish", "Plants"],
+  "url": "https://example.com",
+  "note": "Sample entry. Replace it with a real shop and your own notes."
+}
