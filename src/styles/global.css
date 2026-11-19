@@ -1,3 +1,4 @@
+/* ===== Colours: blue water base with playful accents ===== */
 :root {
   --bg: #e8f4fb;
   --surface: #ffffff;
@@ -78,3 +79,80 @@ input[type=search] { width: 100%; max-width: 24rem; padding: .6rem .8rem; font: 
 .back { font: 500 .95rem var(--head); }
 
 footer.site { max-width: 60rem; margin: auto; padding: 1.5rem 1.2rem 3rem; color: var(--muted); border-top: 1px solid var(--line); font-size: .9rem; }
+
+
+/* ===== Step 2: playful touches ===== */
+
+/* 1. One colour per guide topic. To add a topic, add a line here. */
+[data-t] { --tc: var(--water); }
+[data-t="basics"]    { --tc: #f2a900; }
+[data-t="water"]     { --tc: #1596e0; }
+[data-t="plants"]    { --tc: #1aa37a; }
+[data-t="equipment"] { --tc: #7a5cf0; }
+[data-t="problems"]  { --tc: #ff6b4a; }
+[data-t="fish"]      { --tc: #e8509a; }
+.tag[data-t] {
+  background: color-mix(in srgb, var(--tc) 16%, var(--surface));
+  border-color: color-mix(in srgb, var(--tc) 50%, var(--surface));
+  color: color-mix(in srgb, var(--tc) 40%, var(--ink));
+}
+.card[data-t] { border-top: 4px solid var(--tc); }
+
+/* 2. Wave under the heading */
+.wave { display: block; width: 100%; height: 36px; margin: 1.6rem 0 .4rem; }
+
+/* 3. Bubbly buttons that bounce */
+.btn {
+  border-radius: 999px;
+  padding: .7rem 1.5rem;
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--water) 55%, #000);
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s;
+}
+.btn:hover { transform: translateY(-3px) scale(1.04); box-shadow: 0 7px 0 color-mix(in srgb, var(--water) 55%, #000); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 color-mix(in srgb, var(--water) 55%, #000); }
+.btn.alt { box-shadow: 0 4px 0 var(--line); }
+.btn.alt:hover { box-shadow: 0 7px 0 var(--line); }
+.btn.alt:active { box-shadow: 0 1px 0 var(--line); }
+
+/* 4. Cards that lift */
+a.card { transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s, border-color .18s; }
+a.card:hover {
+  transform: translateY(-5px);
+  border-color: var(--tc, var(--water));
+  box-shadow: 0 10px 22px color-mix(in srgb, var(--tc, var(--water)) 25%, transparent);
+}
+
+/* 5. Logo */
+.logo { display: inline-flex; align-items: center; gap: .5rem; }
+.logo img { width: 36px; height: 36px; }
+
+/* 6. Learn dropdown */
+.has-sub { position: relative; }
+.has-sub > a::after { content: "▾"; font-size: .75em; margin-left: .3em; }
+.sub {
+  position: absolute; top: 100%; left: 0; min-width: 14rem; padding-top: .5rem; z-index: 10;
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity .15s, transform .15s, visibility .15s;
+}
+.sub ul {
+  list-style: none; margin: 0; padding: .4rem;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--ink) 18%, transparent);
+}
+nav.main .sub a {
+  display: flex; align-items: center; gap: .6rem; justify-content: flex-start;
+  padding: .45rem .7rem; border-radius: 8px; color: var(--ink); font-size: .95rem;
+}
+nav.main .sub a::before {
+  content: ""; width: .7rem; height: .7rem; border-radius: 50%; background: var(--tc); flex: none;
+}
+nav.main .sub a span { margin-left: auto; color: var(--muted); font-size: .85rem; }
+nav.main .sub a:hover, nav.main .sub a:focus-visible { background: color-mix(in srgb, var(--tc) 16%, var(--surface)); }
+@media (hover: hover) {
+  .has-sub:hover .sub, .has-sub:focus-within .sub { opacity: 1; visibility: visible; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn, a.card, .sub { transition: none; }
+  .btn:hover, a.card:hover { transform: none; }
+}

@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { topicSlug } from '../../consts';
 
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
 const topics = [...new Set(guides.map((g) => g.data.topic))].sort();
@@ -14,8 +15,8 @@ const topics = [...new Set(guides.map((g) => g.data.topic))].sort();
   </div>
   <div class="grid" id="list">
     {guides.map((g) => (
-      <a class="card" href={`/learn/${g.id}/`} data-topic={g.data.topic}>
-        <div class="tags"><span class="tag">{g.data.topic}</span><span class="tag">{g.data.level}</span></div>
+      <a class="card" href={`/learn/${g.id}/`} data-topic={g.data.topic} data-t={topicSlug(g.data.topic)}>
+        <div class="tags"><span class="tag" data-t={topicSlug(g.data.topic)}>{g.data.topic}</span><span class="tag">{g.data.level}</span></div>
         <h3>{g.data.title}</h3>
         <p>{g.data.description}</p>
       </a>
