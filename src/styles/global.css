@@ -427,3 +427,6 @@ header.site { position: relative; z-index: auto; }
 .s-filters .chip:disabled { opacity: .4; cursor: not-allowed; }
 .s-filters .chip:not(:disabled):hover { border-color: var(--water); }
 .s-more { text-align: center; margin: .8rem 0 0; }
+
+/* Knowledge Center filter: same buttons as the search, but left-aligned under the intro */
+.kc-filters { justify-content: flex-start; margin: 1.2rem 0; }
