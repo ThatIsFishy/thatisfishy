@@ -1,0 +1,5 @@
+---
+title: "Learning the aquarium hobby, out loud."
+description: "A beginner's notebook for the aquarium hobby, with articles, stories and photos."
+---
+I’m a beginner too. This site holds what I learn, the mistakes I make, and the shops worth visiting. Read along, or start your first tank with me.

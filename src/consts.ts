@@ -10,10 +10,3 @@ export const START_YEAR = 2026;
 export const SHOW_SHOPS = true;
 // true = the Shops page says "Coming soon" instead of showing the list.
 export const SHOPS_COMING_SOON = true;
-
-// ----- Topics (labels) in the order they appear in the menu -----
-export const TOPICS = ['Basics', 'Plants', 'Fish', 'Water', 'Equipment', 'Problems'];
-
-// Turns a topic like "Water" into a web-friendly label like "water".
-export const topicSlug = (t: string) =>
-  t.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

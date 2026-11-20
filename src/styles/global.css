@@ -84,20 +84,23 @@ footer.site { max-width: var(--page-max); margin: auto; padding: 1.5rem 1.2rem 3
 
 /* ===== Step 2: playful touches ===== */
 
-/* 1. One colour per guide topic. To add a topic, add a line here. */
-[data-t] { --tc: var(--water); }
-[data-t="basics"]    { --tc: #f2a900; }
-[data-t="water"]     { --tc: #1596e0; }
-[data-t="plants"]    { --tc: #1aa37a; }
-[data-t="equipment"] { --tc: #7a5cf0; }
-[data-t="problems"]  { --tc: #ff6b4a; }
-[data-t="fish"]      { --tc: #e8509a; }
-.tag[data-t] {
+/* 1. One colour per label. The CMS picks a colour NAME (ocean, sea, ...), and these lines turn it into a colour.
+   To add a new colour: add a line here and add its name to the list in src/content.config.ts. */
+[data-c] { --tc: var(--water); }
+[data-c="ocean"]  { --tc: #1596e0; }
+[data-c="sea"]    { --tc: #1aa37a; }
+[data-c="sun"]    { --tc: #f2a900; }
+[data-c="violet"] { --tc: #7a5cf0; }
+[data-c="coral"]  { --tc: #ff6b4a; }
+[data-c="pink"]   { --tc: #e8509a; }
+[data-c="teal"]   { --tc: #0fa3b1; }
+[data-c="orange"] { --tc: #f07d1a; }
+.tag[data-c] {
   background: color-mix(in srgb, var(--tc) 16%, var(--surface));
   border-color: color-mix(in srgb, var(--tc) 50%, var(--surface));
   color: color-mix(in srgb, var(--tc) 40%, var(--ink));
 }
-.card[data-t] { border-top: 4px solid var(--tc); }
+.card[data-c] { border-top: 4px solid var(--tc); }
 
 /* 2. Wave under the heading */
 .wave { display: block; width: 100%; height: 36px; margin: 1.6rem 0 .4rem; }
@@ -212,3 +215,19 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
   .theme { order: 2; }
   nav.main { order: 3; flex-basis: 100%; }
 }
+
+
+/* ===== Round 2: footer links, contact form ===== */
+.footer-links { display: flex; flex-wrap: wrap; gap: .4rem 1.5rem; margin-bottom: 1rem; }
+.footer-links a { color: var(--muted); }
+.footer-links a:hover { color: var(--water); }
+
+.form { display: grid; gap: .5rem; max-width: 40rem; margin-top: 1.5rem; }
+.form label { font: 500 .95rem var(--head); margin-top: .6rem; }
+.form input, .form select, .form textarea {
+  width: 100%; padding: .65rem .8rem; font: inherit; color: var(--ink);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+}
+.form textarea { resize: vertical; }
+.form .btn { justify-self: start; margin-top: .8rem; }
+.hp { position: absolute; left: -9999px; height: 0; overflow: hidden; }

@@ -7,6 +7,8 @@ export default defineConfig({
   trailingSlash: 'always',
   integrations: [
     // If Shops is switched off in src/consts.ts, leave it out of the sitemap too.
-    sitemap({ filter: (page) => SHOW_SHOPS || !page.includes('/shops/') }),
+    sitemap({
+      filter: (page) => !page.includes('/contact/thanks/') && (SHOW_SHOPS || !page.includes('/shops/')),
+    }),
   ],
 });

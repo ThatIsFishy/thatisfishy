@@ -1,7 +1,7 @@
 ---
 title: Why is my water cloudy?
-topic: Problems
-level: Beginner
+labels:
+  - problems
 description: How to tell white, green and brown water apart, and what to do about each.
 date: 2026-11-17
 ---

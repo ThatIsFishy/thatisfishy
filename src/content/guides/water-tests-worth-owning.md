@@ -1,7 +1,7 @@
 ---
 title: The water tests worth owning
-topic: Water
-level: Beginner
+labels:
+  - water
 description: Which test kits a first tank needs, and what each reading tells you.
 date: 2026-11-17
 ---

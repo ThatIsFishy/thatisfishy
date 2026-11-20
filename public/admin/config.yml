@@ -19,10 +19,19 @@ collections:
     extension: md
     format: yaml-frontmatter
     create: true
-    summary: "{{title}} ({{topic}})"
+    summary: "{{title}}"
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Label, name: topic, widget: select, options: [Basics, Plants, Fish, Water, Equipment, Problems] }
+      - label: Labels
+        name: labels
+        widget: relation
+        collection: labels
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        multiple: true
+        min: 1
+        hint: "Pick one or more labels. Add new labels under Labels in the left menu."
       - { label: Short description, name: description, widget: text, hint: "One or two sentences shown in the article list." }
       - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
       - { label: Article text, name: body, widget: markdown }
@@ -41,6 +50,21 @@ collections:
       - { label: Short description, name: description, widget: text, required: false }
       - { label: Story, name: body, widget: markdown }
 
+  - name: labels
+    label: Labels
+    label_singular: Label
+    folder: src/content/labels
+    extension: json
+    format: json
+    create: true
+    identifier_field: name
+    summary: "{{order}}. {{name}}"
+    fields:
+      - { label: Name, name: name, widget: string }
+      - { label: Colour, name: color, widget: select, options: [ocean, sea, sun, violet, coral, pink, teal, orange], default: ocean }
+      - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu." }
+      - { label: Short description, name: description, widget: text, required: false, hint: "Shown at the top of this label's page." }
+
   - name: shops
     label: Shops
     label_singular: Shop
@@ -56,3 +80,17 @@ collections:
       - { label: What they sell, name: types, widget: select, multiple: true, options: [Fish, Plants, Shrimp, Saltwater, Equipment, Food] }
       - { label: Website, name: url, widget: string, required: false }
       - { label: My notes, name: note, widget: text, required: false }
+
+  - name: pages
+    label: Page texts
+    label_singular: Page text
+    folder: src/content/pages
+    extension: md
+    format: yaml-frontmatter
+    create: false
+    delete: false
+    summary: "{{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Short description (for search engines), name: description, widget: text, required: false }
+      - { label: Text, name: body, widget: markdown }

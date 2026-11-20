@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import { getPage } from '../../lib/content';
 import { SHOW_SHOPS, SHOPS_COMING_SOON } from '../../consts';
 
 // If Shops is switched off in consts.ts, send visitors to the home page.
@@ -8,10 +9,11 @@ if (!SHOW_SHOPS) return Astro.redirect('/');
 
 const shops = (await getCollection('shops')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
+const { data, Content } = await getPage('shops');
 ---
-<Base title="Shops" description="A hand-picked list of aquarium shops.">
-  <h1>Shops</h1>
-  <p class="lead">A hand-picked list. I only add shops I have visited or ordered from.</p>
+<Base title={data.title} description={data.description}>
+  <h1>{data.title}</h1>
+  <div class="lead"><Content /></div>
 
   {SHOPS_COMING_SOON ? (
     <div class="panel coming">

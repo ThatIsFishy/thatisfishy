@@ -1,34 +1,29 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { TOPICS, topicSlug } from '../../consts';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getLabels, getPage } from '../../lib/content';
 
+const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
-const extra = [...new Set(guides.map((g) => g.data.topic))].filter((t) => !TOPICS.includes(t)).sort();
-const topics = [...TOPICS, ...extra];
+const { data, Content } = await getPage('knowledge-center');
 ---
-<Base title="Knowledge Center" description="Short, beginner-friendly aquarium articles.">
-  <h1>Knowledge Center</h1>
-  <p class="lead">Short articles written as I learn them. Filter by label.</p>
+<Base title={data.title} description={data.description}>
+  <h1>{data.title}</h1>
+  <div class="lead"><Content /></div>
   <div class="filters" role="group" aria-label="Filter articles by label">
     <button class="chip" type="button" data-filter="All" aria-pressed="true">All</button>
-    {topics.map((t) => <button class="chip" type="button" data-filter={t} aria-pressed="false">{t}</button>)}
+    {labels.map((l) => <button class="chip" type="button" data-filter={l.id} aria-pressed="false">{l.data.name}</button>)}
   </div>
   <div class="grid" id="list">
-    {guides.map((g) => (
-      <a class="card" href={`/knowledge-center/${g.id}/`} data-topic={g.data.topic} data-t={topicSlug(g.data.topic)}>
-        <div class="tags"><span class="tag" data-t={topicSlug(g.data.topic)}>{g.data.topic}</span></div>
-        <h3>{g.data.title}</h3>
-        <p>{g.data.description}</p>
-      </a>
-    ))}
+    {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>
   <p id="empty" hidden>No articles with this label yet. Coming soon.</p>
 </Base>
 
 <script>
   const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
-  const cards = document.querySelectorAll<HTMLElement>('[data-topic]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-labels]');
   const empty = document.getElementById('empty');
   chips.forEach((chip) =>
     chip.addEventListener('click', () => {
@@ -36,7 +31,8 @@ const topics = [...TOPICS, ...extra];
       let shown = 0;
       chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
       cards.forEach((card) => {
-        card.hidden = !(f === 'All' || card.dataset.topic === f);
+        const own = (card.dataset.labels ?? '').split('|');
+        card.hidden = !(f === 'All' || own.includes(f ?? ''));
         if (!card.hidden) shown++;
       });
       if (empty) empty.hidden = shown > 0;

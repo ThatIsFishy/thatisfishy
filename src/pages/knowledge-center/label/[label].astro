@@ -1,34 +1,34 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
-import { TOPICS, topicSlug } from '../../../consts';
+import ArticleCard from '../../../components/ArticleCard.astro';
+import { getLabels, hasLabel } from '../../../lib/content';
 
 export async function getStaticPaths() {
+  const labels = await getLabels();
   const guides = await getCollection('guides');
-  const extra = [...new Set(guides.map((g) => g.data.topic))].filter((t) => !TOPICS.includes(t));
-  return [...TOPICS, ...extra].map((topic) => ({
-    params: { label: topicSlug(topic) },
+  return labels.map((label) => ({
+    params: { label: label.id },
     props: {
-      topic,
+      label,
+      labels,
       guides: guides
-        .filter((g) => g.data.topic === topic)
+        .filter((g) => hasLabel(g, label.id))
         .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()),
     },
   }));
 }
-const { topic, guides } = Astro.props;
+const { label, labels, guides } = Astro.props;
+const intro = label.data.description
+  ?? (guides.length === 0
+    ? 'No articles with this label yet. Coming soon.'
+    : `${guides.length} ${guides.length === 1 ? 'article' : 'articles'} with this label.`);
 ---
-<Base title={topic} description={`Beginner articles about ${topic.toLowerCase()}.`}>
+<Base title={label.data.name} description={`Beginner articles about ${label.data.name.toLowerCase()}.`}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
-  <h1>{topic}</h1>
-  <p class="lead">{guides.length === 0 ? 'No articles with this label yet. Coming soon.' : `${guides.length} ${guides.length === 1 ? 'article' : 'articles'} with this label.`}</p>
+  <h1>{label.data.name}</h1>
+  <p class="lead">{intro}</p>
   <div class="grid">
-    {guides.map((g) => (
-      <a class="card" href={`/knowledge-center/${g.id}/`} data-t={topicSlug(g.data.topic)}>
-        <div class="tags"><span class="tag" data-t={topicSlug(g.data.topic)}>{g.data.topic}</span></div>
-        <h3>{g.data.title}</h3>
-        <p>{g.data.description}</p>
-      </a>
-    ))}
+    {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>
 </Base>

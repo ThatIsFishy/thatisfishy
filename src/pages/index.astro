@@ -2,16 +2,21 @@
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import NitrogenCycle from '../components/NitrogenCycle.astro';
-import { TAGLINE, topicSlug } from '../consts';
+import ArticleCard from '../components/ArticleCard.astro';
+import StoryCard from '../components/StoryCard.astro';
+import { getLabels, getPage } from '../lib/content';
+import { TAGLINE } from '../consts';
 
 type Dated = { data: { date: Date } };
 const newest = (a: Dated, b: Dated) => b.data.date.valueOf() - a.data.date.valueOf();
+const labels = await getLabels();
 const articles = (await getCollection('guides')).sort(newest).slice(0, 8);
 const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
+const { data, Content } = await getPage('home');
 ---
-<Base>
-  <h1>{TAGLINE}</h1>
-  <p class="lead">I’m a beginner too. This site holds what I learn, the mistakes I make, and the shops worth visiting. Read along, or start your first tank with me.</p>
+<Base description={data.description ?? TAGLINE}>
+  <h1>{data.title}</h1>
+  <div class="lead"><Content /></div>
   <div class="actions">
     <a class="btn" href="/knowledge-center/">Start learning</a>
     <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>
@@ -29,13 +34,7 @@ const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
     <a href="/knowledge-center/">See all articles →</a>
   </div>
   <div class="grid four">
-    {articles.map((a) => (
-      <a class="card" href={`/knowledge-center/${a.id}/`} data-t={topicSlug(a.data.topic)}>
-        <div class="tags"><span class="tag" data-t={topicSlug(a.data.topic)}>{a.data.topic}</span></div>
-        <h3>{a.data.title}</h3>
-        <p>{a.data.description}</p>
-      </a>
-    ))}
+    {articles.map((a) => <ArticleCard guide={a} labels={labels} />)}
   </div>
 
   <div class="section-head">
@@ -43,12 +42,6 @@ const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
     <a href="/fishy-stories/">See all stories →</a>
   </div>
   <div class="grid four">
-    {stories.map((s) => (
-      <a class="card" href={`/fishy-stories/${s.id}/`}>
-        <div class="tags"><span class="tag">{s.data.date.toISOString().slice(0, 10)}</span></div>
-        <h3>{s.data.title}</h3>
-        {s.data.description && <p>{s.data.description}</p>}
-      </a>
-    ))}
+    {stories.map((s) => <StoryCard story={s} />)}
   </div>
 </Base>
