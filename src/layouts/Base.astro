@@ -54,6 +54,9 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>
+    <!-- .top keeps the header and the search bar stuck to the top as two separate layers,
+         so each one blurs the page behind it on its own. -->
+    <div class="top">
     <header class="site">
       <div class="bar">
         <a class="logo" href="/"><img src="/favicon.svg" alt="" width="36" height="36" />{SITE_NAME}</a>
@@ -88,15 +91,16 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         </button>
       </div>
 
-      <!-- Search bar: slides down under the header when the magnifier is clicked -->
-      <div class="searchbar" id="searchbar" hidden>
-        <div class="search-inner">
-          <label class="sr" for="search-input">Search the site</label>
-          <input id="search-input" type="search" placeholder="Search words or a short phrase…" autocomplete="off" />
-          <div id="search-results" aria-live="polite"></div>
-        </div>
-      </div>
     </header>
+    <!-- Search bar: slides down under the header when the magnifier is clicked -->
+    <div class="searchbar" id="searchbar" hidden>
+      <div class="search-inner">
+        <label class="sr" for="search-input">Search the site</label>
+        <input id="search-input" type="search" placeholder="Search words or a short phrase…" autocomplete="off" />
+        <div id="search-results" aria-live="polite"></div>
+      </div>
+    </div>
+    </div>
     <main id="main" data-pagefind-body={index ? '' : undefined} data-pagefind-meta={index ? `type:${kind}` : undefined}>
       {index && image && <span hidden data-pagefind-meta={`image:${image}`}></span>}
       <slot />
