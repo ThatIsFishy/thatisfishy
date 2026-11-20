@@ -4,7 +4,9 @@ labels:
   - equipment
 description: Why a bigger tank is usually the easier tank, and a sensible size to start with.
 date: 2026-11-17
+updated: 2026-11-20
 ---
+
 It sounds backwards, but a small tank is harder to keep than a medium one.
 
 ## Why bigger is easier
