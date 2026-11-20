@@ -97,11 +97,12 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
       <div class="search-inner">
         <label class="sr" for="search-input">Search the site</label>
         <input id="search-input" type="search" placeholder="Search words or a short phrase…" autocomplete="off" />
+        <div class="filters s-filters" id="search-filters" role="group" aria-label="Show only" hidden></div>
         <div id="search-results" aria-live="polite"></div>
       </div>
     </div>
     </div>
-    <main id="main" data-pagefind-body={index ? '' : undefined} data-pagefind-meta={index ? `type:${kind}` : undefined}>
+    <main id="main" data-pagefind-body={index ? '' : undefined} data-pagefind-meta={index ? `type:${kind}` : undefined} data-pagefind-filter={index ? 'type[data-kind]' : undefined} data-kind={index ? kind : undefined}>
       {index && image && <span hidden data-pagefind-meta={`image:${image}`}></span>}
       <slot />
     </main>
@@ -147,34 +148,83 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         const path = '/pagefind/pagefind.js';
         pagefind = await import(/* @vite-ignore */ path);
         await pagefind.options({ baseUrl: '/' });
+        await pagefind.filters();   // load the filter data first, so result counts per kind are available
         return pagefind;
       }
 
       const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
 
-      async function run() {
+      // The kinds of result a visitor can filter on, in this order, with the names shown on the buttons.
+      const KINDS: Record<string, string> = {
+        Article: 'Knowledge Center', Story: 'Fishy Stories', Gallery: 'Gallery', Page: 'Info pages', 'Shop Finder': 'Shop Finder',
+      };
+      const selected = new Set<string>();   // nothing selected = "All"
+      const STEP = 8;                       // results shown at first, and per click on "Show more"
+      let shown = STEP;
+      const sFilters = document.getElementById('search-filters');
+
+      async function run(keepShown = false) {
         const term = (sInput?.value ?? '').trim();
         if (!sOut) return;
-        if (term.length < 2) { sOut.innerHTML = ''; return; }
+        if (!keepShown) shown = STEP;
+        if (term.length < 2) { sOut.innerHTML = ''; if (sFilters) sFilters.hidden = true; return; }
         try {
           const pf = await load();
-          const found = await pf.search(term);
+
+          // 1. Count the results per kind for this word (without any filter).
+          const base = await pf.search(term);
+          const counts: Record<string, number> = base.filters?.type ?? {};
+          const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+          // 2. A selected kind that has no results for this word is dropped from the selection.
+          for (const k of [...selected]) if (!(counts[k] > 0)) selected.delete(k);
+
+          // 3. Draw the buttons: all kinds, pale and disabled when there is nothing in them.
+          if (sFilters) {
+            const chip = (k: string, label: string, n: number, on: boolean, off: boolean) =>
+              `<button class="chip" type="button" data-kind="${esc(k)}" aria-pressed="${on}"${off ? ' disabled' : ''}><i class="dot" aria-hidden="true"></i>${esc(label)} <span class="s-n">${n}</span></button>`;
+            sFilters.innerHTML =
+              chip('All', 'All', total, selected.size === 0, false) +
+              Object.keys(KINDS).map((k) => chip(k, KINDS[k], counts[k] ?? 0, selected.has(k), !(counts[k] > 0))).join('');
+            sFilters.hidden = false;
+          }
+
+          // 4. The results: everything, or only the selected kinds.
+          const found = selected.size === 0 ? base : await pf.search(term, { filters: { type: { any: [...selected] } } });
           if (found.results.length === 0) { sOut.innerHTML = `<p class="s-empty">Nothing found for “${esc(term)}”. Try another word.</p>`; return; }
-          const top = await Promise.all(found.results.slice(0, 8).map((r: any) => r.data()));
+          const top = await Promise.all(found.results.slice(0, shown).map((r: any) => r.data()));
+          const more = found.results.length - top.length;
           sOut.innerHTML = '<ul>' + top.map((d: any) => `
             <li><a href="${d.url}">
               ${d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" loading="lazy" />` : ''}
-              <span class="s-text"><span class="s-kind">${esc(d.meta.type ?? 'Page')}</span>
+              <span class="s-text"><span class="s-kind">${esc(KINDS[d.meta.type] ?? d.meta.type ?? 'Page')}</span>
               <strong>${esc(d.meta.title ?? '')}</strong>
               <span class="s-ex">${d.excerpt}</span></span>
-            </a></li>`).join('') + '</ul>';
+            </a></li>`).join('') + '</ul>'
+            + (more > 0 ? `<p class="s-more"><button class="chip" type="button" data-more>Show more <span class="s-n">${more} left</span></button></p>` : '');
         } catch (err) {
           sOut.innerHTML = '<p class="s-empty">Search is only available on the built site (not in <code>npm run dev</code>).</p>';
         }
       }
 
+      // Clicking a button: All clears the selection; a kind is switched on or off.
+      // When the last kind is switched off, the selection is empty again, which means All.
+      sFilters?.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-kind]');
+        if (!btn || btn.disabled) return;
+        const k = btn.dataset.kind ?? 'All';
+        if (k === 'All') selected.clear();
+        else if (selected.has(k)) selected.delete(k);
+        else selected.add(k);
+        run();
+        sInput?.focus();
+      });
+      sOut?.addEventListener('click', (e) => {
+        if ((e.target as HTMLElement).closest('[data-more]')) { shown += STEP; run(true); }
+      });
+
       sBtn?.addEventListener('click', () => setOpen(sBar?.hidden ?? true));
-      sInput?.addEventListener('input', () => { clearTimeout(timer); timer = window.setTimeout(run, 150); });
+      sInput?.addEventListener('input', () => { clearTimeout(timer); timer = window.setTimeout(() => run(), 150); });
       document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sBar && !sBar.hidden) { setOpen(false); sBtn?.focus(); } });
       document.addEventListener('click', (e) => {
         const t = e.target as Node;
