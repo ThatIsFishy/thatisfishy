@@ -2,7 +2,6 @@
 title: Easy plants for a first tank
 labels:
   - plants
-  - test
 description: Hardy plants that forgive beginner mistakes, and how to plant them.
 date: 2026-11-17
 ---
