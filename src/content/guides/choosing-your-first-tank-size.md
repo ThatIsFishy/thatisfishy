@@ -2,6 +2,7 @@
 title: Choosing your first tank size
 labels:
   - equipment
+  - fish
 description: Why a bigger tank is usually the easier tank, and a sensible size to start with.
 date: 2026-11-17
 updated: 2026-11-20
