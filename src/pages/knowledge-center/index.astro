@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
-import { getLabels, getPage, hasLabel } from '../../lib/content';
+import { getLabels, getPage, hasLabel, colorOf } from '../../lib/content';
 
 const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
@@ -12,10 +12,10 @@ const { data, Content } = await getPage('knowledge-center');
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
   <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">
-    <button class="chip" type="button" data-filter="All" aria-pressed="true"><i class="dot" aria-hidden="true"></i>All <span class="s-n">{guides.length}</span></button>
+    <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><i class="dot" aria-hidden="true"></i>All <span class="s-n">{guides.length}</span></button>
     {labels.map((l) => {
       const n = guides.filter((g) => hasLabel(g, l.id)).length;
-      return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0}><i class="dot" aria-hidden="true"></i>{l.data.name} <span class="s-n">{n}</span></button>;
+      return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0} style={`--tc:${colorOf(l)}`}><i class="dot" aria-hidden="true"></i>{l.data.name} <span class="s-n">{n}</span></button>;
     })}
   </div>
   <div class="grid" id="list">
