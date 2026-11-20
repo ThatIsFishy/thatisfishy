@@ -5,6 +5,7 @@ import { getPage } from '../../lib/content';
 const { data, Content } = await getPage('contact');
 ---
 <Base title={data.title} description={data.description}>
+  <div class="column">
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
 
@@ -32,4 +33,5 @@ const { data, Content } = await getPage('contact');
     <p class="note">I use your name and email only to read and answer your message. You can read more in the <a href="/privacy/">privacy notice</a>.</p>
     <button class="btn" type="submit">Send message</button>
   </form>
+  </div>
 </Base>

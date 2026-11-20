@@ -5,6 +5,7 @@ import NitrogenCycle from '../components/NitrogenCycle.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import StoryCard from '../components/StoryCard.astro';
 import GalleryRow from '../components/GalleryRow.astro';
+import Notices from '../components/Notices.astro';
 import { getLabels, getPage } from '../lib/content';
 import { TAGLINE } from '../consts';
 
@@ -27,6 +28,8 @@ const { data, Content } = await getPage('home');
     <path d="M0 24 Q 50 6 100 24 T 200 24 T 300 24 T 400 24 T 500 24 T 600 24 T 700 24 T 800 24 T 900 24 T 1000 24 T 1100 24 T 1200 24" fill="none" stroke="var(--sand)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />
     <path d="M0 16 Q 50 -2 100 16 T 200 16 T 300 16 T 400 16 T 500 16 T 600 16 T 700 16 T 800 16 T 900 16 T 1000 16 T 1100 16 T 1200 16" fill="none" stroke="var(--water)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />
   </svg>
+
+  <Notices />
 
   <NitrogenCycle />
 

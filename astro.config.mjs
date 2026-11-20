@@ -10,9 +10,9 @@ export default defineConfig({
   // Turns photo lines in articles into positioned figures (see src/lib/remark-photos.mjs)
   markdown: { processor: unified({ remarkPlugins: [remarkPhotos] }) },
   integrations: [
-    // If Shops is switched off in src/consts.ts, leave it out of the sitemap too.
+    // If Shop Finder is switched off in src/consts.ts, leave it out of the sitemap too.
     sitemap({
-      filter: (page) => !page.includes('/contact/thanks/') && (SHOW_SHOPS || !page.includes('/shops/')),
+      filter: (page) => !page.includes('/contact/thanks/') && (SHOW_SHOPS || !page.includes('/shop-finder/')),
     }),
   ],
 });

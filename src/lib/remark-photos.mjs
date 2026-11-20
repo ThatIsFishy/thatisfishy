@@ -1,30 +1,41 @@
-// Turns photo lines in articles into nicely positioned figures.
+// Turns photo lines in articles into nicely positioned figures with a source label.
 //
-// In the CMS you insert a photo as usual. To position it, add a layout word:
-//   - in the "title" of the image (if the CMS dialog has that field), or
-//   - at the very start of the alt text, between curly brackets: {left} Red shrimp on moss
+// In the CMS use the "Photo" button in the editor toolbar: it has drop-downs for the layout and the
+// source. Under the hood it writes this, which you can also type by hand:
 //
-// Layout words:  left | right | center | small
-//   left / right  the photo sits at the side and the text wraps around it
-//   center        the photo sits in the middle on its own line (this is the default)
-//   small         a smaller photo in the middle
-// Add a caption after a bar:  {left | My first shrimp}   or   title: left | My first shrimp
+//   ![{left, ai | My caption} Description of the photo](/images/uploads/photo.jpg)
+//
+// Between the curly brackets, separated by commas:
+//   layout:  left | right | center | small
+//     left / right  the photo sits at the side and the text wraps around it
+//     center        the photo sits in the middle on its own line (the default)
+//     small         a smaller photo in the middle
+//   source:  own | ai | external      (my photo, AI generated, external source)
+//   Then, after a bar |, an optional caption.
+// The same text may also be put in the image "title" instead of the curly brackets.
 //
 // Two or more photos in the SAME paragraph (one directly under the other, no empty line)
 // are shown side by side in one row.
 
 const LAYOUTS = ['left', 'right', 'center', 'small'];
+const SOURCES = { own: 'My photo', ai: 'AI generated', external: 'External source' };
 
 const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// Reads "left | caption" into { layout, caption }
+// Reads "left, ai | caption" into { layout, source, caption }
 function parseToken(raw) {
-  const [first, ...rest] = String(raw ?? '').split('|');
-  const word = first.trim().toLowerCase();
-  const isLayout = LAYOUTS.includes(word);
-  const caption = (isLayout ? rest.join('|') : [first, ...rest].join('|')).trim();
-  return { layout: isLayout ? word : 'center', caption };
+  const text = String(raw ?? '');
+  const bar = text.indexOf('|');
+  const wordsPart = bar === -1 ? text : text.slice(0, bar);
+  const words = wordsPart.split(/[\s,]+/).map((w) => w.trim().toLowerCase()).filter(Boolean);
+  const known = words.every((w) => LAYOUTS.includes(w) || w in SOURCES);
+  if (!known) return { layout: 'center', source: '', caption: text.trim() };
+  return {
+    layout: words.find((w) => LAYOUTS.includes(w)) ?? 'center',
+    source: words.find((w) => w in SOURCES) ?? '',
+    caption: bar === -1 ? '' : text.slice(bar + 1).trim(),
+  };
 }
 
 // Finds the layout token for one image node: the title wins, else a {…} prefix in the alt text.
@@ -39,8 +50,12 @@ function describe(img) {
   return { src: img.url, alt, ...parseToken(token) };
 }
 
+const badge = (p) =>
+  p.source ? `<span class="src src-${p.source}" data-pagefind-ignore><i aria-hidden="true"></i>${SOURCES[p.source]}</span>` : '';
+
+// The photo with its source label on top
 const imgTag = (p) =>
-  `<img src="${esc(p.src)}" alt="${esc(p.alt)}" loading="lazy" decoding="async">`;
+  `<span class="imgwrap" data-src="${p.source}"><img src="${esc(p.src)}" alt="${esc(p.alt)}" loading="lazy" decoding="async">${badge(p)}</span>`;
 
 function figure(p) {
   const cap = p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : '';

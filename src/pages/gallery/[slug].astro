@@ -1,6 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import PubDates from '../../components/PubDates.astro';
+import SourceBadge from '../../components/SourceBadge.astro';
 
 export async function getStaticPaths() {
   const items = await getCollection('gallery');
@@ -9,13 +11,24 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const cover = entry.data.photos[0];
+const isUrl = (t: string) => /^https?:\/\//i.test(t);
 ---
 <Base title={entry.data.title} description={`Gallery: ${entry.data.title}`} index kind="Gallery" image={cover.image}>
-  <p class="back" data-pagefind-ignore><a href="/gallery/">← Gallery</a></p>
-  <h1>{entry.data.title}</h1>
-  <p class="meta">{entry.data.date.toISOString().slice(0, 10)}</p>
-  <div class="entry-photos">
-    {entry.data.photos.map((p) => <img src={p.image} alt={p.alt} loading="lazy" decoding="async" />)}
+  <div class="column wide">
+    <p class="back" data-pagefind-ignore><a href="/gallery/">← Gallery</a></p>
+    <h1>{entry.data.title}</h1>
+    <PubDates date={entry.data.date} updated={entry.data.updated} />
+    <div class="entry-photos">
+      {entry.data.photos.map((p) => (
+        <figure class="entry-photo" data-src={p.source}>
+          <div class="imgwrap">
+            <img src={p.image} alt={p.alt} loading="lazy" decoding="async" />
+            <SourceBadge source={p.source} />
+          </div>
+          {p.credit && <figcaption>Credit: {isUrl(p.credit) ? <a href={p.credit} rel="noopener">{p.credit}</a> : p.credit}</figcaption>}
+        </figure>
+      ))}
+    </div>
+    <div class="prose"><Content /></div>
   </div>
-  <div class="prose"><Content /></div>
 </Base>

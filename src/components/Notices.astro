@@ -1,0 +1,24 @@
+---
+import { render } from 'astro:content';
+import { getNotices, fmtDate } from '../lib/content';
+
+// The "Important notes" panel on the home page.
+// It only exists while there is at least one note in the CMS under "Important notes".
+const notices = await Promise.all(
+  (await getNotices()).map(async (n) => ({ n, Body: (await render(n)).Content }))
+);
+---
+{notices.length > 0 && (
+  <section class="panel notices" aria-labelledby="notices-h">
+    <h2 id="notices-h">Important notes</h2>
+    <div class="notice-list">
+      {notices.map(({ n, Body }) => (
+        <article class="notice" data-type={n.data.type}>
+          <p class="notice-meta"><span class="notice-type">{n.data.type}</span> {fmtDate(n.data.date)}</p>
+          <h3>{n.data.title}</h3>
+          <div class="prose"><Body /></div>
+        </article>
+      ))}
+    </div>
+  </section>
+)}

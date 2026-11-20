@@ -1,5 +1,5 @@
 ---
-title: "Shops"
-description: "A hand-picked list of aquarium shops."
+title: "Shop Finder"
+description: "A hand-picked list of local aquarium shops. This site does not sell anything."
 ---
-A hand-picked list. I only add shops I have visited or ordered from.
+A search tool for local aquarium shops, picked by hand. I don’t sell anything on this site; I only help you find where to buy.

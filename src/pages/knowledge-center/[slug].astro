@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import { getLabels, labelsOf } from '../../lib/content';
+import PubDates from '../../components/PubDates.astro';
+import { getLabels, labelsOf, colorOf } from '../../lib/content';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
@@ -12,10 +13,13 @@ const { Content } = await render(entry);
 const own = labelsOf(entry, await getLabels());
 ---
 <Base title={entry.data.title} description={entry.data.description} index kind="Article">
-  <p class="back" data-pagefind-ignore><a href="/knowledge-center/">← Knowledge Center</a></p>
-  <h1>{entry.data.title}</h1>
-  <div class="tags">
-    {own.map((l) => <a class="tag" data-c={l.data.color} href={`/knowledge-center/label/${l.id}/`}>{l.data.name}</a>)}
+  <div class="column">
+    <p class="back" data-pagefind-ignore><a href="/knowledge-center/">← Knowledge Center</a></p>
+    <h1>{entry.data.title}</h1>
+    <PubDates date={entry.data.date} updated={entry.data.updated} />
+    <div class="tags">
+      {own.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`/knowledge-center/label/${l.id}/`}>{l.data.name}</a>)}
+    </div>
+    <div class="prose"><Content /></div>
   </div>
-  <div class="prose"><Content /></div>
 </Base>

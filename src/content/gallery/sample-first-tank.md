@@ -5,6 +5,7 @@ order: 1
 photos:
   - image: /images/uploads/sample-tank-1.svg
     alt: "A small sample aquarium with one orange fish and green plants on the left"
+    source: own
 ---
 This is a **sample entry**. Delete it in the CMS under *Gallery* when you add your own photos.
 

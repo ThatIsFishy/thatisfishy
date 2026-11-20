@@ -1,0 +1,10 @@
+---
+import { SOURCES, type Source } from '../consts';
+
+// The small coloured label that says where a photo comes from.
+// Green = my photo, blue = AI generated, orange = external source. The words are always shown too,
+// so the meaning never depends on colour alone.
+interface Props { source?: Source; inline?: boolean; }
+const { source, inline = false } = Astro.props;
+---
+{source && <span data-pagefind-ignore class:list={['src', `src-${source}`, { inline }]}><i aria-hidden="true"></i>{SOURCES[source]}</span>}

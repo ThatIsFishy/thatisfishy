@@ -1,16 +1,16 @@
-import { defineCollection, reference } from 'astro:content';
+import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 // The colours a label can have. The colours themselves are defined in global.css.
-const colors = ['ocean', 'sea', 'sun', 'violet', 'coral', 'pink', 'teal', 'orange'] as const;
+// (Labels used fixed colour names before; those old names still work, see colorOf() in src/lib/content.ts.)
 
 // Labels: one small file per label in src/content/labels
 const labels = defineCollection({
   loader: glob({ pattern: '**/*.json', base: './src/content/labels' }),
   schema: z.object({
     name: z.string(),
-    color: z.enum(colors).default('ocean'),
+    color: z.string().default('#1596e0'),
     order: z.coerce.number().default(50),
     description: z.string().optional(),
   }),
@@ -21,9 +21,11 @@ const guides = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
   schema: z.object({
     title: z.string(),
-    labels: z.array(reference('labels')).min(1),
+    // Label ids. An article may have none (it then only shows under "All").
+    labels: z.array(z.string()).default([]),
     description: z.string(),
     date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
   }),
 });
 
@@ -32,6 +34,7 @@ const journal = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
     description: z.string().optional(),
   }),
 });
@@ -64,14 +67,28 @@ const gallery = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    updated: z.coerce.date().optional(),
     order: z.coerce.number().default(100),
     photos: z
       .array(z.object({
         image: z.string(),
         alt: z.string().min(1, 'Describe what is in the photo'),
+        // Where the photo comes from. Shown as a coloured label.
+        source: z.enum(['own', 'ai', 'external']).optional(),
+        credit: z.string().optional(),
       }))
       .min(1),
   }),
 });
 
-export const collections = { labels, guides, journal, shops, pages, gallery };
+// Important notes: shown in a panel on the home page, only while at least one exists.
+const notices = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notices' }),
+  schema: z.object({
+    title: z.string(),
+    type: z.enum(['Correction', 'Site update', 'Policy', 'Other']).default('Other'),
+    date: z.coerce.date(),
+  }),
+});
+
+export const collections = { labels, guides, journal, shops, pages, gallery, notices };

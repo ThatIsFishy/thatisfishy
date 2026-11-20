@@ -1,0 +1,2 @@
+Important notes live here, one file per note. Add them in the CMS under "Important notes".
+While this folder has no notes, the panel on the home page stays hidden.

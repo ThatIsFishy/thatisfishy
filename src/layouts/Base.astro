@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
 import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS } from '../consts';
-import { getLabels, hasLabel } from '../lib/content';
+import { getLabels, hasLabel, colorOf } from '../lib/content';
 
 // index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
 interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; }
@@ -16,7 +16,7 @@ const guides = await getCollection('guides');
 const menuLabels = (await getLabels()).map((label) => ({
   id: label.id,
   name: label.data.name,
-  color: label.data.color,
+  color: colorOf(label),
   count: guides.filter((g) => hasLabel(g, label.id)).length,
 }));
 
@@ -25,7 +25,7 @@ const nav: { href: string; label: string; sub?: boolean }[] = [
   { href: '/knowledge-center/', label: 'Knowledge Center', sub: true },
   { href: '/fishy-stories/', label: 'Fishy Stories' },
   { href: '/gallery/', label: 'Gallery' },
-  ...(SHOW_SHOPS ? [{ href: '/shops/', label: 'Shops' }] : []),
+  ...(SHOW_SHOPS ? [{ href: '/shop-finder/', label: 'Shop Finder' }] : []),
   { href: '/about/', label: 'About' },
 ];
 const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
@@ -69,7 +69,7 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
                   <ul>
                     {menuLabels.map((l) => (
                       <li>
-                        <a href={`/knowledge-center/label/${l.id}/`} data-c={l.color}>
+                        <a href={`/knowledge-center/label/${l.id}/`} data-c="" style={`--tc:${l.color}`}>
                           {l.name}<span>{l.count > 0 ? l.count : 'soon'}</span>
                         </a>
                       </li>

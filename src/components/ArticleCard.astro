@@ -1,14 +1,14 @@
 ---
 import type { Guide, Label } from '../lib/content';
-import { labelsOf } from '../lib/content';
+import { labelsOf, colorOf } from '../lib/content';
 
 interface Props { guide: Guide; labels: Label[]; }
 const { guide, labels } = Astro.props;
 const own = labelsOf(guide, labels);
 ---
-<a class="card" href={`/knowledge-center/${guide.id}/`} data-labels={own.map((l) => l.id).join('|')} data-c={own[0]?.data.color}>
+<a class="card" href={`/knowledge-center/${guide.id}/`} data-labels={own.map((l) => l.id).join('|')} data-c={own[0] ? '' : undefined} style={own[0] ? `--tc:${colorOf(own[0])}` : undefined}>
   <div class="tags">
-    {own.map((l) => <span class="tag" data-c={l.data.color}>{l.data.name}</span>)}
+    {own.map((l) => <span class="tag" data-c="" style={`--tc:${colorOf(l)}`}>{l.data.name}</span>)}
   </div>
   <h3>{guide.data.title}</h3>
   <p>{guide.data.description}</p>

@@ -30,10 +30,11 @@ collections:
         value_field: "{{slug}}"
         display_fields: [name]
         multiple: true
-        min: 1
-        hint: "Pick one or more labels. Add new labels under Labels in the left menu."
+        required: false
+        hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
       - { label: Short description, name: description, widget: text, hint: "One or two sentences shown in the article list." }
-      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Fill it in when you change the article later. It shows as 'Updated' under the title." }
       - { label: Article text, name: body, widget: markdown }
 
   - name: journal
@@ -46,7 +47,8 @@ collections:
     summary: "{{date}} {{title}}"
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Fill it in when you change the article later. It shows as 'Updated' under the title." }
       - { label: Short description, name: description, widget: text, required: false }
       - { label: Story, name: body, widget: markdown }
 
@@ -60,7 +62,8 @@ collections:
     summary: "{{order}}. {{title}}"
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Fill it in when you change the article later. It shows as 'Updated' under the title." }
       - { label: Order number, name: order, widget: number, value_type: int, default: 100, hint: "1 comes first on the Gallery page. Same number = newest first." }
       - label: Photos
         name: photos
@@ -70,7 +73,30 @@ collections:
         fields:
           - { label: Photo, name: image, widget: image }
           - { label: "What is in the photo (alt text)", name: alt, widget: string, hint: "Required. Short and plain, for people who cannot see the photo and for search engines." }
+          - label: Source of the photo
+            name: source
+            widget: select
+            options:
+              - { label: "My photo (green)", value: own }
+              - { label: "AI generated (blue)", value: ai }
+              - { label: "External source (orange)", value: external }
+            hint: "Required. Shown as a coloured label on the photo."
+          - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
       - { label: Explanation, name: body, widget: markdown, hint: "Shown on the right when someone clicks the photo." }
+
+  - name: notices
+    label: Important notes
+    label_singular: Note
+    folder: src/content/notices
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    summary: "{{date}} {{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Type, name: type, widget: select, options: [Correction, Site update, Policy, Other], default: Other }
+      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Text, name: body, widget: markdown, hint: "Shown in the Important notes panel on the home page. When you delete the last note, the panel disappears." }
 
   - name: labels
     label: Labels
@@ -83,12 +109,12 @@ collections:
     summary: "{{order}}. {{name}}"
     fields:
       - { label: Name, name: name, widget: string }
-      - { label: Colour, name: color, widget: select, options: [ocean, sea, sun, violet, coral, pink, teal, orange], default: ocean }
+      - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour. (Older labels may show the default here until you pick a colour and save.)" }
       - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu." }
       - { label: Short description, name: description, widget: text, required: false, hint: "Shown at the top of this label's page." }
 
   - name: shops
-    label: Shops
+    label: Shop Finder
     label_singular: Shop
     folder: src/content/shops
     extension: json

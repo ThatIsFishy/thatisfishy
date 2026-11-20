@@ -5,7 +5,10 @@ order: 2
 photos:
   - image: /images/uploads/sample-tank-2.svg
     alt: "A tall sample picture of a tank with an orange fish in the middle"
+    source: ai
   - image: /images/uploads/sample-tank-3.svg
     alt: "A sample picture with a yellow background and an orange fish"
+    source: external
+    credit: "https://example.com/where-this-came-from"
 ---
-One entry can hold several photos, for example before and after. All of them show on the right when you click the entry.
+One entry can hold several photos, for example before and after. Click the photo to open it big, then click the left or right side of the photo to move through them.
