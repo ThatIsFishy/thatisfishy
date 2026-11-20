@@ -417,16 +417,20 @@ header.site { position: relative; z-index: auto; }
 #search-results .s-empty { text-align: center; }
 
 /* Search filter buttons: a circle that fills when selected, dark blue when on, pale when empty */
-.s-filters .chip { display: inline-flex; align-items: center; gap: .45rem; }
+/* Every button has a frame in its own colour (--tc), also when it is selected */
+.s-filters .chip { display: inline-flex; align-items: center; gap: .45rem; border: 2px solid var(--tc, var(--line)); }
 .s-filters .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 2px solid currentColor; flex: none; }
-.s-filters .chip[aria-pressed="true"] { background: #0a5a96; border-color: #0a5a96; color: #fff; }
+.s-filters .chip[aria-pressed="true"] { background: #0a5a96; color: #fff; }
 /* Selected: the circle turns neon green */
 .s-filters .chip[aria-pressed="true"] .dot { background: #39ff14; border-color: #39ff14; }
-:root[data-theme="dark"] .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; border-color: #1f7fc4; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; border-color: #1f7fc4; } }
+:root[data-theme="dark"] .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; } }
 .s-filters .chip:disabled { opacity: .4; cursor: not-allowed; }
-.s-filters .chip:not(:disabled):hover { border-color: var(--water); }
+.s-filters .chip:not(:disabled):hover { box-shadow: 0 0 0 3px color-mix(in srgb, var(--tc, var(--water)) 30%, transparent); }
 .s-more { text-align: center; margin: .8rem 0 0; }
 
 /* Knowledge Center filter: same buttons as the search, but left-aligned under the intro */
 .kc-filters { justify-content: flex-start; margin: 1.2rem 0; }
+
+/* The search buttons keep a plain frame: colours belong to the Knowledge Center labels */
+.s-filters:not(.kc-filters) .chip { border-width: 1px; }
