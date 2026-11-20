@@ -11,7 +11,7 @@ const shops = (await getCollection('shops')).sort((a, b) => a.data.name.localeCo
 const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
 const { data, Content } = await getPage('shops');
 ---
-<Base title={data.title} description={data.description}>
+<Base title={data.title} description={data.description} index={!SHOPS_COMING_SOON} kind="Shop">
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
 

@@ -4,8 +4,9 @@ import { getCollection } from 'astro:content';
 import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS } from '../consts';
 import { getLabels, hasLabel } from '../lib/content';
 
-interface Props { title?: string; description?: string; noindex?: boolean; }
-const { title, description = TAGLINE, noindex = false } = Astro.props;
+// index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
+interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; }
+const { title, description = TAGLINE, noindex = false, index = false, kind = 'Page', image } = Astro.props;
 const fullTitle = title ? `${title} – ${SITE_NAME}` : `${SITE_NAME} – ${TAGLINE}`;
 const path = Astro.url.pathname;
 const canonical = new URL(path, SITE_URL).toString();
@@ -23,6 +24,7 @@ const nav: { href: string; label: string; sub?: boolean }[] = [
   { href: '/', label: 'Home' },
   { href: '/knowledge-center/', label: 'Knowledge Center', sub: true },
   { href: '/fishy-stories/', label: 'Fishy Stories' },
+  { href: '/gallery/', label: 'Gallery' },
   ...(SHOW_SHOPS ? [{ href: '/shops/', label: 'Shops' }] : []),
   { href: '/about/', label: 'About' },
 ];
@@ -56,6 +58,9 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
       <div class="bar">
         <a class="logo" href="/"><img src="/favicon.svg" alt="" width="36" height="36" />{SITE_NAME}</a>
         <nav class="main" aria-label="Main">
+          <button class="search-btn" id="search-btn" type="button" aria-label="Search the site" aria-expanded="false" aria-controls="searchbar">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4" /><path d="M15.5 15.5L21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" /></svg>
+          </button>
           {nav.map((n) =>
             n.sub ? (
               <div class="has-sub">
@@ -82,8 +87,20 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
           <svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /></svg>
         </button>
       </div>
+
+      <!-- Search bar: slides down under the header when the magnifier is clicked -->
+      <div class="searchbar" id="searchbar" hidden>
+        <div class="search-inner">
+          <label class="sr" for="search-input">Search the site</label>
+          <input id="search-input" type="search" placeholder="Search words or a short phrase…" autocomplete="off" />
+          <div id="search-results" aria-live="polite"></div>
+        </div>
+      </div>
     </header>
-    <main id="main"><slot /></main>
+    <main id="main" data-pagefind-body={index ? '' : undefined} data-pagefind-meta={index ? `type:${kind}` : undefined}>
+      {index && image && <span hidden data-pagefind-meta={`image:${image}`}></span>}
+      <slot />
+    </main>
     <footer class="site">
       <nav class="footer-links" aria-label="Footer">
         <a href="/about/">About</a>
@@ -103,6 +120,61 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         const next = dark ? 'light' : 'dark';
         root.dataset.theme = next;
         try { localStorage.setItem('theme', next); } catch (e) {}
+      });
+
+      // ----- Search (uses Pagefind, an index made when the site is built) -----
+      const sBtn = document.getElementById('search-btn') as HTMLButtonElement | null;
+      const sBar = document.getElementById('searchbar');
+      const sInput = document.getElementById('search-input') as HTMLInputElement | null;
+      const sOut = document.getElementById('search-results');
+      let pagefind: any = null;
+      let timer: number | undefined;
+
+      function setOpen(open: boolean) {
+        if (!sBar || !sBtn) return;
+        sBar.hidden = !open;
+        sBtn.setAttribute('aria-expanded', String(open));
+        if (open) sInput?.focus();
+      }
+
+      async function load() {
+        if (pagefind) return pagefind;
+        // The path is in a variable so the build tool leaves it alone; the file is made after the build.
+        const path = '/pagefind/pagefind.js';
+        pagefind = await import(/* @vite-ignore */ path);
+        await pagefind.options({ baseUrl: '/' });
+        return pagefind;
+      }
+
+      const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
+
+      async function run() {
+        const term = (sInput?.value ?? '').trim();
+        if (!sOut) return;
+        if (term.length < 2) { sOut.innerHTML = ''; return; }
+        try {
+          const pf = await load();
+          const found = await pf.search(term);
+          if (found.results.length === 0) { sOut.innerHTML = `<p class="s-empty">Nothing found for “${esc(term)}”. Try another word.</p>`; return; }
+          const top = await Promise.all(found.results.slice(0, 8).map((r: any) => r.data()));
+          sOut.innerHTML = '<ul>' + top.map((d: any) => `
+            <li><a href="${d.url}">
+              ${d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" loading="lazy" />` : ''}
+              <span class="s-text"><span class="s-kind">${esc(d.meta.type ?? 'Page')}</span>
+              <strong>${esc(d.meta.title ?? '')}</strong>
+              <span class="s-ex">${d.excerpt}</span></span>
+            </a></li>`).join('') + '</ul>';
+        } catch (err) {
+          sOut.innerHTML = '<p class="s-empty">Search is only available on the built site (not in <code>npm run dev</code>).</p>';
+        }
+      }
+
+      sBtn?.addEventListener('click', () => setOpen(sBar?.hidden ?? true));
+      sInput?.addEventListener('input', () => { clearTimeout(timer); timer = window.setTimeout(run, 150); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && sBar && !sBar.hidden) { setOpen(false); sBtn?.focus(); } });
+      document.addEventListener('click', (e) => {
+        const t = e.target as Node;
+        if (sBar && !sBar.hidden && !sBar.contains(t) && !sBtn?.contains(t)) setOpen(false);
       });
 
       // Footer year: "2026" in 2026, "2026 – 2027" in 2027, and so on.

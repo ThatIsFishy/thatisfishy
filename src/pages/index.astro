@@ -4,6 +4,7 @@ import Base from '../layouts/Base.astro';
 import NitrogenCycle from '../components/NitrogenCycle.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import StoryCard from '../components/StoryCard.astro';
+import GalleryRow from '../components/GalleryRow.astro';
 import { getLabels, getPage } from '../lib/content';
 import { TAGLINE } from '../consts';
 
@@ -44,4 +45,6 @@ const { data, Content } = await getPage('home');
   <div class="grid four">
     {stories.map((s) => <StoryCard story={s} />)}
   </div>
+
+  <GalleryRow />
 </Base>

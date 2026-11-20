@@ -10,3 +10,7 @@ export const START_YEAR = 2026;
 export const SHOW_SHOPS = true;
 // true = the Shops page says "Coming soon" instead of showing the list.
 export const SHOPS_COMING_SOON = true;
+
+// ----- Gallery -----
+// How many of the newest photos the home page shows (one row of 4).
+export const HOME_GALLERY_COUNT = 4;

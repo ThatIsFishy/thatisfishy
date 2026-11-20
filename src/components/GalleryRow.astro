@@ -1,0 +1,21 @@
+---
+import { getGallery } from '../lib/content';
+import { HOME_GALLERY_COUNT } from '../consts';
+import GalleryTile from './GalleryTile.astro';
+
+// "Newest Gallery photos" row for the home page: the newest by date, not by order number.
+const newest = (await getGallery())
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, HOME_GALLERY_COUNT);
+---
+{newest.length > 0 && (
+  <Fragment>
+    <div class="section-head">
+      <h2>Newest Gallery photos</h2>
+      <a href="/gallery/">See all photos →</a>
+    </div>
+    <div class="grid four tiles-home">
+      {newest.map((entry) => <GalleryTile entry={entry} home />)}
+    </div>
+  </Fragment>
+)}

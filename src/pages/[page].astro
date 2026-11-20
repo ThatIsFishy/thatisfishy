@@ -9,7 +9,7 @@ export function getStaticPaths() {
 const { id } = Astro.props;
 const { data, Content } = await getPage(id);
 ---
-<Base title={data.title} description={data.description}>
+<Base title={data.title} description={data.description} index kind="Page">
   <h1>{data.title}</h1>
   <div class="prose"><Content /></div>
 </Base>

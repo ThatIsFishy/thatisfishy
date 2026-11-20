@@ -11,8 +11,8 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const own = labelsOf(entry, await getLabels());
 ---
-<Base title={entry.data.title} description={entry.data.description}>
-  <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
+<Base title={entry.data.title} description={entry.data.description} index kind="Article">
+  <p class="back" data-pagefind-ignore><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1>{entry.data.title}</h1>
   <div class="tags">
     {own.map((l) => <a class="tag" data-c={l.data.color} href={`/knowledge-center/label/${l.id}/`}>{l.data.name}</a>)}

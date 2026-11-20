@@ -27,3 +27,9 @@ export async function getPage(id: string) {
   const { Content } = await render(entry);
   return { data: entry.data, Content };
 }
+
+// Gallery entries in the order you set in the CMS (1 first), newest first when the order is equal.
+export async function getGallery() {
+  const items = await getCollection('gallery');
+  return items.sort((a, b) => a.data.order - b.data.order || b.data.date.valueOf() - a.data.date.valueOf());
+}

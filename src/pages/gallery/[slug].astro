@@ -1,0 +1,21 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+
+export async function getStaticPaths() {
+  const items = await getCollection('gallery');
+  return items.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const cover = entry.data.photos[0];
+---
+<Base title={entry.data.title} description={`Gallery: ${entry.data.title}`} index kind="Gallery" image={cover.image}>
+  <p class="back" data-pagefind-ignore><a href="/gallery/">← Gallery</a></p>
+  <h1>{entry.data.title}</h1>
+  <p class="meta">{entry.data.date.toISOString().slice(0, 10)}</p>
+  <div class="entry-photos">
+    {entry.data.photos.map((p) => <img src={p.image} alt={p.alt} loading="lazy" decoding="async" />)}
+  </div>
+  <div class="prose"><Content /></div>
+</Base>

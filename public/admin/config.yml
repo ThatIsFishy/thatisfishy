@@ -50,6 +50,28 @@ collections:
       - { label: Short description, name: description, widget: text, required: false }
       - { label: Story, name: body, widget: markdown }
 
+  - name: gallery
+    label: Gallery
+    label_singular: Gallery entry
+    folder: src/content/gallery
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    summary: "{{order}}. {{title}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Order number, name: order, widget: number, value_type: int, default: 100, hint: "1 comes first on the Gallery page. Same number = newest first." }
+      - label: Photos
+        name: photos
+        widget: list
+        min: 1
+        hint: "Add one or more photos. Resize them to about 1600 pixels wide before uploading."
+        fields:
+          - { label: Photo, name: image, widget: image }
+          - { label: "What is in the photo (alt text)", name: alt, widget: string, hint: "Required. Short and plain, for people who cannot see the photo and for search engines." }
+      - { label: Explanation, name: body, widget: markdown, hint: "Shown on the right when someone clicks the photo." }
+
   - name: labels
     label: Labels
     label_singular: Label
