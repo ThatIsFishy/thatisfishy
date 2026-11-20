@@ -15,7 +15,7 @@ First of all, welcome to my aquarium blog, **That Is Fishy!** You are on the rig
 
 Before I explain why I started this blog, let me introduce myself.
 
-I am a 27-year-old independent European man currently living in the Netherlands, originally from Hungary. I have always loved nature and animals and I have always wanted to bring them closer to me whether by having them around me or by visiting places where they live. I have been been fortunate enough to travel all around the world and explore the beauty of our planet from the depths of the seas and the heart of jungles to the tops of mountains.
+I am Adam, a 27-year-old independent European man currently living in the Netherlands, originally from Hungary. I have always loved nature and animals and I have always wanted to bring them closer to me whether by having them around me or by visiting places where they live. I have been been fortunate enough to travel all around the world and explore the beauty of our planet from the depths of the seas and the heart of jungles to the tops of mountains.
 
 It was never really a question of whether I would study something related to nature at university. I graduated as an Environmental Engineer and later continued my studies in the Netherlands, specialising in Water Technology.
 
