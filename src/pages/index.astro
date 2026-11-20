@@ -4,15 +4,17 @@ import Base from '../layouts/Base.astro';
 import NitrogenCycle from '../components/NitrogenCycle.astro';
 import { TAGLINE, topicSlug } from '../consts';
 
-const guides = (await getCollection('guides')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 3);
-const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 2);
+type Dated = { data: { date: Date } };
+const newest = (a: Dated, b: Dated) => b.data.date.valueOf() - a.data.date.valueOf();
+const articles = (await getCollection('guides')).sort(newest).slice(0, 8);
+const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
 ---
 <Base>
   <h1>{TAGLINE}</h1>
   <p class="lead">I’m a beginner too. This site holds what I learn, the mistakes I make, and the shops worth visiting. Read along, or start your first tank with me.</p>
   <div class="actions">
-    <a class="btn" href="/learn/">Start learning</a>
-    <a class="btn alt" href="/journal/">Read my tank journal</a>
+    <a class="btn" href="/knowledge-center/">Start learning</a>
+    <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>
   </div>
 
   <svg class="wave" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
@@ -22,24 +24,30 @@ const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valu
 
   <NitrogenCycle />
 
-  <h2>Newest guides</h2>
-  <div class="grid">
-    {guides.map((g) => (
-      <a class="card" href={`/learn/${g.id}/`} data-t={topicSlug(g.data.topic)}>
-        <div class="tags"><span class="tag" data-t={topicSlug(g.data.topic)}>{g.data.topic}</span><span class="tag">{g.data.level}</span></div>
-        <h3>{g.data.title}</h3>
-        <p>{g.data.description}</p>
+  <div class="section-head">
+    <h2>Newest articles</h2>
+    <a href="/knowledge-center/">See all articles →</a>
+  </div>
+  <div class="grid four">
+    {articles.map((a) => (
+      <a class="card" href={`/knowledge-center/${a.id}/`} data-t={topicSlug(a.data.topic)}>
+        <div class="tags"><span class="tag" data-t={topicSlug(a.data.topic)}>{a.data.topic}</span></div>
+        <h3>{a.data.title}</h3>
+        <p>{a.data.description}</p>
       </a>
     ))}
   </div>
 
-  <h2>From the journal</h2>
-  <div class="grid">
-    {entries.map((e) => (
-      <a class="card" href={`/journal/${e.id}/`}>
-        <div class="tags"><span class="tag">{e.data.date.toISOString().slice(0, 10)}</span></div>
-        <h3>{e.data.title}</h3>
-        {e.data.description && <p>{e.data.description}</p>}
+  <div class="section-head">
+    <h2>Newest Fishy Stories</h2>
+    <a href="/fishy-stories/">See all stories →</a>
+  </div>
+  <div class="grid four">
+    {stories.map((s) => (
+      <a class="card" href={`/fishy-stories/${s.id}/`}>
+        <div class="tags"><span class="tag">{s.data.date.toISOString().slice(0, 10)}</span></div>
+        <h3>{s.data.title}</h3>
+        {s.data.description && <p>{s.data.description}</p>}
       </a>
     ))}
   </div>

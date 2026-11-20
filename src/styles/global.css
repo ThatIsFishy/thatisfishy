@@ -9,6 +9,7 @@
   --sand: #ffd23f;
   --line: #bcdcee;
   --warn: #ff6b4a;
+  --page-max: 100rem;
   --head: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
   --body: "Literata", Georgia, serif;
   color-scheme: light;
@@ -37,14 +38,14 @@ a { color: var(--water); }
 .skip:focus { left: 1rem; top: 1rem; background: var(--surface); padding: .5rem 1rem; z-index: 20; }
 
 header.site { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--line); z-index: 5; }
-.bar { max-width: 60rem; margin: auto; padding: .7rem 1.2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.bar { max-width: var(--page-max); margin: auto; padding: .7rem 1.2rem; display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
 .logo { font: 700 1.4rem var(--head); color: var(--ink); text-decoration: none; margin-right: auto; }
 nav.main { display: flex; gap: .2rem; flex-wrap: wrap; }
 nav.main a { font: 500 1rem var(--head); text-decoration: none; color: var(--muted); padding: .3rem .6rem; border-radius: 6px; }
 nav.main a[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: inset 0 -3px var(--water); }
 .theme { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); padding: .3rem .6rem; cursor: pointer; font: inherit; }
 
-main { max-width: 60rem; margin: auto; padding: 2rem 1.2rem 4rem; }
+main { max-width: var(--page-max); margin: auto; padding: 2rem 1.2rem 4rem; }
 .lead { font-size: 1.2rem; color: var(--muted); max-width: 38rem; }
 .btn { display: inline-block; font: 700 1rem var(--head); background: var(--water); color: var(--bg); padding: .65rem 1.2rem; border-radius: 8px; text-decoration: none; border: 0; cursor: pointer; }
 .btn.alt { background: transparent; color: var(--ink); border: 2px solid var(--line); }
@@ -78,7 +79,7 @@ input[type=search] { width: 100%; max-width: 24rem; padding: .6rem .8rem; font: 
 .meta { color: var(--muted); font: 500 .95rem var(--head); }
 .back { font: 500 .95rem var(--head); }
 
-footer.site { max-width: 60rem; margin: auto; padding: 1.5rem 1.2rem 3rem; color: var(--muted); border-top: 1px solid var(--line); font-size: .9rem; }
+footer.site { max-width: var(--page-max); margin: auto; padding: 1.5rem 1.2rem 3rem; color: var(--muted); border-top: 1px solid var(--line); font-size: .9rem; }
 
 
 /* ===== Step 2: playful touches ===== */
@@ -155,4 +156,59 @@ nav.main .sub a:hover, nav.main .sub a:focus-visible { background: color-mix(in 
 @media (prefers-reduced-motion: reduce) {
   .btn, a.card, .sub { transition: none; }
   .btn:hover, a.card:hover { transform: none; }
+}
+
+
+/* ===== Round 1: layout and look ===== */
+
+/* Wider layout: header, pages and footer share one width and side spacing.
+   Change --page-max (at the top of this file) to make the whole site wider or narrower. */
+.bar, main, footer.site { padding-left: clamp(1rem, 3vw, 3rem); padding-right: clamp(1rem, 3vw, 3rem); }
+.prose { max-width: 46rem; }
+
+/* Frosted-glass header: 80% solid, so the page shows softly through it */
+header.site {
+  background: color-mix(in srgb, var(--bg) 80%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* Menu items on one line, all at the same height */
+nav.main { align-items: center; }
+nav.main > a, .has-sub > a { display: inline-flex; align-items: center; min-height: 2.2rem; line-height: 1.2; }
+.has-sub { display: flex; align-items: center; }
+
+/* Square light/dark button with sun and moon */
+.theme { width: 2.5rem; height: 2.5rem; padding: 0; display: inline-grid; place-items: center; border-radius: 10px; }
+.theme .sun { display: none; }
+:root[data-theme="dark"] .theme .moon { display: none; }
+:root[data-theme="dark"] .theme .sun { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme .moon { display: none; }
+  :root:not([data-theme="light"]) .theme .sun { display: block; }
+}
+
+/* Home rows: 4 cards per row, the 5th starts a new row */
+.grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 70rem) { .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 40rem) { .grid.four { grid-template-columns: 1fr; } }
+.section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; }
+.section-head h2 { margin: 0 0 .6rem; }
+.section-head a { font: 500 1rem var(--head); }
+
+/* Nitrogen cycle panel: text on the left, slider on the right on wide screens */
+.cycle-layout { display: grid; gap: 2rem; grid-template-columns: 1fr 1.5fr; align-items: center; }
+@media (max-width: 56rem) { .cycle-layout { grid-template-columns: 1fr; } }
+
+/* "Coming soon" box */
+.coming { text-align: center; padding: 2.5rem 1.4rem; border-style: dashed; }
+
+/* Footer line lines up with the page content */
+footer.site { border-top: 0; padding-top: 0; }
+footer.site::before { content: ""; display: block; border-top: 1px solid var(--line); margin-bottom: 1.5rem; }
+
+/* Phones: logo and light/dark button on the first line, the menu below */
+@media (max-width: 48rem) {
+  .theme { order: 2; }
+  nav.main { order: 3; flex-basis: 100%; }
 }

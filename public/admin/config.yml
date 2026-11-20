@@ -13,8 +13,8 @@ public_folder: /images/uploads
 
 collections:
   - name: guides
-    label: Guides
-    label_singular: Guide
+    label: Knowledge Center articles
+    label_singular: Article
     folder: src/content/guides
     extension: md
     format: yaml-frontmatter
@@ -22,15 +22,14 @@ collections:
     summary: "{{title}} ({{topic}})"
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Topic, name: topic, widget: select, options: [Basics, Water, Equipment, Plants, Fish, Problems] }
-      - { label: Level, name: level, widget: select, options: [Beginner, Intermediate, Advanced], default: Beginner }
-      - { label: Short description, name: description, widget: text, hint: "One or two sentences shown in the guide list." }
+      - { label: Label, name: topic, widget: select, options: [Basics, Plants, Fish, Water, Equipment, Problems] }
+      - { label: Short description, name: description, widget: text, hint: "One or two sentences shown in the article list." }
       - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
-      - { label: Guide text, name: body, widget: markdown }
+      - { label: Article text, name: body, widget: markdown }
 
   - name: journal
-    label: Tank journal
-    label_singular: Journal entry
+    label: Fishy Stories
+    label_singular: Story
     folder: src/content/journal
     extension: md
     format: yaml-frontmatter
@@ -40,7 +39,7 @@ collections:
       - { label: Title, name: title, widget: string }
       - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
       - { label: Short description, name: description, widget: text, required: false }
-      - { label: Entry, name: body, widget: markdown }
+      - { label: Story, name: body, widget: markdown }
 
   - name: shops
     label: Shops

@@ -1,24 +1,28 @@
 ---
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
-import { SITE_NAME, SITE_URL, TAGLINE, topicSlug } from '../consts';
+import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, TOPICS, topicSlug } from '../consts';
 
 interface Props { title?: string; description?: string; }
 const { title, description = TAGLINE } = Astro.props;
 const fullTitle = title ? `${title} – ${SITE_NAME}` : `${SITE_NAME} – ${TAGLINE}`;
 const path = Astro.url.pathname;
 const canonical = new URL(path, SITE_URL).toString();
-const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/learn/', label: 'Learn' },
-  { href: '/journal/', label: 'Journal' },
-  { href: '/shops/', label: 'Shops' },
-  { href: '/about/', label: 'About' },
-];
+
+// Count the articles per topic, so the menu can show the numbers.
 const guides = await getCollection('guides');
 const counts = new Map<string, number>();
 guides.forEach((g) => counts.set(g.data.topic, (counts.get(g.data.topic) ?? 0) + 1));
-const topics = [...counts.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+const extra = [...counts.keys()].filter((t) => !TOPICS.includes(t)).sort();
+const menuTopics = [...TOPICS, ...extra].map((name) => ({ name, count: counts.get(name) ?? 0 }));
+
+const nav: { href: string; label: string; sub?: boolean }[] = [
+  { href: '/', label: 'Home' },
+  { href: '/knowledge-center/', label: 'Knowledge Center', sub: true },
+  { href: '/fishy-stories/', label: 'Fishy Stories' },
+  ...(SHOW_SHOPS ? [{ href: '/shops/', label: 'Shops' }] : []),
+  { href: '/about/', label: 'About' },
+];
 const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
 <!doctype html>
@@ -49,13 +53,17 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         <a class="logo" href="/"><img src="/favicon.svg" alt="" width="36" height="36" />{SITE_NAME}</a>
         <nav class="main" aria-label="Main">
           {nav.map((n) =>
-            n.href === '/learn/' ? (
+            n.sub ? (
               <div class="has-sub">
                 <a href={n.href} aria-current={active(n.href) ? 'page' : undefined}>{n.label}</a>
                 <div class="sub">
                   <ul>
-                    {topics.map(([t, count]) => (
-                      <li><a href={`/learn/topic/${topicSlug(t)}/`} data-t={topicSlug(t)}>{t}<span>{count}</span></a></li>
+                    {menuTopics.map((t) => (
+                      <li>
+                        <a href={`/knowledge-center/label/${topicSlug(t.name)}/`} data-t={topicSlug(t.name)}>
+                          {t.name}<span>{t.count > 0 ? t.count : 'soon'}</span>
+                        </a>
+                      </li>
                     ))}
                   </ul>
                 </div>
@@ -65,12 +73,15 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
             )
           )}
         </nav>
-        <button class="theme" id="theme" type="button" aria-label="Switch between light and dark mode">◐</button>
+        <button class="theme" id="theme" type="button" aria-label="Switch between light and dark mode">
+          <svg class="moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z" fill="currentColor" /></svg>
+          <svg class="sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" /></svg>
+        </button>
       </div>
     </header>
     <main id="main"><slot /></main>
     <footer class="site">
-      <p>{SITE_NAME}, spelled out: that-is-fishy. A hobby project. This is not veterinary advice. If your fish are sick, ask an experienced keeper or a vet.</p>
+      <p>© <span id="years" data-start={START_YEAR}>{START_YEAR}</span> {SITE_NAME}</p>
     </footer>
     <script>
       const btn = document.getElementById('theme');
@@ -83,6 +94,14 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         root.dataset.theme = next;
         try { localStorage.setItem('theme', next); } catch (e) {}
       });
+
+      // Footer year: "2026" in 2026, "2026 – 2027" in 2027, and so on.
+      const years = document.getElementById('years');
+      if (years) {
+        const start = Number(years.dataset.start);
+        const now = new Date().getFullYear();
+        years.textContent = now > start ? `${start} – ${now}` : String(start);
+      }
     </script>
   </body>
 </html>

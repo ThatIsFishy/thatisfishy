@@ -1,15 +1,19 @@
 <div class="panel" id="cycle">
-  <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
-  <p>Fish make ammonia. Bacteria turn it into nitrite, then into nitrate. A new tank has no bacteria yet, so it takes about five weeks to grow them. Drag the slider to see what a typical cycle looks like.</p>
-  <div class="sim">
-    <label for="day"><strong>Day <span id="dayv">0</span></strong>: <span id="stage" aria-live="polite"></span></label>
-    <input id="day" type="range" min="0" max="42" value="0" />
-    <div class="row"><span>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><span id="v-nh3"></span></div>
-    <div class="row"><span>Nitrite</span><div class="track"><div class="fill" id="b-no2" style="background:var(--sand)"></div></div><span id="v-no2"></span></div>
-    <div class="row"><span>Nitrate</span><div class="track"><div class="fill" id="b-no3" style="background:var(--plant)"></div></div><span id="v-no3"></span></div>
+  <div class="cycle-layout">
+    <div class="cycle-copy">
+      <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
+      <p>Fish make ammonia. Bacteria turn it into nitrite, then into nitrate. A new tank has no bacteria yet, so it takes about five weeks to grow them. Drag the slider to see what a typical cycle looks like.</p>
+      <p class="note">This is an illustrative curve, not a measurement. Real tanks vary, so test with a liquid kit.</p>
+      <p class="more"><a href="/knowledge-center/what-is-the-nitrogen-cycle/">Read the full article</a></p>
+    </div>
+    <div class="sim">
+      <label for="day"><strong>Day <span id="dayv">0</span></strong>: <span id="stage" aria-live="polite"></span></label>
+      <input id="day" type="range" min="0" max="42" value="0" />
+      <div class="row"><span>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><span id="v-nh3"></span></div>
+      <div class="row"><span>Nitrite</span><div class="track"><div class="fill" id="b-no2" style="background:var(--sand)"></div></div><span id="v-no2"></span></div>
+      <div class="row"><span>Nitrate</span><div class="track"><div class="fill" id="b-no3" style="background:var(--plant)"></div></div><span id="v-no3"></span></div>
+    </div>
   </div>
-  <p class="note">This is an illustrative curve, not a measurement. Real tanks vary, so test with a liquid kit.</p>
-  <p class="more"><a href="/learn/what-is-the-nitrogen-cycle/">Read the full guide</a></p>
 </div>
 
 <script>
