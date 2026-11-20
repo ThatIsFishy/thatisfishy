@@ -406,3 +406,23 @@ header.site { position: relative; z-index: auto; }
 
 /* Search bar: same frosted glass as the header */
 .searchbar { background: color-mix(in srgb, var(--bg) 70%, transparent); }
+
+/* Search bar in the middle of the screen, with filter buttons */
+.search-inner { text-align: center; }
+.search-inner input { display: block; margin: 0 auto; max-width: 42rem; }
+.s-filters { justify-content: center; margin: .8rem 0 0; }
+.s-filters[hidden] { display: none; }
+.s-n { opacity: .65; font-size: .8rem; margin-left: .15rem; }
+#search-results ul { margin-inline: auto; text-align: left; max-width: 52rem; }
+#search-results .s-empty { text-align: center; }
+
+/* Search filter buttons: a circle that fills when selected, dark blue when on, pale when empty */
+.s-filters .chip { display: inline-flex; align-items: center; gap: .45rem; }
+.s-filters .dot { width: .8rem; height: .8rem; border-radius: 50%; border: 2px solid currentColor; flex: none; }
+.s-filters .chip[aria-pressed="true"] { background: #0a5a96; border-color: #0a5a96; color: #fff; }
+.s-filters .chip[aria-pressed="true"] .dot { background: #fff; border-color: #fff; }
+:root[data-theme="dark"] .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; border-color: #1f7fc4; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .s-filters .chip[aria-pressed="true"] { background: #1f7fc4; border-color: #1f7fc4; } }
+.s-filters .chip:disabled { opacity: .4; cursor: not-allowed; }
+.s-filters .chip:not(:disabled):hover { border-color: var(--water); }
+.s-more { text-align: center; margin: .8rem 0 0; }
