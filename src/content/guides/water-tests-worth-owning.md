@@ -2,9 +2,12 @@
 title: The water tests worth owning
 labels:
   - water
+  - problems
 description: Which test kits a first tank needs, and what each reading tells you.
 date: 2026-11-17
+updated: ''
 ---
+
 You can’t see most water problems, so tests are your eyes.
 
 ## Start with these four
