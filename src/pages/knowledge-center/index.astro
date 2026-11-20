@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
-import { getLabels, getPage } from '../../lib/content';
+import { getLabels, getPage, hasLabel } from '../../lib/content';
 
 const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
@@ -11,9 +11,12 @@ const { data, Content } = await getPage('knowledge-center');
 <Base title={data.title} description={data.description}>
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
-  <div class="filters" role="group" aria-label="Filter articles by label">
-    <button class="chip" type="button" data-filter="All" aria-pressed="true">All</button>
-    {labels.map((l) => <button class="chip" type="button" data-filter={l.id} aria-pressed="false">{l.data.name}</button>)}
+  <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">
+    <button class="chip" type="button" data-filter="All" aria-pressed="true"><i class="dot" aria-hidden="true"></i>All <span class="s-n">{guides.length}</span></button>
+    {labels.map((l) => {
+      const n = guides.filter((g) => hasLabel(g, l.id)).length;
+      return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0}><i class="dot" aria-hidden="true"></i>{l.data.name} <span class="s-n">{n}</span></button>;
+    })}
   </div>
   <div class="grid" id="list">
     {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
@@ -22,20 +25,35 @@ const { data, Content } = await getPage('knowledge-center');
 </Base>
 
 <script>
+  // Several labels can be switched on at once (an article shows if it has any of them).
+  // "All" clears the selection; switching off the last label brings "All" back.
   const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
   const cards = document.querySelectorAll<HTMLElement>('[data-labels]');
   const empty = document.getElementById('empty');
+  const selected = new Set<string>();
+
+  function apply() {
+    chips.forEach((c) => {
+      const f = c.dataset.filter ?? '';
+      c.setAttribute('aria-pressed', String(f === 'All' ? selected.size === 0 : selected.has(f)));
+    });
+    let shown = 0;
+    cards.forEach((card) => {
+      const own = (card.dataset.labels ?? '').split('|');
+      card.hidden = !(selected.size === 0 || own.some((l) => selected.has(l)));
+      if (!card.hidden) shown++;
+    });
+    if (empty) empty.hidden = shown > 0;
+  }
+
   chips.forEach((chip) =>
     chip.addEventListener('click', () => {
-      const f = chip.dataset.filter;
-      let shown = 0;
-      chips.forEach((c) => c.setAttribute('aria-pressed', String(c === chip)));
-      cards.forEach((card) => {
-        const own = (card.dataset.labels ?? '').split('|');
-        card.hidden = !(f === 'All' || own.includes(f ?? ''));
-        if (!card.hidden) shown++;
-      });
-      if (empty) empty.hidden = shown > 0;
+      if (chip.disabled) return;
+      const f = chip.dataset.filter ?? 'All';
+      if (f === 'All') selected.clear();
+      else if (selected.has(f)) selected.delete(f);
+      else selected.add(f);
+      apply();
     })
   );
 </script>
