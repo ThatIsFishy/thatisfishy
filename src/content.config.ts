@@ -2,6 +2,12 @@ import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
+// The CMS writes an empty optional field as '' (or null). These helpers treat that as "not set"
+// so an empty field can never stop the build.
+const blank = (v: unknown) => (v === null || v === '' ? undefined : v);
+const optionalDate = z.preprocess(blank, z.coerce.date().optional());
+const optionalText = z.preprocess(blank, z.string().optional());
+
 // The colours a label can have. The colours themselves are defined in global.css.
 // (Labels used fixed colour names before; those old names still work, see colorOf() in src/lib/content.ts.)
 
@@ -12,7 +18,7 @@ const labels = defineCollection({
     name: z.string(),
     color: z.string().default('#1596e0'),
     order: z.coerce.number().default(50),
-    description: z.string().optional(),
+    description: optionalText,
   }),
 });
 
@@ -25,7 +31,7 @@ const guides = defineCollection({
     labels: z.array(z.string()).default([]),
     description: z.string(),
     date: z.coerce.date(),
-    updated: z.coerce.date().optional(),
+    updated: optionalDate,
   }),
 });
 
@@ -34,8 +40,8 @@ const journal = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    updated: z.coerce.date().optional(),
-    description: z.string().optional(),
+    updated: optionalDate,
+    description: optionalText,
   }),
 });
 
@@ -45,8 +51,8 @@ const shops = defineCollection({
     name: z.string(),
     city: z.string(),
     types: z.array(z.string()).default([]),
-    url: z.string().optional(),
-    note: z.string().optional(),
+    url: optionalText,
+    note: optionalText,
   }),
 });
 
@@ -55,7 +61,7 @@ const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
     title: z.string(),
-    description: z.string().optional(),
+    description: optionalText,
   }),
 });
 
@@ -67,15 +73,15 @@ const gallery = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    updated: z.coerce.date().optional(),
+    updated: optionalDate,
     order: z.coerce.number().default(100),
     photos: z
       .array(z.object({
         image: z.string(),
         alt: z.string().min(1, 'Describe what is in the photo'),
         // Where the photo comes from. Shown as a coloured label.
-        source: z.enum(['own', 'ai', 'external']).optional(),
-        credit: z.string().optional(),
+        source: z.preprocess(blank, z.enum(['own', 'ai', 'external']).optional()),
+        credit: optionalText,
       }))
       .min(1),
   }),
