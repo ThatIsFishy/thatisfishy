@@ -1,5 +1,6 @@
 ---
 import Base from '../layouts/Base.astro';
+import ComingSoon from '../components/ComingSoon.astro';
 import Break1 from '../components/Break1.astro';
 import { getPage } from '../lib/content';
 
@@ -15,6 +16,7 @@ const { data, Content } = await getPage(id);
     <h1>{data.title}</h1>
     {data.description && <div class="lead"><p>{data.description}</p></div>}
     <Break1 />
+    {data.comingSoon && <ComingSoon message={data.comingSoonMessage} />}
     <div class="prose"><Content /></div>
   </div>
 </Base>

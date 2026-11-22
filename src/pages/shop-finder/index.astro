@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Break1 from '../../components/Break1.astro';
+import ComingSoon from '../../components/ComingSoon.astro';
 import { getPage } from '../../lib/content';
 import { SHOW_SHOPS, SHOPS_COMING_SOON, SHOW_RATING } from '../../consts';
 
@@ -11,18 +12,17 @@ if (!SHOW_SHOPS) return Astro.redirect('/');
 const shops = (await getCollection('shops')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
 const { data, Content } = await getPage('shops');
+// "Coming soon" is switched in the CMS (Page texts → Shop Finder). Until that is saved once, consts.ts decides.
+const coming = data.comingSoon ?? SHOPS_COMING_SOON;
 ---
-<Base title={data.title} description={data.description} index={!SHOPS_COMING_SOON} kind="Shop Finder">
+<Base title={data.title} description={data.description} index={!coming} kind="Shop Finder">
   {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
   <Break1 />
 
-  {SHOPS_COMING_SOON ? (
-    <div class="panel coming">
-      <h2>Coming soon</h2>
-      <p>A hand-picked list of local aquarium shops, to help you find where to buy. I don’t sell anything here. It isn’t ready yet, so check back soon.</p>
-    </div>
+  {coming ? (
+    <ComingSoon message={data.comingSoonMessage ?? 'A hand-picked list of local aquarium shops, to help you find where to buy. I don’t sell anything here. It isn’t ready yet, so check back soon.'} />
   ) : (
     <Fragment>
       <div class="filters" role="group" aria-label="Filter shops by what they sell">

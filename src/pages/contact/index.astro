@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Break1 from '../../components/Break1.astro';
+import ComingSoon from '../../components/ComingSoon.astro';
 import { getPage } from '../../lib/content';
 
 const { data, Content } = await getPage('contact');
@@ -10,6 +11,7 @@ const { data, Content } = await getPage('contact');
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
   <Break1 />
+  {data.comingSoon && <ComingSoon message={data.comingSoonMessage} />}
 
   <form class="form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="bot-field">
     <input type="hidden" name="form-name" value="contact" />

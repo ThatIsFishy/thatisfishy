@@ -63,6 +63,8 @@ const pages = defineCollection({
   schema: z.object({
     title: z.string(),
     description: optionalText,
+    comingSoon: z.preprocess((v) => (v === null || v === '' ? undefined : v), z.boolean().optional()),
+    comingSoonMessage: optionalText,
   }),
 });
 

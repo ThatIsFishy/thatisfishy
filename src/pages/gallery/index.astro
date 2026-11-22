@@ -2,6 +2,7 @@
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Break1 from '../../components/Break1.astro';
+import ComingSoon from '../../components/ComingSoon.astro';
 import GalleryTile from '../../components/GalleryTile.astro';
 import { getGallery, getPage, fmtDate } from '../../lib/content';
 import { SOURCES } from '../../consts';
@@ -15,9 +16,10 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
   <Break1 />
+  {data.comingSoon && <ComingSoon message={data.comingSoonMessage} />}
 
   {items.length === 0 ? (
-    <div class="panel coming"><h2>Coming soon</h2><p>The first photos are on their way.</p></div>
+    <ComingSoon message="The first photos are on their way." />
   ) : (
     <div class="tiles" id="gallery">
       {items.map((entry) => <GalleryTile entry={entry} />)}

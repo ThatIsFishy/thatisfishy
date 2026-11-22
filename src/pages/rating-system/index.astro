@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Break1 from '../../components/Break1.astro';
+import ComingSoon from '../../components/ComingSoon.astro';
 import { getPage } from '../../lib/content';
 import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 
@@ -8,18 +9,15 @@ import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 if (!SHOW_RATING) return Astro.redirect('/');
 
 const { data, Content } = await getPage('rating-system');
+// "Coming soon" is switched in the CMS (Page texts → Rating System). Until that is saved once, consts.ts decides.
+const coming = data.comingSoon ?? RATING_COMING_SOON;
 ---
-<Base title={data.title} description={data.description} index={!RATING_COMING_SOON} kind="Page">
+<Base title={data.title} description={data.description} index={!coming} kind="Page">
   <div class="column">
     <h1>{data.title}</h1>
     <div class="lead"><Content /></div>
     <Break1 />
 
-    {RATING_COMING_SOON && (
-      <div class="panel coming">
-        <h2>Coming soon</h2>
-        <p>The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon.</p>
-      </div>
-    )}
+    {coming && <ComingSoon message={data.comingSoonMessage ?? 'The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon.'} />}
   </div>
 </Base>

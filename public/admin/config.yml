@@ -142,4 +142,6 @@ collections:
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Short description (for search engines), name: description, widget: text, required: false }
+      - { label: Show "Coming soon" on this page, name: comingSoon, widget: boolean, default: false, required: false, hint: "Switch on for a page that is not ready. It shows a Coming soon card. Switch off when the page is ready." }
+      - { label: Coming soon message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. Shown under Coming soon. Leave empty for the standard message." }
       - { label: Text, name: body, widget: markdown }
