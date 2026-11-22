@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import EntryHead from '../components/EntryHead.astro';
 import MainText from '../components/MainText.astro';
-import { getPage } from '../lib/content';
+import { getPage, noticeOf } from '../lib/content';
 
 // The small text pages. Each one reads its text from src/content/pages/<id>.md
 export function getStaticPaths() {
@@ -10,11 +10,12 @@ export function getStaticPaths() {
 }
 const { id } = Astro.props;
 const { data, Content, hasBody } = await getPage(id);
+const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} index kind="Page">
   <div class="column">
     <h1>{data.title}</h1>
     <EntryHead data={data} />
-    <MainText hasBody={hasBody}><Content /></MainText>
+    <MainText hasBody={hasBody && !notice}><Content /></MainText>
   </div>
 </Base>

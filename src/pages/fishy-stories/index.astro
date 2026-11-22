@@ -4,15 +4,16 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import StoryCard from '../../components/StoryCard.astro';
-import { getPage } from '../../lib/content';
+import { getPage, noticeOf } from '../../lib/content';
 
 const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 const { data, Content, hasBody } = await getPage('fishy-stories');
+const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
-  <MainText hasBody={hasBody}><Content /></MainText>
+  <MainText hasBody={hasBody && !notice}><Content /></MainText>
   <div class="grid">
     {entries.map((e) => <StoryCard story={e} />)}
   </div>

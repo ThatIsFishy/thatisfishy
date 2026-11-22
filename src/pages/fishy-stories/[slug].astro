@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
+import { noticeOf } from '../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getCollection('journal');
@@ -16,6 +17,6 @@ const { Content } = await render(entry);
     <p class="back" data-pagefind-ignore><a href="/fishy-stories/">← All Fishy Stories</a></p>
     <h1>{entry.data.title}</h1>
     <EntryHead data={entry.data} showDateByDefault />
-    <MainText hasBody={Boolean(entry.body?.trim())}><Content /></MainText>
+    <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)}><Content /></MainText>
   </div>
 </Base>

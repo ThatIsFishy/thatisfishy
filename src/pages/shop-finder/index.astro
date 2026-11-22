@@ -21,7 +21,7 @@ const notice = noticeOf(data, fallback);
   {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <EntryHead data={data} noticeFallback={fallback} noticeMessage="A hand-picked list of local aquarium shops, to help you find where to buy. I don’t sell anything here. It isn’t ready yet, so check back soon." />
-  <MainText hasBody={hasBody}><Content /></MainText>
+  <MainText hasBody={hasBody && !notice}><Content /></MainText>
 
   {!notice && (
     <Fragment>

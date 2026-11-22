@@ -1,14 +1,16 @@
 ---
 import type { Guide, Label } from '../lib/content';
-import { labelsOf, colorOf } from '../lib/content';
+import { labelsOf, colorOf, noticeOf } from '../lib/content';
 
 interface Props { guide: Guide; labels: Label[]; }
 const { guide, labels } = Astro.props;
 const own = labelsOf(guide, labels);
+const notice = noticeOf(guide.data);
 ---
 <a class="card" href={`/knowledge-center/${guide.id}/`} data-labels={own.map((l) => l.id).join('|')} data-c={own[0] ? '' : undefined} style={own[0] ? `--tc:${colorOf(own[0])}` : undefined}>
   <div class="tags">
     {own.map((l) => <span class="tag" data-c="" style={`--tc:${colorOf(l)}`}>{l.data.name}</span>)}
+    {notice && <span class="tag">{notice === 'empty' ? 'Nothing here yet' : 'Coming soon'}</span>}
   </div>
   <h3>{guide.data.title}</h3>
   <p>{guide.data.intro ?? guide.data.description}</p>

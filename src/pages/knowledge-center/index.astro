@@ -4,16 +4,17 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
-import { getLabels, getPage, hasLabel, colorOf } from '../../lib/content';
+import { getLabels, getPage, hasLabel, colorOf, noticeOf } from '../../lib/content';
 
 const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
 const { data, Content, hasBody } = await getPage('knowledge-center');
+const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
-  <MainText hasBody={hasBody}><Content /></MainText>
+  <MainText hasBody={hasBody && !notice}><Content /></MainText>
   <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">
     <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>All <span class="s-n">{guides.length}</span></button>
     {labels.map((l) => {

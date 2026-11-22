@@ -38,7 +38,7 @@ collections:
         multiple: true
         required: false
         hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
-      - { label: Notice, name: notice, widget: select, default: none, required: false, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Shows a card under the line with a bubble. To end a long text with one instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
       - { label: Main text, name: body, widget: markdown, required: false, hint: "The article. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
 
@@ -58,7 +58,7 @@ collections:
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
       - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Pick it when you change the text later." }
-      - { label: Notice, name: notice, widget: select, default: none, required: false, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Shows a card under the line with a bubble. To end a long text with one instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
       - { label: Main text, name: body, widget: markdown, required: false, hint: "The story. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
 
@@ -157,6 +157,6 @@ collections:
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
       - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Pick it when you change the text later." }
-      - { label: Notice, name: notice, widget: select, default: none, required: false, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Shows a card under the line with a bubble. To end a long text with one instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
       - { label: Main text, name: body, widget: markdown, required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }

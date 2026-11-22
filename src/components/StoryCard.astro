@@ -1,11 +1,15 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 
+import { noticeOf } from '../lib/content';
+
 interface Props { story: CollectionEntry<'journal'>; }
 const { story } = Astro.props;
+const notice = noticeOf(story.data);
 ---
 <a class="card story" href={`/fishy-stories/${story.id}/`}>
-  <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span></div>
+  <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span>
+    {notice && <span class="tag">{notice === 'empty' ? 'Nothing here yet' : 'Coming soon'}</span>}</div>
   <h3>{story.data.title}</h3>
   {(story.data.intro ?? story.data.description) && <p>{story.data.intro ?? story.data.description}</p>}
 </a>

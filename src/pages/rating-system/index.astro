@@ -17,6 +17,6 @@ const notice = noticeOf(data, fallback);
   <div class="column">
     <h1>{data.title}</h1>
     <EntryHead data={data} noticeFallback={fallback} noticeMessage="The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon." />
-    <MainText hasBody={hasBody}><Content /></MainText>
+    <MainText hasBody={hasBody && !notice}><Content /></MainText>
   </div>
 </Base>
