@@ -1,0 +1,13 @@
+---
+import Break3 from './Break3.astro';
+
+// The main text, followed by the three bubbles ("the text ends here"). Nothing shows when the text is empty.
+interface Props { hasBody?: boolean; }
+const { hasBody = true } = Astro.props;
+---
+{hasBody && (
+  <Fragment>
+    <div class="prose"><slot /></div>
+    <Break3 />
+  </Fragment>
+)}

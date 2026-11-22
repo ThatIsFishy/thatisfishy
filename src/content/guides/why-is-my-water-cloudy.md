@@ -2,7 +2,7 @@
 title: Why is my water cloudy?
 labels:
   - problems
-description: How to tell white, green and brown water apart, and what to do about each.
+intro: How to tell white, green and brown water apart, and what to do about each.
 date: 2026-11-17
 ---
 Cloudy water is one of the most common beginner worries. The colour tells you a lot.

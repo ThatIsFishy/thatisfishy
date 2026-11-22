@@ -2,7 +2,7 @@
 title: Choosing your first tank size
 labels:
   - equipment
-description: Why a bigger tank is usually the easier tank, and a sensible size to start with.
+intro: Why a bigger tank is usually the easier tank, and a sensible size to start with.
 date: 2026-11-17
 updated: 2026-11-20
 ---

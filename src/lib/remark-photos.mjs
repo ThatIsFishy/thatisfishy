@@ -75,6 +75,15 @@ const BUB = '<svg class="bub{c}" aria-hidden="true"><use href="#bub"></use></svg
 const brk3 = () => `<div class="brk3" aria-hidden="true">${BUB.replace('{c}', ' sm')}${BUB.replace('{c}', ' lg')}${BUB.replace('{c}', '')}</div>`;
 const brk1 = () => `<div class="brk1" aria-hidden="true"><span class="ln ln1"></span>${BUB.replace('{c}', ' lg')}<span class="ln ln2"></span></div>`;
 
+// A notice card inside the text: {{notice:coming}} or {{notice:empty}}, optionally with a message after a bar:
+// {{notice:coming|The rest of this article follows soon.}}  (written by the editor's Insert buttons)
+const NOTICE = {
+  coming: ['Coming soon', 'The rest of this is not ready yet. Check back soon.'],
+  empty: ['Nothing here yet', 'There is nothing here yet. Check back soon.'],
+};
+const notice = (kind, message) =>
+  `<div class="card empty-card coming-card"><div class="cl" aria-hidden="true">${BUB.replace('{c}', ' lg c1')}${BUB.replace('{c}', ' sm c2')}${BUB.replace('{c}', ' c3')}</div><h3>${NOTICE[kind][0]}</h3><p>${esc(message || NOTICE[kind][1])}</p></div>`;
+
 export default function remarkPhotos() {
   return (tree) => {
     const walk = (node) => {
@@ -82,8 +91,11 @@ export default function remarkPhotos() {
       node.children = node.children.map((child) => {
         if (child.type === 'thematicBreak') return { type: 'html', value: brk3() };
         if (child.type === 'paragraph' && child.children?.length === 1 && child.children[0].type === 'text') {
-          const m = child.children[0].value.trim().match(/^\{\{break:(three|line)\}\}$/);
+          const text = child.children[0].value.trim();
+          const m = text.match(/^\{\{break:(three|line)\}\}$/);
           if (m) return { type: 'html', value: m[1] === 'line' ? brk1() : brk3() };
+          const n = text.match(/^\{\{notice:(coming|empty)(?:\|([^}]*))?\}\}$/);
+          if (n) return { type: 'html', value: notice(n[1], (n[2] || '').trim()) };
         }
         if (child.type === 'paragraph') {
           const kids = child.children ?? [];

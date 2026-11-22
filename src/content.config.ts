@@ -7,6 +7,19 @@ import { glob } from 'astro/loaders';
 const blank = (v: unknown) => (v === null || v === '' ? undefined : v);
 const optionalDate = z.preprocess(blank, z.coerce.date().optional());
 const optionalText = z.preprocess(blank, z.string().optional());
+const optionalBool = z.preprocess(blank, z.boolean().optional());
+// The same fields on pages, articles and stories (see the CMS form order):
+// title, search description, intro, dates, notice (none / coming soon / nothing here yet), message.
+const shared = {
+  description: optionalText,            // for search engines; the intro is used when this is empty
+  intro: optionalText,                  // the introduction text under the title
+  showDate: optionalBool,               // show "Published ..." under the title
+  showUpdated: optionalBool,            // show "Updated ..." under the title
+  updated: optionalDate,
+  notice: z.preprocess(blank, z.enum(['none', 'coming', 'empty']).optional()),
+  comingSoon: optionalBool,             // older switch, still understood
+  comingSoonMessage: optionalText,      // the sentence on the notice card
+};
 
 // The colours a label can have. The colours themselves are defined in global.css.
 // (Labels used fixed colour names before; those old names still work, see colorOf() in src/lib/content.ts.)
@@ -30,9 +43,8 @@ const guides = defineCollection({
     title: z.string(),
     // Label ids. An article may have none (it then only shows under "All").
     labels: z.array(z.string()).default([]),
-    description: z.string(),
     date: z.coerce.date(),
-    updated: optionalDate,
+    ...shared,
   }),
 });
 
@@ -41,8 +53,7 @@ const journal = defineCollection({
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
-    updated: optionalDate,
-    description: optionalText,
+    ...shared,
   }),
 });
 
@@ -62,9 +73,8 @@ const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
     title: z.string(),
-    description: optionalText,
-    comingSoon: z.preprocess((v) => (v === null || v === '' ? undefined : v), z.boolean().optional()),
-    comingSoonMessage: optionalText,
+    date: optionalDate,
+    ...shared,
   }),
 });
 

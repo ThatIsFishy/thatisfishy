@@ -11,5 +11,5 @@ const own = labelsOf(guide, labels);
     {own.map((l) => <span class="tag" data-c="" style={`--tc:${colorOf(l)}`}>{l.data.name}</span>)}
   </div>
   <h3>{guide.data.title}</h3>
-  <p>{guide.data.description}</p>
+  <p>{guide.data.intro ?? guide.data.description}</p>
 </a>

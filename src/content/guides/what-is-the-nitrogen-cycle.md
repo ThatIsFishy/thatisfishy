@@ -2,7 +2,7 @@
 title: What is the nitrogen cycle?
 labels:
   - basics
-description: Why a new tank needs about five weeks before it is safe for fish, and how to tell when it is ready.
+intro: Why a new tank needs about five weeks before it is safe for fish, and how to tell when it is ready.
 date: 2026-11-17
 ---
 Every tank runs on a small invisible process. Understanding it early saves fish.

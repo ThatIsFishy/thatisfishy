@@ -1,23 +1,22 @@
 ---
 import Base from '../../layouts/Base.astro';
-import Break1 from '../../components/Break1.astro';
-import ComingSoon from '../../components/ComingSoon.astro';
-import { getPage } from '../../lib/content';
+import EntryHead from '../../components/EntryHead.astro';
+import MainText from '../../components/MainText.astro';
+import { getPage, noticeOf } from '../../lib/content';
 import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 
 // If the Rating System is switched off in consts.ts, send visitors to the home page.
 if (!SHOW_RATING) return Astro.redirect('/');
 
-const { data, Content } = await getPage('rating-system');
-// "Coming soon" is switched in the CMS (Page texts → Rating System). Until that is saved once, consts.ts decides.
-const coming = data.comingSoon ?? RATING_COMING_SOON;
+const { data, Content, hasBody } = await getPage('rating-system');
+// The notice is chosen in the CMS (Page texts → Rating System). Until the page has been saved once with that choice, consts.ts decides.
+const fallback = RATING_COMING_SOON ? 'coming' : undefined;
+const notice = noticeOf(data, fallback);
 ---
-<Base title={data.title} description={data.description} index={!coming} kind="Page">
+<Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Page">
   <div class="column">
     <h1>{data.title}</h1>
-    <div class="lead"><Content /></div>
-    <Break1 />
-
-    {coming && <ComingSoon message={data.comingSoonMessage ?? 'The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon.'} />}
+    <EntryHead data={data} noticeFallback={fallback} noticeMessage="The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon." />
+    <MainText hasBody={hasBody}><Content /></MainText>
   </div>
 </Base>

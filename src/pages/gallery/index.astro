@@ -1,22 +1,21 @@
 ---
 import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Break1 from '../../components/Break1.astro';
-import ComingSoon from '../../components/ComingSoon.astro';
+import EntryHead from '../../components/EntryHead.astro';
+import MainText from '../../components/MainText.astro';
 import GalleryTile from '../../components/GalleryTile.astro';
 import { getGallery, getPage, fmtDate } from '../../lib/content';
 import { SOURCES } from '../../consts';
 
 const items = await getGallery();
-const { data, Content } = await getPage('gallery');
+const { data, Content, hasBody } = await getPage('gallery');
 // Render each explanation now, so the page can show it instantly on a click.
 const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (await render(entry)).Content })));
 ---
-<Base title={data.title} description={data.description}>
+<Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
-  <div class="lead"><Content /></div>
-  <Break1 />
-  {data.comingSoon && <ComingSoon message={data.comingSoonMessage} />}
+  <EntryHead data={data} />
+  <MainText hasBody={hasBody}><Content /></MainText>
 
   {items.length === 0 ? (
     <ComingSoon message="The first photos are on their way." />

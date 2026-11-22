@@ -1,0 +1,35 @@
+---
+import { fmtDate, colorOf, noticeOf, type Label } from '../lib/content';
+import Break1 from './Break1.astro';
+import ComingSoon from './ComingSoon.astro';
+
+// Everything between the title and the main text, in the same order on every page, article and story:
+//   introduction, "Published · Updated", labels, the line with a bubble, the notice card.
+interface Props {
+  data: any;                       // the page / article / story fields
+  labels?: Label[];                // the article's labels (articles only)
+  showDateByDefault?: boolean;     // true for articles and stories, false for pages
+  noticeFallback?: 'coming' | 'empty';
+  noticeMessage?: string;          // used when the notice has no message of its own
+}
+const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage } = Astro.props;
+const notice = noticeOf(data, noticeFallback);
+const intro = String(data.intro ?? '').trim();
+const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
+const updated = (data.showUpdated ?? true) && data.updated ? fmtDate(data.updated) : '';
+---
+{intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+{(published || updated) && (
+  <p class="dates" data-pagefind-ignore>
+    {published && <span>Published {published}</span>}
+    {published && updated && <span class="sep" aria-hidden="true"> · </span>}
+    {updated && <span>Updated {updated}</span>}
+  </p>
+)}
+{labels.length > 0 && (
+  <div class="tags">
+    {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`/knowledge-center/label/${l.id}/`}>{l.data.name}</a>)}
+  </div>
+)}
+<Break1 />
+{notice && <ComingSoon kind={notice} message={data.comingSoonMessage ?? noticeMessage} />}

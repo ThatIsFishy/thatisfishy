@@ -1,6 +1,6 @@
 ---
 title: About Fishy
-description: |-
+intro: |-
   Welcome to That Is Fishy!
   A little about me and my aquarium journey
 ---

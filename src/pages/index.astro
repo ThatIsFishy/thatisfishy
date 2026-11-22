@@ -16,12 +16,13 @@ const newest = (a: Dated, b: Dated) => b.data.date.valueOf() - a.data.date.value
 const labels = await getLabels();
 const articles = (await getCollection('guides')).sort(newest).slice(0, 8);
 const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
-const { data, Content } = await getPage('home');
+const { data } = await getPage('home');
+const intro = String(data.intro ?? '').trim();
 ---
-<Base description={data.description ?? TAGLINE}>
+<Base description={data.description ?? data.intro ?? TAGLINE}>
   <div class="band">
     <h1>{data.title}</h1>
-    <div class="lead"><Content /></div>
+    {intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
     <div class="actions">
       <a class="btn" href="/knowledge-center/">Knowledge Center</a>
       <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>

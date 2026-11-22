@@ -1,7 +1,7 @@
 ---
 title: Planning my first tank
 date: 2026-11-17
-description: Where I am starting from, and what I plan to learn first.
+intro: Where I am starting from, and what I plan to learn first.
 ---
 Today I’m setting up this site as a place to keep what I learn. I’m a beginner, and I plan to share the mistakes along with the wins.
 

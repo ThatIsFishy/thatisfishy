@@ -1,6 +1,7 @@
 ---
 title: "Ground rules, Transparency and AI usage"
-description: "How I write, what I disclose, and how I use AI on this site."
+intro: |-
+  How I write, what I disclose, and how I use AI on this site.
 ---
 *This is a first version. It will change as I learn.*
 

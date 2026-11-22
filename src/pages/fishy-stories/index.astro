@@ -1,19 +1,18 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import Break1 from '../../components/Break1.astro';
-import ComingSoon from '../../components/ComingSoon.astro';
+import EntryHead from '../../components/EntryHead.astro';
+import MainText from '../../components/MainText.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import { getPage } from '../../lib/content';
 
 const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const { data, Content } = await getPage('fishy-stories');
+const { data, Content, hasBody } = await getPage('fishy-stories');
 ---
-<Base title={data.title} description={data.description}>
+<Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
-  <div class="lead"><Content /></div>
-  <Break1 />
-  {data.comingSoon && <ComingSoon message={data.comingSoonMessage} />}
+  <EntryHead data={data} />
+  <MainText hasBody={hasBody}><Content /></MainText>
   <div class="grid">
     {entries.map((e) => <StoryCard story={e} />)}
   </div>

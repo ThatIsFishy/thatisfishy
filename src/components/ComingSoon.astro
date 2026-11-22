@@ -1,13 +1,15 @@
 ---
-// A "Coming soon" card with the bubble cluster, for pages that are not ready yet.
-// Turn it on per page in the CMS (Page texts → "Show Coming soon"). The message is optional.
-interface Props { message?: string; }
-const { message } = Astro.props;
+// The notice card with the bubble cluster: "Coming soon" or "Nothing here yet".
+// Chosen per page, article or story in the CMS (Notice). The message is optional.
+interface Props { kind?: 'coming' | 'empty'; message?: string; }
+const { kind = 'coming', message } = Astro.props;
+const title = kind === 'empty' ? 'Nothing here yet' : 'Coming soon';
+const fallback = kind === 'empty' ? 'There is nothing here yet. Check back soon.' : 'This is not ready yet. Check back soon.';
 ---
 <div class="card empty-card coming-card">
   <div class="cl" aria-hidden="true">
     <svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg>
   </div>
-  <h3>Coming soon</h3>
-  <p>{message ?? 'This page is not ready yet. Check back soon.'}</p>
+  <h3>{title}</h3>
+  <p>{message ?? fallback}</p>
 </div>

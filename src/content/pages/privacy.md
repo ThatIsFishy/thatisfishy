@@ -1,6 +1,7 @@
 ---
 title: "Privacy"
-description: "What happens to your data when you use this site."
+intro: |-
+  What happens to your data when you use this site.
 ---
 *This is a first version. It will change if the site changes.*
 

@@ -1,4 +1,6 @@
 import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import remarkPhotos from './remark-photos.mjs';
 
 export type Label = CollectionEntry<'labels'>;
 export type Guide = CollectionEntry<'guides'>;
@@ -44,11 +46,20 @@ export async function getNotices() {
 }
 
 // A page text from the CMS (src/content/pages/<id>.md), ready to show.
+// "Content" is the Main text (the body); hasBody says whether anything was written there.
 export async function getPage(id: string) {
   const entry = await getEntry('pages', id);
   if (!entry) throw new Error(`Missing page text: src/content/pages/${id}.md`);
   const { Content } = await render(entry);
-  return { data: entry.data, Content };
+  return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()) };
+}
+
+// Which notice card to show: 'coming', 'empty' or nothing.
+// "fallback" is used only while the page has never been saved with the new notice selection.
+export function noticeOf(data: { notice?: string; comingSoon?: boolean }, fallback?: 'coming' | 'empty'): 'coming' | 'empty' | undefined {
+  if (data.notice === 'coming' || data.notice === 'empty') return data.notice;
+  if (data.notice === 'none') return undefined;
+  return data.comingSoon ? 'coming' : fallback;
 }
 
 // Gallery entries in the order you set in the CMS (1 first), newest first when the order is equal.

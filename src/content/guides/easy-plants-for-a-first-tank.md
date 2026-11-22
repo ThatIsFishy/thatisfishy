@@ -2,7 +2,7 @@
 title: Easy plants for a first tank
 labels:
   - plants
-description: Hardy plants that forgive beginner mistakes, and how to plant them.
+intro: Hardy plants that forgive beginner mistakes, and how to plant them.
 date: 2026-11-17
 ---
 
