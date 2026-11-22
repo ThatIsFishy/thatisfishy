@@ -520,3 +520,16 @@ footer.site .brk1 { margin: 0 0 1.5rem; }
 
 .empty-card { text-align: center; max-width: 26rem; margin: 2rem auto; padding: 1.4rem 1.2rem; }
 .empty-card h3 { margin: .2rem 0; }
+
+/* "Read my Fishy Stories" and other outline buttons: a solid surface, so they stand out on the intro band */
+.btn.alt { background: var(--surface); border-color: color-mix(in srgb, var(--water) 40%, var(--bg)); }
+
+/* Dark mode: the outline button's fill and bottom edge were too close to the band colour, so lift both */
+:root[data-theme="dark"] .btn.alt { --bf: color-mix(in srgb, var(--water) 22%, var(--surface)); --be: color-mix(in srgb, var(--water) 45%, var(--bg)); background: var(--bf); border-color: color-mix(in srgb, var(--water) 65%, var(--bg)); box-shadow: 0 4px 0 var(--be); }
+:root[data-theme="dark"] .btn.alt:hover { box-shadow: 0 7px 0 var(--be); }
+:root[data-theme="dark"] .btn.alt:active { box-shadow: 0 1px 0 var(--be); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .btn.alt { --be: color-mix(in srgb, var(--water) 45%, var(--bg)); background: color-mix(in srgb, var(--water) 22%, var(--surface)); border-color: color-mix(in srgb, var(--water) 65%, var(--bg)); box-shadow: 0 4px 0 var(--be); }
+  :root:not([data-theme="light"]) .btn.alt:hover { box-shadow: 0 7px 0 var(--be); }
+  :root:not([data-theme="light"]) .btn.alt:active { box-shadow: 0 1px 0 var(--be); }
+}
