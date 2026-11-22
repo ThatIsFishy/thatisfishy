@@ -516,3 +516,6 @@ footer.site .brk1 { margin: 0 0 1.5rem; }
 @media (max-width: 900px) { #sb { display: none; } }
 .column .dates { text-align: center; }
 .column > .tags { justify-content: center; }
+
+.empty-card { text-align: center; max-width: 26rem; margin: 2rem auto; padding: 1.4rem 1.2rem; }
+.empty-card h3 { margin: .2rem 0; }

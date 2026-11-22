@@ -21,16 +21,23 @@ export async function getStaticPaths() {
 }
 const { label, labels, guides } = Astro.props;
 const intro = label.data.description
-  ?? (guides.length === 0
-    ? 'No articles with this label yet. Coming soon.'
-    : `${guides.length} ${guides.length === 1 ? 'article' : 'articles'} with this label.`);
+  ?? (guides.length === 0 ? undefined : `${guides.length} ${guides.length === 1 ? 'article' : 'articles'} with this label.`);
+const emptyMessage = label.data.emptyMessage ?? 'Articles with this label are on the way.';
 ---
 <Base title={label.data.name} description={`Beginner articles about ${label.data.name.toLowerCase()}.`}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1>{label.data.name}</h1>
-  <p class="lead">{intro}</p>
+  {intro && <p class="lead">{intro}</p>}
   <Break1 />
-  <div class="grid">
-    {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
-  </div>
+  {guides.length === 0 ? (
+    <div class="card empty-card">
+      <div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div>
+      <h3>Nothing here yet</h3>
+      <p>{emptyMessage}</p>
+    </div>
+  ) : (
+    <div class="grid">
+      {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
+    </div>
+  )}
 </Base>

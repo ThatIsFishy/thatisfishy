@@ -112,6 +112,7 @@ collections:
       - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour. (Older labels may show the default here until you pick a colour and save.)" }
       - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu." }
       - { label: Short description, name: description, widget: text, required: false, hint: "Shown at the top of this label's page." }
+      - { label: Message while there are no articles, name: emptyMessage, widget: text, required: false, hint: "Optional. Shown under \"Nothing here yet\" on this label's page until the first article has this label. Leave empty for the standard message." }
 
   - name: shops
     label: Shop Finder

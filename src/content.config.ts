@@ -19,6 +19,7 @@ const labels = defineCollection({
     color: z.string().default('#1596e0'),
     order: z.coerce.number().default(50),
     description: optionalText,
+    emptyMessage: optionalText,
   }),
 });
 
