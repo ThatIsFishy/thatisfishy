@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Break1 from '../../components/Break1.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
 import { getLabels, getPage, hasLabel, colorOf } from '../../lib/content';
 
@@ -11,17 +12,18 @@ const { data, Content } = await getPage('knowledge-center');
 <Base title={data.title} description={data.description}>
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
+  <Break1 />
   <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">
-    <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><i class="dot" aria-hidden="true"></i>All <span class="s-n">{guides.length}</span></button>
+    <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>All <span class="s-n">{guides.length}</span></button>
     {labels.map((l) => {
       const n = guides.filter((g) => hasLabel(g, l.id)).length;
-      return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0} style={`--tc:${colorOf(l)}`}><i class="dot" aria-hidden="true"></i>{l.data.name} <span class="s-n">{n}</span></button>;
+      return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0} style={`--tc:${colorOf(l)}`}><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>{l.data.name} <span class="s-n">{n}</span></button>;
     })}
   </div>
   <div class="grid" id="list">
     {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>
-  <p id="empty" hidden>No articles with this label yet. Coming soon.</p>
+  <div id="empty" class="s-empty" hidden><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div><p>No articles with this label yet. Coming soon.</p></div>
 </Base>
 
 <script>

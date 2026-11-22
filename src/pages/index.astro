@@ -4,6 +4,8 @@ import Base from '../layouts/Base.astro';
 import NitrogenCycle from '../components/NitrogenCycle.astro';
 import ArticleCard from '../components/ArticleCard.astro';
 import StoryCard from '../components/StoryCard.astro';
+import Break1 from '../components/Break1.astro';
+import Break3 from '../components/Break3.astro';
 import GalleryRow from '../components/GalleryRow.astro';
 import Notices from '../components/Notices.astro';
 import { getLabels, getPage } from '../lib/content';
@@ -17,32 +19,31 @@ const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
 const { data, Content } = await getPage('home');
 ---
 <Base description={data.description ?? TAGLINE}>
-  <h1>{data.title}</h1>
-  <div class="lead"><Content /></div>
-  <div class="actions">
-    <a class="btn" href="/knowledge-center/">Start learning</a>
-    <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>
+  <div class="band">
+    <h1>{data.title}</h1>
+    <div class="lead"><Content /></div>
+    <div class="actions">
+      <a class="btn" href="/knowledge-center/">Knowledge Center</a>
+      <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>
+    </div>
   </div>
-
-  <svg class="wave" viewBox="0 0 1200 40" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 24 Q 50 6 100 24 T 200 24 T 300 24 T 400 24 T 500 24 T 600 24 T 700 24 T 800 24 T 900 24 T 1000 24 T 1100 24 T 1200 24" fill="none" stroke="var(--sand)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />
-    <path d="M0 16 Q 50 -2 100 16 T 200 16 T 300 16 T 400 16 T 500 16 T 600 16 T 700 16 T 800 16 T 900 16 T 1000 16 T 1100 16 T 1200 16" fill="none" stroke="var(--water)" stroke-width="3" stroke-linecap="round" vector-effect="non-scaling-stroke" />
-  </svg>
+  <Break1 />
 
   <Notices />
 
   <NitrogenCycle />
 
   <div class="section-head">
-    <h2>Newest articles</h2>
+    <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> Newest articles</h2>
     <a href="/knowledge-center/">See all articles →</a>
   </div>
   <div class="grid four">
     {articles.map((a) => <ArticleCard guide={a} labels={labels} />)}
   </div>
 
+  <Break3 gap />
   <div class="section-head">
-    <h2>Newest Fishy Stories</h2>
+    <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> Newest Fishy Stories</h2>
     <a href="/fishy-stories/">See all stories →</a>
   </div>
   <div class="grid four">

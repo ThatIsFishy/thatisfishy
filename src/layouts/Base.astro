@@ -1,6 +1,16 @@
 ---
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
+import '@fontsource/oswald/400.css';
+import '@fontsource/oswald/500.css';
+import '@fontsource/oswald/600.css';
+import '@fontsource/oswald/700.css';
+import '@fontsource/lora/400.css';
+import '@fontsource/lora/400-italic.css';
+import '@fontsource/lora/600.css';
+import '@fontsource/lora/700.css';
+import SideBubbles from '../components/SideBubbles.astro';
+import Break1 from '../components/Break1.astro';
 import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, SHOW_RATING } from '../consts';
 import { getLabels, hasLabel, colorOf } from '../lib/content';
 
@@ -45,14 +55,12 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={SITE_NAME} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Literata:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
     <script is:inline>
       try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     </script>
   </head>
   <body>
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><symbol id="bub" viewBox="0 0 28 28"><circle cx="14" cy="14" r="9" fill="none" stroke="currentColor" stroke-width="2" /><circle cx="17" cy="11" r="2.2" fill="currentColor" /></symbol></svg>
     <a class="skip" href="#main">Skip to content</a>
     <!-- .top keeps the header and the search bar stuck to the top as two separate layers,
          so each one blurs the page behind it on its own. -->
@@ -106,7 +114,9 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
       {index && image && <span hidden data-pagefind-meta={`image:${image}`}></span>}
       <slot />
     </main>
+    <SideBubbles />
     <footer class="site">
+      <Break1 />
       <nav class="footer-links" aria-label="Footer">
         <a href="/about/">About</a>
         <a href="/contact/">Contact</a>
@@ -169,6 +179,7 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
         if (!sOut) return;
         if (!keepShown) shown = STEP;
         if (term.length < 2) { sOut.innerHTML = ''; if (sFilters) sFilters.hidden = true; return; }
+        if (!pagefind) sOut.innerHTML = '<div class="s-load"><div class="rise" aria-hidden="true"><svg class="bub"><use href="#bub"></use></svg><svg class="bub"><use href="#bub"></use></svg><svg class="bub"><use href="#bub"></use></svg></div><span>Searching…</span></div>';
         try {
           const pf = await load();
 
@@ -183,7 +194,7 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
           // 3. Draw the buttons: all kinds, pale and disabled when there is nothing in them.
           if (sFilters) {
             const chip = (k: string, label: string, n: number, on: boolean, off: boolean) =>
-              `<button class="chip" type="button" data-kind="${esc(k)}" aria-pressed="${on}"${off ? ' disabled' : ''}><i class="dot" aria-hidden="true"></i>${esc(label)} <span class="s-n">${n}</span></button>`;
+              `<button class="chip" type="button" data-kind="${esc(k)}" aria-pressed="${on}"${off ? ' disabled' : ''}><svg class="bub dot" aria-hidden="true"><use href="#bub"></use></svg>${esc(label)} <span class="s-n">${n}</span></button>`;
             sFilters.innerHTML =
               chip('All', 'All', total, selected.size === 0, false) +
               Object.keys(KINDS).map((k) => chip(k, KINDS[k], counts[k] ?? 0, selected.has(k), !(counts[k] > 0))).join('');
@@ -192,7 +203,7 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
 
           // 4. The results: everything, or only the selected kinds.
           const found = selected.size === 0 ? base : await pf.search(term, { filters: { type: { any: [...selected] } } });
-          if (found.results.length === 0) { sOut.innerHTML = `<p class="s-empty">Nothing found for “${esc(term)}”. Try another word.</p>`; return; }
+          if (found.results.length === 0) { sOut.innerHTML = `<div class="s-empty"><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub"></use></svg><svg class="bub sm c2"><use href="#bub"></use></svg><svg class="bub c3"><use href="#bub"></use></svg></div><p>Nothing found for “${esc(term)}”. Try another word.</p></div>`; return; }
           const top = await Promise.all(found.results.slice(0, shown).map((r: any) => r.data()));
           const more = found.results.length - top.length;
           sOut.innerHTML = '<ul>' + top.map((d: any) => `

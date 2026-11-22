@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
+import Break1 from '../../../components/Break1.astro';
 import ArticleCard from '../../../components/ArticleCard.astro';
 import { getLabels, hasLabel } from '../../../lib/content';
 
@@ -28,6 +29,7 @@ const intro = label.data.description
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1>{label.data.name}</h1>
   <p class="lead">{intro}</p>
+  <Break1 />
   <div class="grid">
     {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>

@@ -1,6 +1,7 @@
 ---
 import { getGallery } from '../lib/content';
 import { HOME_GALLERY_COUNT } from '../consts';
+import Break3 from './Break3.astro';
 import GalleryTile from './GalleryTile.astro';
 
 // "Newest Gallery photos" row for the home page: the newest by date, not by order number.
@@ -10,8 +11,9 @@ const newest = (await getGallery())
 ---
 {newest.length > 0 && (
   <Fragment>
+    <Break3 gap />
     <div class="section-head">
-      <h2>Newest Gallery photos</h2>
+      <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> Newest Gallery photos</h2>
       <a href="/gallery/">See all photos →</a>
     </div>
     <div class="grid four tiles-home">

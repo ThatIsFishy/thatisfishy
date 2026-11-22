@@ -10,7 +10,7 @@ const notices = await Promise.all(
 ---
 {notices.length > 0 && (
   <section class="panel notices" aria-labelledby="notices-h">
-    <h2 id="notices-h">Important notes</h2>
+    <h2 id="notices-h"><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> Important notes</h2>
     <div class="notice-list">
       {notices.map(({ n, Body }) => (
         <article class="notice" data-type={n.data.type}>

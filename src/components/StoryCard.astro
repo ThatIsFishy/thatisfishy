@@ -4,7 +4,7 @@ import type { CollectionEntry } from 'astro:content';
 interface Props { story: CollectionEntry<'journal'>; }
 const { story } = Astro.props;
 ---
-<a class="card" href={`/fishy-stories/${story.id}/`}>
+<a class="card story" href={`/fishy-stories/${story.id}/`}>
   <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span></div>
   <h3>{story.data.title}</h3>
   {story.data.description && <p>{story.data.description}</p>}

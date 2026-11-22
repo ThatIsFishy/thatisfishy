@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import Break1 from '../../components/Break1.astro';
 import { getPage } from '../../lib/content';
 import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 
@@ -12,6 +13,7 @@ const { data, Content } = await getPage('rating-system');
   <div class="column">
     <h1>{data.title}</h1>
     <div class="lead"><Content /></div>
+    <Break1 />
 
     {RATING_COMING_SOON && (
       <div class="panel coming">

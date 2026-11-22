@@ -1,0 +1,56 @@
+---
+// Decorative bubbles in the empty side margins. They move only while the visitor scrolls,
+// a little faster than the page, and never enter the text. Hidden on narrow screens and for
+// visitors who prefer reduced motion.
+---
+<div id="sb" aria-hidden="true"></div>
+<script>
+  const sb = document.getElementById('sb');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (sb && !reduce) {
+    type B = { el: SVGSVGElement; side: number; fx: number; base: number; f: number; size: number };
+    const seeds: [number, number, number, number][] = [[.08, 300, .5, 20], [.3, 900, .7, 34], [.55, 1500, .55, 16], [.8, 2100, .6, 26], [.2, 2700, .8, 14], [.65, 3300, .65, 30]];
+    const bubbles: B[] = [];
+    for (let side = 0; side < 2; side++) {
+      for (const [fx, base, f, size] of seeds) {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGSVGElement;
+        el.setAttribute('class', 'sbb');
+        el.innerHTML = '<use href="#bub"></use>';
+        sb.appendChild(el);
+        bubbles.push({ el, side, fx, base: base + side * 450, f: 1 + f * 0.5, size });
+      }
+    }
+    let L = 0, R = 0, W = innerWidth;
+    function measure() {
+      const m = document.querySelector<HTMLElement>('main .column') ?? document.querySelector<HTMLElement>('main');
+      if (!m) return;
+      const r = m.getBoundingClientRect();
+      const cs = getComputedStyle(m);
+      const isCol = m.classList.contains('column');
+      const pl = isCol ? 0 : parseFloat(cs.paddingLeft), pr = isCol ? 0 : parseFloat(cs.paddingRight);
+      W = innerWidth;
+      L = Math.max(0, r.left + pl);
+      R = Math.max(0, W - (r.right - pr));
+      draw();
+    }
+    function draw() {
+      const y = scrollY, H = innerHeight + 120;
+      for (const b of bubbles) {
+        const margin = b.side ? R : L;
+        const room = margin - 14;
+        const sz = Math.min(b.size, room);
+        if (innerWidth < 900 || sz < 10) { b.el.style.display = 'none'; continue; }
+        b.el.style.display = 'block';
+        b.el.setAttribute('width', String(sz));
+        b.el.setAttribute('height', String(sz));
+        const x = b.side ? W - margin + 8 + b.fx * (room - sz) : 6 + b.fx * (room - sz);
+        const py = (((b.base - y * b.f) % H) + H) % H - 60;
+        b.el.style.transform = `translate(${x}px, ${py}px)`;
+      }
+    }
+    addEventListener('scroll', () => requestAnimationFrame(draw), { passive: true });
+    addEventListener('resize', measure);
+    addEventListener('load', measure);
+    measure();
+  }
+</script>

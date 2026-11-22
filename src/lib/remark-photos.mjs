@@ -51,7 +51,7 @@ function describe(img) {
 }
 
 const badge = (p) =>
-  p.source ? `<span class="src src-${p.source}" data-pagefind-ignore><i aria-hidden="true"></i>${SOURCES[p.source]}</span>` : '';
+  p.source ? `<span class="src src-${p.source}" data-pagefind-ignore><svg class="bub srcb" aria-hidden="true"><use href="#bub"></use></svg>${SOURCES[p.source]}</span>` : '';
 
 // The photo with its source label on top
 const imgTag = (p) =>
@@ -69,11 +69,22 @@ function row(list) {
   return `<div class="photo-row" style="--n:${list.length}">${items}</div>`;
 }
 
+// Section breaks. A line with only --- (or ***) gives three bubbles. The editor's Section break button
+// writes {{break:three}} or {{break:line}} on its own line, which gives three bubbles or a line with one bubble.
+const BUB = '<svg class="bub{c}" aria-hidden="true"><use href="#bub"></use></svg>';
+const brk3 = () => `<div class="brk3" aria-hidden="true">${BUB.replace('{c}', ' sm')}${BUB.replace('{c}', ' lg')}${BUB.replace('{c}', '')}</div>`;
+const brk1 = () => `<div class="brk1" aria-hidden="true"><span class="ln ln1"></span>${BUB.replace('{c}', ' lg')}<span class="ln ln2"></span></div>`;
+
 export default function remarkPhotos() {
   return (tree) => {
     const walk = (node) => {
       if (!node.children) return;
       node.children = node.children.map((child) => {
+        if (child.type === 'thematicBreak') return { type: 'html', value: brk3() };
+        if (child.type === 'paragraph' && child.children?.length === 1 && child.children[0].type === 'text') {
+          const m = child.children[0].value.trim().match(/^\{\{break:(three|line)\}\}$/);
+          if (m) return { type: 'html', value: m[1] === 'line' ? brk1() : brk3() };
+        }
         if (child.type === 'paragraph') {
           const kids = child.children ?? [];
           const images = kids.filter((k) => k.type === 'image');

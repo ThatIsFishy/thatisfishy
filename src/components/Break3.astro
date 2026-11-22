@@ -1,0 +1,10 @@
+---
+// Three bubbles of different sizes: "a section ends here". Always centred.
+interface Props { gap?: boolean; }
+const { gap = false } = Astro.props;
+---
+<div class:list={['brk3', { gap }]} aria-hidden="true">
+  <svg class="bub sm"><use href="#bub" /></svg>
+  <svg class="bub lg"><use href="#bub" /></svg>
+  <svg class="bub"><use href="#bub" /></svg>
+</div>

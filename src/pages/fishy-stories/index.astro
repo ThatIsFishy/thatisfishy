@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Break1 from '../../components/Break1.astro';
 import StoryCard from '../../components/StoryCard.astro';
 import { getPage } from '../../lib/content';
 
@@ -10,6 +11,7 @@ const { data, Content } = await getPage('fishy-stories');
 <Base title={data.title} description={data.description}>
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
+  <Break1 />
   <div class="grid">
     {entries.map((e) => <StoryCard story={e} />)}
   </div>

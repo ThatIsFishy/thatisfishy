@@ -7,4 +7,4 @@ import { SOURCES, type Source } from '../consts';
 interface Props { source?: Source; inline?: boolean; }
 const { source, inline = false } = Astro.props;
 ---
-{source && <span data-pagefind-ignore class:list={['src', `src-${source}`, { inline }]}><i aria-hidden="true"></i>{SOURCES[source]}</span>}
+{source && <span data-pagefind-ignore class:list={['src', `src-${source}`, { inline }]}><svg class="bub srcb" aria-hidden="true"><use href="#bub" /></svg>{SOURCES[source]}</span>}

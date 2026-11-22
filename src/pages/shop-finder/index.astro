@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Break1 from '../../components/Break1.astro';
 import { getPage } from '../../lib/content';
 import { SHOW_SHOPS, SHOPS_COMING_SOON, SHOW_RATING } from '../../consts';
 
@@ -15,6 +16,7 @@ const { data, Content } = await getPage('shops');
   {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
+  <Break1 />
 
   {SHOPS_COMING_SOON ? (
     <div class="panel coming">
@@ -39,7 +41,7 @@ const { data, Content } = await getPage('shops');
           </div>
         ))}
       </div>
-      <p id="empty" hidden>No shops match. Clear the search or pick another filter.</p>
+      <div id="empty" class="s-empty" hidden><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div><p>No shops match. Clear the search or pick another filter.</p></div>
     </Fragment>
   )}
 </Base>

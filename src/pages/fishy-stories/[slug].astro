@@ -1,6 +1,7 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Break3 from '../../components/Break3.astro';
 import PubDates from '../../components/PubDates.astro';
 
 export async function getStaticPaths() {
@@ -16,5 +17,6 @@ const { Content } = await render(entry);
     <h1>{entry.data.title}</h1>
     <PubDates date={entry.data.date} updated={entry.data.updated} />
     <div class="prose"><Content /></div>
+    <Break3 />
   </div>
 </Base>
