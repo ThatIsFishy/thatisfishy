@@ -47,11 +47,21 @@ export async function getNotices() {
 
 // A page text from the CMS (src/content/pages/<id>.md), ready to show.
 // "Content" is the Main text (the body); hasBody says whether anything was written there.
-export async function getPage(id: string) {
-  const entry = await getEntry('pages', id);
-  if (!entry) throw new Error(`Missing page text: src/content/pages/${id}.md`);
+export async function getPage(id: string, collection: 'pages' | 'extra' = 'pages') {
+  const entry: any = await getEntry(collection, id);
+  if (!entry) throw new Error(`Missing page text: src/content/${collection}/${id}.md`);
   const { Content } = await render(entry);
   return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()) };
+}
+
+// Addresses that extra pages may not take, because the site already uses them.
+export const RESERVED = ['about', 'contact', 'gallery', 'knowledge-center', 'fishy-stories', 'shop-finder', 'rating-system', 'ground-rules', 'privacy', 'admin', 'images', 'pagefind', '_astro', 'favicon', 'sitemap', 'robots'];
+
+// The extra pages made in the CMS, with the address they get.
+export async function getExtraPages() {
+  return (await getCollection('extra'))
+    .filter((e) => !RESERVED.includes(e.id))
+    .map((e) => ({ id: e.id, title: e.data.title, href: `/${e.id}/`, menu: e.data.menu, position: e.data.position }));
 }
 
 // Which notice card to show: 'coming', 'empty' or nothing.

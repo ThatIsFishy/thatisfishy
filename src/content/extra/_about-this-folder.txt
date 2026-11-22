@@ -1,0 +1,1 @@
+Extra pages made in the CMS ("Extra pages") are saved in this folder as .md files.

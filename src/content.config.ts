@@ -78,6 +78,18 @@ const pages = defineCollection({
   }),
 });
 
+// Extra pages made in the CMS ("Extra pages"). Each one gets its own address and may show a link in the header or footer.
+const extra = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/extra' }),
+  schema: z.object({
+    title: z.string(),
+    date: optionalDate,
+    menu: z.preprocess(blank, z.enum(['header', 'footer', 'none']).default('none')),
+    position: z.preprocess(blank, z.coerce.number().default(100)),
+    ...shared,
+  }),
+});
+
 // Gallery: one entry = a title, an explanation and one or more photos.
 // "order" decides the position on the Gallery page (1 comes first).
 // Photos live in public/images/uploads; here we only store the path and the alt text.
@@ -110,4 +122,4 @@ const notices = defineCollection({
   }),
 });
 
-export const collections = { labels, guides, journal, shops, pages, gallery, notices };
+export const collections = { labels, guides, journal, shops, pages, extra, gallery, notices };
