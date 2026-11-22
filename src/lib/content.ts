@@ -47,21 +47,30 @@ export async function getNotices() {
 
 // A page text from the CMS (src/content/pages/<id>.md), ready to show.
 // "Content" is the Main text (the body); hasBody says whether anything was written there.
-export async function getPage(id: string, collection: 'pages' | 'extra' = 'pages') {
-  const entry: any = await getEntry(collection, id);
-  if (!entry) throw new Error(`Missing page text: src/content/${collection}/${id}.md`);
+export async function getPage(id: string) {
+  const entry: any = await getEntry('pages', id);
+  if (!entry) throw new Error(`Missing page: src/content/pages/${id}.md`);
   const { Content } = await render(entry);
   return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()) };
 }
 
-// Addresses that extra pages may not take, because the site already uses them.
-export const RESERVED = ['about', 'contact', 'gallery', 'knowledge-center', 'fishy-stories', 'shop-finder', 'rating-system', 'ground-rules', 'privacy', 'admin', 'images', 'pagefind', '_astro', 'favicon', 'sitemap', 'robots'];
+// Pages that have their own file in src/pages (they are not made by [page].astro).
+export const BUILT_IN = ['home', 'knowledge-center', 'fishy-stories', 'gallery', 'shops', 'contact', 'rating-system'];
+// Addresses a new page may not take, because the site already uses them.
+export const RESERVED = ['admin', 'images', 'pagefind', '_astro', 'favicon', 'sitemap', 'robots', 'search', 'thanks', 'shop-finder'];
 
-// The extra pages made in the CMS, with the address they get.
-export async function getExtraPages() {
-  return (await getCollection('extra'))
-    .filter((e) => !RESERVED.includes(e.id))
-    .map((e) => ({ id: e.id, title: e.data.title, href: `/${e.id}/`, menu: e.data.menu, position: e.data.position }));
+// Where each built-in page lives.
+const HREF: Record<string, string> = { home: '/', shops: '/shop-finder/' };
+export const hrefOf = (id: string) => HREF[id] ?? `/${id}/`;
+
+// All pages with their link, menu and position.
+export async function getAllPages() {
+  return (await getCollection('pages')).map((e) => ({ id: e.id, title: e.data.title, href: hrefOf(e.id), menu: e.data.menu, position: e.data.position, footerPosition: e.data.footerPosition }));
+}
+
+// The new pages made in the CMS (everything that is not built in).
+export async function getNewPages() {
+  return (await getAllPages()).filter((e) => !BUILT_IN.includes(e.id) && !RESERVED.includes(e.id));
 }
 
 // Which notice card to show: 'coming', 'empty' or nothing.

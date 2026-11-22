@@ -68,24 +68,15 @@ const shops = defineCollection({
   }),
 });
 
-// Page texts: the introductions and the small pages, editable in the CMS
+// Pages: every page of the site (built-in and new), with its text and where its link shows (menu + position)
 const pages = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/pages' }),
   schema: z.object({
     title: z.string(),
-    date: optionalDate,
-    ...shared,
-  }),
-});
-
-// Extra pages made in the CMS ("Extra pages"). Each one gets its own address and may show a link in the header or footer.
-const extra = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/extra' }),
-  schema: z.object({
-    title: z.string(),
-    date: optionalDate,
-    menu: z.preprocess(blank, z.enum(['header', 'footer', 'none']).default('none')),
+    menu: z.preprocess(blank, z.enum(['header', 'footer', 'both', 'none']).default('none')),
     position: z.preprocess(blank, z.coerce.number().default(100)),
+    footerPosition: z.preprocess(blank, z.coerce.number().default(100)),
+    date: optionalDate,
     ...shared,
   }),
 });
@@ -122,4 +113,4 @@ const notices = defineCollection({
   }),
 });
 
-export const collections = { labels, guides, journal, shops, pages, extra, gallery, notices };
+export const collections = { labels, guides, journal, shops, pages, gallery, notices };

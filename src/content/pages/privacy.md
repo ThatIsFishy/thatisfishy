@@ -1,5 +1,8 @@
 ---
 title: "Privacy"
+menu: footer
+position: 100
+footerPosition: 50
 intro: |-
   What happens to your data when you use this site.
 ---

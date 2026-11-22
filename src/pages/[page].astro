@@ -2,16 +2,15 @@
 import Base from '../layouts/Base.astro';
 import EntryHead from '../components/EntryHead.astro';
 import MainText from '../components/MainText.astro';
-import { getPage, noticeOf, getExtraPages } from '../lib/content';
+import { getPage, noticeOf, getNewPages } from '../lib/content';
 
-// The small text pages. Each one reads its text from src/content/pages/<id>.md
+// Every page that has no file of its own (About, Ground rules, Privacy and the pages made in the CMS).
+// Each one reads its text from src/content/pages/<id>.md
 export async function getStaticPaths() {
-  const fixed = ['about', 'ground-rules', 'privacy'].map((id) => ({ params: { page: id }, props: { id, collection: 'pages' as const } }));
-  const extra = (await getExtraPages()).map((e) => ({ params: { page: e.id }, props: { id: e.id, collection: 'extra' as const } }));
-  return [...fixed, ...extra];
+  return (await getNewPages()).map((e) => ({ params: { page: e.id }, props: { id: e.id } }));
 }
-const { id, collection } = Astro.props;
-const { data, Content, hasBody } = await getPage(id, collection);
+const { id } = Astro.props;
+const { data, Content, hasBody } = await getPage(id);
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} index kind="Page">

@@ -1,5 +1,8 @@
 ---
 title: About Fishy
+menu: both
+position: 60
+footerPosition: 10
 intro: |-
   Welcome to That Is Fishy!
   A little about me and my aquarium journey

@@ -1,5 +1,8 @@
 ---
 title: "Ground rules, Transparency and AI usage"
+menu: footer
+position: 100
+footerPosition: 40
 intro: |-
   How I write, what I disclose, and how I use AI on this site.
 ---
