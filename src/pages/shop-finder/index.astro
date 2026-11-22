@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { getPage } from '../../lib/content';
-import { SHOW_SHOPS, SHOPS_COMING_SOON } from '../../consts';
+import { SHOW_SHOPS, SHOPS_COMING_SOON, SHOW_RATING } from '../../consts';
 
 // If Shop Finder is switched off in consts.ts, send visitors to the home page.
 if (!SHOW_SHOPS) return Astro.redirect('/');
@@ -12,6 +12,7 @@ const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
 const { data, Content } = await getPage('shops');
 ---
 <Base title={data.title} description={data.description} index={!SHOPS_COMING_SOON} kind="Shop Finder">
+  {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <div class="lead"><Content /></div>
 

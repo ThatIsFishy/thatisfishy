@@ -10,6 +10,11 @@ export const START_YEAR = 2026;
 export const SHOW_SHOPS = true;
 // true = the Shop Finder page says "Coming soon" instead of showing the list.
 export const SHOPS_COMING_SOON = true;
+// false = the Rating System page disappears from the footer and the page sends visitors to the home page.
+// BEFORE PUBLISHING: set SHOW_SHOPS and SHOW_RATING to false unless these pages are ready.
+export const SHOW_RATING = true;
+// true = the Rating System page says "Coming soon".
+export const RATING_COMING_SOON = true;
 
 // ----- Gallery -----
 // How many of the newest photos the home page shows (one row of 4).

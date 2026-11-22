@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import { unified } from '@astrojs/markdown-remark';
 import remarkPhotos from './src/lib/remark-photos.mjs';
-import { SHOW_SHOPS } from './src/consts.ts';
+import { SHOW_SHOPS, SHOW_RATING } from './src/consts.ts';
 
 export default defineConfig({
   site: 'https://thatisfishy.com',
@@ -12,7 +12,7 @@ export default defineConfig({
   integrations: [
     // If Shop Finder is switched off in src/consts.ts, leave it out of the sitemap too.
     sitemap({
-      filter: (page) => !page.includes('/contact/thanks/') && (SHOW_SHOPS || !page.includes('/shop-finder/')),
+      filter: (page) => !page.includes('/contact/thanks/') && (SHOW_SHOPS || !page.includes('/shop-finder/')) && (SHOW_RATING || !page.includes('/rating-system/')),
     }),
   ],
 });

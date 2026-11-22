@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { getCollection } from 'astro:content';
-import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS } from '../consts';
+import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, SHOW_RATING } from '../consts';
 import { getLabels, hasLabel, colorOf } from '../lib/content';
 
 // index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
@@ -110,6 +110,7 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
       <nav class="footer-links" aria-label="Footer">
         <a href="/about/">About</a>
         <a href="/contact/">Contact</a>
+        {SHOW_RATING && <a href="/rating-system/">Rating System</a>}
         <a href="/ground-rules/">Ground rules, Transparency and AI usage</a>
         <a href="/privacy/">Privacy</a>
       </nav>
