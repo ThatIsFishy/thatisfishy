@@ -44,9 +44,10 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
           <button class="lb-close" id="lb-close" type="button" aria-label="Close photo">×</button>
           <h2 id="lb-title"></h2>
           <p class="src-line" id="lb-srcline"></p>
-          <div class="tags lb-tags" id="lb-tags"></div>
-          <p class="dates" id="lb-dates"></p>
           <p class="lead" id="lb-intro"></p>
+          <p class="dates" id="lb-dates"></p>
+          <div class="tags lb-tags" id="lb-tags"></div>
+          <div class="brk1" aria-hidden="true"><span class="ln ln1"></span><svg class="bub lg"><use href="#bub" /></svg><span class="ln ln2"></span></div>
           <div class="prose" id="lb-body"></div>
           <p class="credit" id="lb-credit"></p>
           <p><a id="lb-link" href="#">Open on its own page →</a></p>
