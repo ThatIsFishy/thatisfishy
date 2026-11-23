@@ -1,9 +1,15 @@
 ---
 title: Easy plants for a first tank
+description: ''
+intro: Hardy plants that forgive beginner mistakes, and how to plant them.
+showDate: true
+date: 2026-11-17
+showUpdated: true
+updated: 2026-11-23
 labels:
   - plants
-intro: Hardy plants that forgive beginner mistakes, and how to plant them.
-date: 2026-11-17
+notice: none
+comingSoonMessage: ''
 ---
 
 Plants make a tank look better and help it stay healthy. They take up nitrate, they compete with algae for light and nutrients, and they give fish somewhere to hide.
