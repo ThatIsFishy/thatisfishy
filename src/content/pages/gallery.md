@@ -7,8 +7,10 @@ description: Photos of my tanks, plants and fish, with a few words about each on
 intro: Photos from my tanks. Click on a photo to read what it is about.
 showDate: false
 date: 2026-11-23
-showUpdated: false
-updated: ''
+showUpdated: true
+updated: 2026-11-23
 notice: none
 comingSoonMessage: ''
 ---
+
+Main
