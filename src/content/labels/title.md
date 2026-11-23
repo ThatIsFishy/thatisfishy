@@ -1,7 +1,7 @@
 ---
 name: Title
 color: '#000000'
-order: 50
+order: 10
 description: ''
 intro: Introduction
 showDate: true
