@@ -264,8 +264,8 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
   background: linear-gradient(transparent, rgb(7 26 46 / .78));
 }
 .tile .count {
-  position: absolute; top: .5rem; right: .5rem; background: var(--sand); color: #0b2a4a;
-  font: 700 .75rem var(--head); padding: .15rem .5rem; border-radius: 99px;
+  position: absolute; top: .5rem; right: .5rem; background: rgb(11 42 74 / .55); color: rgb(255 255 255 / .92);
+  font: 500 .75rem var(--head); padding: .15rem .5rem; border-radius: 99px; backdrop-filter: blur(3px);
 }
 
 /* Photo source labels: green = my photo, blue = AI generated, orange = external source */
