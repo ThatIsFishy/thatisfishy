@@ -1,5 +1,7 @@
 {
   "name": "Basics",
-  "color": "sun",
-  "order": 1
+  "color": "#e8b640",
+  "order": 1,
+  "description": "",
+  "emptyMessage": ""
 }
