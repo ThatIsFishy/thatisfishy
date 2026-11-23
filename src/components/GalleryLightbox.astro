@@ -18,9 +18,10 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
         <article
           data-for={entry.id}
           data-title={entry.data.title}
-          data-published={fmtDate(entry.data.date)}
+          data-published={entry.data.showDate !== false ? fmtDate(entry.data.date) : ''}
           data-labels={JSON.stringify(galleryLabelsOf(entry, allLabels).map((l) => ({ id: l.id, name: l.data.name, color: colorOf(l) })))}
-          data-updated={entry.data.updated ? fmtDate(entry.data.updated) : ''}
+          data-updated={entry.data.showUpdated !== false && entry.data.updated ? fmtDate(entry.data.updated) : ''}
+          data-intro={entry.data.intro ?? ''}
           data-photos={JSON.stringify(entry.data.photos.map((p) => ({ src: p.image, alt: p.alt, source: p.source ?? '', credit: p.credit ?? '' })))}
         >
           <div class="prose"><Body /></div>
@@ -45,6 +46,7 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
           <p class="src-line" id="lb-srcline"></p>
           <div class="tags lb-tags" id="lb-tags"></div>
           <p class="dates" id="lb-dates"></p>
+          <p class="lead" id="lb-intro"></p>
           <div class="prose" id="lb-body"></div>
           <p class="credit" id="lb-credit"></p>
           <p><a id="lb-link" href="#">Open on its own page →</a></p>
@@ -112,7 +114,8 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
       photos = JSON.parse(source.dataset.photos ?? '[]');
       index = 0;
       $('lb-title').textContent = source.dataset.title ?? '';
-      $('lb-dates').textContent = `Published ${source.dataset.published}` + (source.dataset.updated ? ` · Updated ${source.dataset.updated}` : '');
+      $('lb-dates').textContent = [source.dataset.published && `Published ${source.dataset.published}`, source.dataset.updated && `Updated ${source.dataset.updated}`].filter(Boolean).join(' · ');
+      $('lb-intro').textContent = source.dataset.intro ?? '';
       const tags = $('lb-tags');
       tags.replaceChildren();
       for (const l of JSON.parse(source.dataset.labels ?? '[]') as { id: string; name: string; color: string }[]) {

@@ -267,6 +267,7 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
 .lb-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .6rem; }
 .lb-tags a { text-decoration: none; }
 .lb-tags:empty { display: none; }
+#lb-intro:empty, #lb-dates:empty { display: none; }
 .tile .count {
   position: absolute; top: .5rem; right: .5rem; background: rgb(11 42 74 / .55); color: rgb(255 255 255 / .92);
   font: 500 .75rem var(--head); padding: .15rem .5rem; border-radius: 99px; backdrop-filter: blur(3px);
@@ -456,6 +457,8 @@ header.site { position: relative; z-index: auto; }
 /* ===== Round 5: bubble design ===== */
 h2, h3 { font-weight: 600; letter-spacing: .01em; }
 h1 { letter-spacing: .01em; }
+/* Label pages: the title is underlined in the label's colour */
+h1.label-title { text-decoration: underline; text-decoration-color: var(--tc); text-decoration-skip-ink: none; text-decoration-thickness: .09em; text-underline-offset: .14em; }
 strong, b { font-weight: 600; }
 
 /* The bubble (defined once in Base.astro as #bub) */

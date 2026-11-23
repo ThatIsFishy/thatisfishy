@@ -91,16 +91,20 @@ const pages = defineCollection({
   }),
 });
 
-// Gallery: one entry = a title, an explanation and one or more photos.
-// "order" decides the position on the Gallery page (1 comes first).
+// Gallery: one entry = a title, the usual head fields, one or more photos and a main text.
+// The Gallery page lists them by publishing date, newest first.
 // Photos live in public/images/uploads; here we only store the path and the alt text.
 const gallery = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/gallery' }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
+    // Same head fields as articles and stories (no notice: a photo post always has its photos).
+    description: optionalText,
+    intro: optionalText,
+    showDate: optionalBool,
+    showUpdated: optionalBool,
     updated: optionalDate,
-    order: z.coerce.number().default(100),
     // Gallery label ids (the Gallery labels, not the Knowledge Center labels). All photos of the entry share them.
     labels: z.array(z.string()).default([]),
     photos: z

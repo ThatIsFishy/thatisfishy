@@ -70,12 +70,18 @@ collections:
     extension: md
     format: yaml-frontmatter
     create: true
-    summary: "{{order}}. {{title}}"
+    summary: "{{date}} {{title}}"
+    sortable_fields:
+      fields: [date, title]
+      default: { field: date, direction: Descending }
     fields:
       - { label: Title, name: title, widget: string }
-      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
-      - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Fill it in when you change the article later. It shows as 'Updated' under the title." }
-      - { label: Order number, name: order, widget: number, value_type: int, default: 100, hint: "1 comes first on the Gallery page. Same number = newest first." }
+      - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
+      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Show the published date, name: showDate, widget: boolean, default: true, required: false, hint: "Switch on to show Published under the title." }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. The Gallery is sorted by it, newest first." }
+      - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
+      - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Pick it when you change the text later." }
       - label: Labels
         name: labels
         widget: relation
@@ -104,7 +110,7 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-      - { label: Explanation, name: body, widget: markdown, hint: "Shown on the right when someone clicks the photo." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "The explanation. Shown on the right when someone clicks the photo, and under the photos on the photo's own page." }
 
   - name: notices
     label: Important notes

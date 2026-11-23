@@ -14,8 +14,6 @@ const notice = noticeOf(data);
 <Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
-  <MainText hasBody={hasBody && !notice}><Content /></MainText>
-
   {items.length === 0 ? null : (
     <Fragment>
     {labels.length > 0 && (
@@ -34,6 +32,7 @@ const notice = noticeOf(data);
     <GalleryLightbox items={items} />
     </Fragment>
   )}
+  <MainText hasBody={hasBody && !notice} before={items.length > 0}><Content /></MainText>
 </Base>
 
 <script>

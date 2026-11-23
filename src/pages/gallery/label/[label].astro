@@ -5,7 +5,7 @@ import EntryHead from '../../../components/EntryHead.astro';
 import MainText from '../../../components/MainText.astro';
 import GalleryTile from '../../../components/GalleryTile.astro';
 import GalleryLightbox from '../../../components/GalleryLightbox.astro';
-import { getGalleryLabels, getGallery, hasGalleryLabel, noticeOf } from '../../../lib/content';
+import { getGalleryLabels, getGallery, hasGalleryLabel, noticeOf, colorOf } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const labels = await getGalleryLabels();
@@ -23,7 +23,7 @@ const description = label.data.description ?? label.data.intro ?? `Aquarium phot
 ---
 <Base title={label.data.name} description={description}>
   <p class="back"><a href="/gallery/">← Gallery</a></p>
-  <h1>{label.data.name}</h1>
+  <h1 class="label-title" style={`--tc:${colorOf(label)}`}>{label.data.name}</h1>
   <EntryHead data={label.data} />
   {!notice && (
     <Fragment>
@@ -33,7 +33,7 @@ const description = label.data.description ?? label.data.intro ?? `Aquarium phot
         </div>
       )}
       {entries.length > 0 && <GalleryLightbox items={entries} />}
-      <MainText hasBody={hasBody}><Content /></MainText>
+      <MainText hasBody={hasBody} before={entries.length > 0}><Content /></MainText>
     </Fragment>
   )}
 </Base>

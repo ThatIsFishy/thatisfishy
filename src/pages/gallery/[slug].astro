@@ -1,7 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
-import PubDates from '../../components/PubDates.astro';
+import EntryHead from '../../components/EntryHead.astro';
+import MainText from '../../components/MainText.astro';
 import SourceBadge from '../../components/SourceBadge.astro';
 import { getGalleryLabels, galleryLabelsOf, colorOf } from '../../lib/content';
 
@@ -15,16 +16,11 @@ const cover = entry.data.photos[0];
 const own = galleryLabelsOf(entry, await getGalleryLabels());
 const isUrl = (t: string) => /^https?:\/\//i.test(t);
 ---
-<Base title={entry.data.title} description={`Gallery: ${entry.data.title}`} index kind="Gallery" image={cover.image}>
+<Base title={entry.data.title} description={entry.data.description ?? entry.data.intro ?? `Gallery: ${entry.data.title}`} index kind="Gallery" image={cover.image}>
   <div class="column wide">
     <p class="back" data-pagefind-ignore><a href="/gallery/">← Gallery</a></p>
     <h1>{entry.data.title}</h1>
-    <PubDates date={entry.data.date} updated={entry.data.updated} />
-    {own.length > 0 && (
-      <div class="tags">
-        {own.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`/gallery/label/${l.id}/`}>{l.data.name}</a>)}
-      </div>
-    )}
+    <EntryHead data={entry.data} labels={own} labelBase="/gallery/label/" showDateByDefault />
     <div class="entry-photos">
       {entry.data.photos.map((p) => (
         <figure class="entry-photo" data-src={p.source}>
@@ -36,6 +32,6 @@ const isUrl = (t: string) => /^https?:\/\//i.test(t);
         </figure>
       ))}
     </div>
-    <div class="prose"><Content /></div>
+    <MainText hasBody={Boolean(entry.body?.trim())} before><Content /></MainText>
   </div>
 </Base>

@@ -1,12 +1,14 @@
 ---
 import Break3 from './Break3.astro';
 
-// The main text, followed by the three bubbles ("the text ends here"). Nothing shows when the text is empty.
-interface Props { hasBody?: boolean; }
-const { hasBody = true } = Astro.props;
+// The main text, closed by three bubbles ("the text ends here"). Nothing shows when the text is empty.
+// With `before`, three bubbles also come first: use it when something else (cards, photos) sits above the text.
+interface Props { hasBody?: boolean; before?: boolean; }
+const { hasBody = true, before = false } = Astro.props;
 ---
 {hasBody && (
   <Fragment>
+    {before && <Break3 />}
     <div class="prose"><slot /></div>
     <Break3 />
   </Fragment>

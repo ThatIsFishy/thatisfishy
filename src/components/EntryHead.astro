@@ -1,5 +1,5 @@
 ---
-import { fmtDate, colorOf, noticeOf, type Label } from '../lib/content';
+import { fmtDate, colorOf, noticeOf, type Label, type GalleryLabel } from '../lib/content';
 import Break1 from './Break1.astro';
 import ComingSoon from './ComingSoon.astro';
 
@@ -7,12 +7,13 @@ import ComingSoon from './ComingSoon.astro';
 //   introduction, "Published · Updated", labels, the line with a bubble, the notice card.
 interface Props {
   data: any;                       // the page / article / story fields
-  labels?: Label[];                // the article's labels (articles only)
+  labels?: (Label | GalleryLabel)[];                // the article's labels (articles only)
   showDateByDefault?: boolean;     // true for articles and stories, false for pages
   noticeFallback?: 'coming' | 'empty';
   noticeMessage?: string;          // used when the notice has no message of its own
+  labelBase?: string;              // where the label links go (Knowledge Center by default)
 }
-const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage } = Astro.props;
+const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/' } = Astro.props;
 const notice = noticeOf(data, noticeFallback);
 const intro = String(data.intro ?? '').trim();
 const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
@@ -28,7 +29,7 @@ const updated = (data.showUpdated ?? true) && data.updated ? fmtDate(data.update
 )}
 {labels.length > 0 && (
   <div class="tags">
-    {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`/knowledge-center/label/${l.id}/`}>{l.data.name}</a>)}
+    {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`${labelBase}${l.id}/`}>{l.data.name}</a>)}
   </div>
 )}
 <Break1 />

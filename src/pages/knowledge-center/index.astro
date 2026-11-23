@@ -14,7 +14,6 @@ const notice = noticeOf(data);
 <Base title={data.title} description={data.description ?? data.intro}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
-  <MainText hasBody={hasBody && !notice}><Content /></MainText>
   <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">
     <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>All <span class="s-n">{guides.length}</span></button>
     {labels.map((l) => {
@@ -26,6 +25,7 @@ const notice = noticeOf(data);
     {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>
   <div id="empty" class="s-empty" hidden><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div><p>No articles with this label yet. Coming soon.</p></div>
+  <MainText hasBody={hasBody && !notice} before><Content /></MainText>
 </Base>
 
 <script>

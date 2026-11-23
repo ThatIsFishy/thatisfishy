@@ -97,5 +97,5 @@ export function noticeOf(data: { notice?: string; comingSoon?: boolean }, fallba
 // Gallery entries in the order you set in the CMS (1 first), newest first when the order is equal.
 export async function getGallery() {
   const items = await getCollection('gallery');
-  return items.sort((a, b) => a.data.order - b.data.order || b.data.date.valueOf() - a.data.date.valueOf());
+  return items.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.data.title.localeCompare(b.data.title));
 }
