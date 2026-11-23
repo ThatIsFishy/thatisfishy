@@ -1,10 +1,15 @@
 ---
 title: Choosing your first tank size
+description: ''
+intro: Why a bigger tank is usually the easier tank, and a sensible size to start with.
+showDate: true
+date: 2026-11-17
+showUpdated: true
+updated: 2026-11-23
 labels:
   - equipment
-intro: Why a bigger tank is usually the easier tank, and a sensible size to start with.
-date: 2026-11-17
-updated: 2026-11-20
+notice: none
+comingSoonMessage: ''
 ---
 
 It sounds backwards, but a small tank is harder to keep than a medium one.
