@@ -26,12 +26,12 @@ const description = label.data.description ?? label.data.intro ?? `Aquarium phot
   <EntryHead data={label.data} />
   {!notice && (
     <Fragment>
-      <MainText hasBody={hasBody}><Content /></MainText>
       {entries.length > 0 && (
         <div class="tiles">
           {entries.map((entry) => <GalleryTile entry={entry} />)}
         </div>
       )}
+      <MainText hasBody={hasBody}><Content /></MainText>
     </Fragment>
   )}
 </Base>

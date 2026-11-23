@@ -32,12 +32,12 @@ const description = label.data.description ?? label.data.intro ?? `Beginner arti
   <EntryHead data={label.data} />
   {!notice && (
     <Fragment>
-      <MainText hasBody={hasBody}><Content /></MainText>
       {guides.length > 0 && (
         <div class="grid">
           {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
         </div>
       )}
+      <MainText hasBody={hasBody}><Content /></MainText>
     </Fragment>
   )}
 </Base>
