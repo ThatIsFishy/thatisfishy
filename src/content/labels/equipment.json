@@ -1,5 +1,7 @@
 {
   "name": "Equipment",
-  "color": "violet",
-  "order": 5
+  "color": "#ff80ff",
+  "order": 5,
+  "description": "",
+  "emptyMessage": ""
 }
