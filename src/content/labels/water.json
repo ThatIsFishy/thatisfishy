@@ -1,5 +1,7 @@
 {
   "name": "Water",
-  "color": "ocean",
-  "order": 4
+  "color": "#38a8de",
+  "order": 4,
+  "description": "",
+  "emptyMessage": ""
 }
