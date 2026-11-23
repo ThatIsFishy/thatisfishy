@@ -1,5 +1,7 @@
 {
   "name": "Fish",
-  "color": "pink",
-  "order": 3
+  "color": "#ffb7db",
+  "order": 3,
+  "description": "",
+  "emptyMessage": ""
 }
