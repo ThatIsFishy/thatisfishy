@@ -3,6 +3,8 @@ title: 'Sample: an entry with two photos'
 date: 2026-11-19
 updated: 2026-11-23
 order: 2
+labels:
+  - fish
 photos:
   - image: /images/uploads/sample-tank-2.svg
     alt: A tall sample picture of a tank with an orange fish in the middle
