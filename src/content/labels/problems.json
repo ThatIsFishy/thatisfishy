@@ -1,5 +1,7 @@
 {
   "name": "Problems",
-  "color": "coral",
-  "order": 6
+  "color": "#f95b0f",
+  "order": 6,
+  "description": "",
+  "emptyMessage": ""
 }
