@@ -5,10 +5,10 @@ position: 30
 footerPosition: 100
 description: 'Real stories from my tank: what I did, what happened, what I would change.'
 intro: 'Real stories from my tank: what I did, what happened, what I’d change.'
-showDate: false
+showDate: true
 date: 2026-11-23
-showUpdated: false
-updated: ''
+showUpdated: true
+updated: 2026-11-23
 notice: none
 comingSoonMessage: ''
 ---
