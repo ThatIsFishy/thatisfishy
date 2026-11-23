@@ -7,8 +7,8 @@ description: Short, beginner-friendly aquarium articles.
 intro: Short articles written as I learn them during my journey. Filter by label.
 showDate: false
 date: 2026-11-23
-showUpdated: false
-updated: ''
+showUpdated: true
+updated: 2026-11-23
 notice: none
 comingSoonMessage: ''
 ---
