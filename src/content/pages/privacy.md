@@ -1,11 +1,18 @@
 ---
-title: "Privacy"
+title: Privacy
 menu: footer
 position: 100
 footerPosition: 50
-intro: |-
-  What happens to your data when you use this site.
+description: ''
+intro: What happens to your data when you use this site.
+showDate: false
+date: 2026-11-23
+showUpdated: false
+updated: ''
+notice: none
+comingSoonMessage: ''
 ---
+
 *This is a first version. It will change if the site changes.*
 
 ## The contact form
