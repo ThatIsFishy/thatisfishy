@@ -7,8 +7,7 @@ date: 2026-11-23
 showUpdated: true
 updated: 2026-11-23
 labels:
-  - fish
-  - plants
+  - title-notice-with-article
 notice: coming
 comingSoonMessage: Notice message
 ---
