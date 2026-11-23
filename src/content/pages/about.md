@@ -3,9 +3,16 @@ title: About Fishy
 menu: both
 position: 60
 footerPosition: 10
+description: ''
 intro: |-
   Welcome to That Is Fishy!
   A little about me and my aquarium journey
+showDate: false
+date: 2026-11-23
+showUpdated: false
+updated: ''
+notice: none
+comingSoonMessage: ''
 ---
 
 # **Welcome to That Is Fishy!**
