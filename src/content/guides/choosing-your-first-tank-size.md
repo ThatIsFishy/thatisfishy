@@ -3,7 +3,7 @@ title: Choosing your first tank size
 description: ''
 intro: Why a bigger tank is usually the easier tank, and a sensible size to start with.
 showDate: true
-date: 2026-11-17
+date: 2026-11-23
 showUpdated: true
 updated: 2026-11-23
 labels:
