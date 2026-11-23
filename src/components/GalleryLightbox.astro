@@ -1,0 +1,165 @@
+---
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { fmtDate } from '../lib/content';
+import { SOURCES } from '../consts';
+
+// The big-photo view, shared by the Gallery page and the Gallery label pages.
+// The tiles must sit in an element with id="gallery".
+interface Props { items: CollectionEntry<'gallery'>[]; }
+const { items } = Astro.props;
+// Render each explanation now, so the page can show it instantly on a click.
+const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (await render(entry)).Content })));
+---
+<!-- Hidden copies of every explanation; the script copies one into the big-photo view. -->
+    <div hidden id="store" data-sources={JSON.stringify(SOURCES)}>
+      {details.map(({ entry, Body }) => (
+        <article
+          data-for={entry.id}
+          data-title={entry.data.title}
+          data-published={fmtDate(entry.data.date)}
+          data-updated={entry.data.updated ? fmtDate(entry.data.updated) : ''}
+          data-photos={JSON.stringify(entry.data.photos.map((p) => ({ src: p.image, alt: p.alt, source: p.source ?? '', credit: p.credit ?? '' })))}
+        >
+          <div class="prose"><Body /></div>
+        </article>
+      ))}
+    </div>
+
+    <!-- The big photo view. Empty and hidden until a photo is clicked. -->
+    <div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-labelledby="lb-title">
+      <div class="lb-inner">
+        <figure class="lb-photo" id="lb-photo">
+          <div class="lb-imgwrap">
+            <img id="lb-img" alt="" />
+            <span id="lb-src"></span>
+            <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous photo"><span aria-hidden="true">‹</span></button>
+            <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next photo"><span aria-hidden="true">›</span></button>
+            <span class="lb-count" id="lb-count"></span>
+          </div>
+        </figure>
+        <aside class="lb-text">
+          <button class="lb-close" id="lb-close" type="button" aria-label="Close photo">×</button>
+          <h2 id="lb-title"></h2>
+          <p class="src-line" id="lb-srcline"></p>
+          <p class="dates" id="lb-dates"></p>
+          <div class="prose" id="lb-body"></div>
+          <p class="credit" id="lb-credit"></p>
+          <p><a id="lb-link" href="#">Open on its own page →</a></p>
+        </aside>
+      </div>
+    </div>
+
+<script>
+  type Photo = { src: string; alt: string; source: string; credit: string };
+  const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
+  const lb = $('lb'), store = $('store');
+
+  if (lb && store) {
+    const SOURCES = JSON.parse(store.dataset.sources ?? '{}') as Record<string, string>;
+    const img = $<HTMLImageElement>('lb-img');
+    let slug: string | null = null;
+    let photos: Photo[] = [];
+    let index = 0;
+    let lastFocus: HTMLElement | null = null;
+
+    // A source label: a coloured dot and the words.
+    function badge(source: string, extra = ''): string {
+      return SOURCES[source] ? `<span class="src src-${source} ${extra}"><svg class="bub srcb" aria-hidden="true"><use href="#bub"></use></svg>${SOURCES[source]}</span>` : '';
+    }
+
+    // The big photo takes about half the page width, but never more than fits the screen.
+    function size() {
+      if (!img.naturalWidth) return;
+      const r = img.naturalWidth / img.naturalHeight;
+      const W = innerWidth, H = innerHeight;
+      const w = W > 960
+        ? Math.min(W * 0.5, H * 0.86 * r, W - 24 * 16 - 80)
+        : Math.min(W - 32, H * 0.6 * r);
+      img.style.width = `${Math.max(w, 200)}px`;
+    }
+    img.addEventListener('load', size);
+    addEventListener('resize', size);
+
+    function showPhoto() {
+      const p = photos[index];
+      img.alt = p.alt;
+      img.src = p.src;
+      img.dataset.src = p.source;
+      $('lb-src').innerHTML = badge(p.source);
+      $('lb-srcline').innerHTML = badge(p.source, 'inline');
+      $('lb-count').textContent = photos.length > 1 ? `${index + 1} / ${photos.length}` : '';
+      lb.classList.toggle('single', photos.length < 2);
+      // Credit: a web address becomes a link, anything else stays plain text.
+      const credit = $('lb-credit');
+      credit.replaceChildren();
+      if (p.credit) {
+        credit.append('Credit: ');
+        if (/^https?:\/\//i.test(p.credit)) {
+          const a = document.createElement('a');
+          a.href = p.credit; a.rel = 'noopener'; a.textContent = p.credit;
+          credit.append(a);
+        } else credit.append(p.credit);
+      }
+    }
+
+    function open(id: string) {
+      const source = store.querySelector<HTMLElement>(`[data-for="${CSS.escape(id)}"]`);
+      if (!source) return;
+      if (lb.hidden) lastFocus = document.activeElement as HTMLElement | null;
+      slug = id;
+      photos = JSON.parse(source.dataset.photos ?? '[]');
+      index = 0;
+      $('lb-title').textContent = source.dataset.title ?? '';
+      $('lb-dates').textContent = `Published ${source.dataset.published}` + (source.dataset.updated ? ` · Updated ${source.dataset.updated}` : '');
+      $('lb-body').innerHTML = source.querySelector('.prose')?.innerHTML ?? '';
+      ($('lb-link') as HTMLAnchorElement).href = `/gallery/${id}/`;
+      showPhoto();
+      lb.hidden = false;
+      document.documentElement.classList.add('lb-open');
+      history.replaceState(null, '', `#${id}`);
+      $('lb-close').focus();
+    }
+
+    function close() {
+      lb.hidden = true;
+      slug = null;
+      document.documentElement.classList.remove('lb-open');
+      if (location.hash) history.replaceState(null, '', location.pathname);
+      lastFocus?.focus();
+    }
+
+    function step(d: number) {
+      if (photos.length < 2) return;
+      index = (index + d + photos.length) % photos.length;
+      showPhoto();
+    }
+
+    $('gallery').addEventListener('click', (e) => {
+      const tile = (e.target as HTMLElement).closest<HTMLElement>('.tile');
+      if (!tile) return;
+      e.preventDefault();                       // no jump to the entry page
+      open(tile.dataset.slug ?? '');
+    });
+    $('lb-close').addEventListener('click', close);
+    $('lb-prev').addEventListener('click', () => step(-1));
+    $('lb-next').addEventListener('click', () => step(1));
+    // Click on the blurred background closes it
+    lb.addEventListener('click', (e) => { if (e.target === lb || (e.target as HTMLElement).classList.contains('lb-inner')) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'ArrowLeft') step(-1);
+      else if (e.key === 'ArrowRight') step(1);
+      else if (e.key === 'Tab') {                // keep the keyboard focus inside the view
+        const f = [...lb.querySelectorAll<HTMLElement>('button, a[href]')].filter((el) => el.offsetParent !== null);
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+
+    // A link like /gallery/#my-photo opens that photo straight away.
+    if (location.hash.length > 1) open(decodeURIComponent(location.hash.slice(1)));
+  }
+</script>
