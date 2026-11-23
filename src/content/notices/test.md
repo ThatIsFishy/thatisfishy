@@ -1,6 +1,6 @@
 ---
 title: Test
-type: Site update
+type: Correction
 date: 2026-11-20
 ---
 
