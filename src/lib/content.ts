@@ -4,6 +4,8 @@ import remarkPhotos from './remark-photos.mjs';
 
 export type Label = CollectionEntry<'labels'>;
 export type Guide = CollectionEntry<'guides'>;
+export type GalleryLabel = CollectionEntry<'galleryLabels'>;
+export type GalleryEntry = CollectionEntry<'gallery'>;
 
 // All labels, in the order you set in the CMS (then A to Z).
 export async function getLabels(): Promise<Label[]> {
@@ -18,6 +20,17 @@ export function labelsOf(guide: Guide, labels: Label[]): Label[] {
   return labels.filter((l) => ids.includes(l.id));
 }
 
+// The Gallery has its own labels (a separate list in the CMS), in menu order.
+export async function getGalleryLabels(): Promise<GalleryLabel[]> {
+  const labels = await getCollection('galleryLabels');
+  return labels.sort((a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name));
+}
+// The labels one gallery entry has (a deleted label is skipped).
+export function galleryLabelsOf(entry: GalleryEntry, labels: GalleryLabel[]): GalleryLabel[] {
+  return labels.filter((l) => entry.data.labels.includes(l.id));
+}
+export const hasGalleryLabel = (entry: GalleryEntry, labelId: string) => entry.data.labels.includes(labelId);
+
 // Does this article carry this label?
 export function hasLabel(guide: Guide, labelId: string): boolean {
   return guide.data.labels.includes(labelId);
@@ -29,7 +42,7 @@ const OLD_COLORS: Record<string, string> = {
   coral: '#ff6b4a', pink: '#e8509a', teal: '#0fa3b1', orange: '#f07d1a',
 };
 // The colour of a label, always as a colour code.
-export function colorOf(label?: Label): string {
+export function colorOf(label?: Label | GalleryLabel): string {
   const c = label?.data.color ?? '';
   return OLD_COLORS[c] ?? (/^#[0-9a-f]{3,8}$/i.test(c) ? c : '#1596e0');
 }

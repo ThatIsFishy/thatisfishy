@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
-import Break1 from '../../../components/Break1.astro';
+import EntryHead from '../../../components/EntryHead.astro';
+import MainText from '../../../components/MainText.astro';
 import ArticleCard from '../../../components/ArticleCard.astro';
-import NoticeLogo from '../../../components/NoticeLogo.astro';
-import { getLabels, hasLabel } from '../../../lib/content';
+import { getLabels, hasLabel, noticeOf } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const labels = await getLabels();
@@ -21,24 +21,23 @@ export async function getStaticPaths() {
   }));
 }
 const { label, labels, guides } = Astro.props;
-const intro = label.data.description
-  ?? (guides.length === 0 ? undefined : `${guides.length} ${guides.length === 1 ? 'article' : 'articles'} with this label.`);
-const emptyMessage = label.data.emptyMessage ?? 'Articles with this label are on the way.';
+const { Content } = await render(label);
+const hasBody = Boolean(label.body?.trim());
+const notice = noticeOf(label.data);
+const description = label.data.description ?? label.data.intro ?? `Beginner articles about ${label.data.name.toLowerCase()}.`;
 ---
-<Base title={label.data.name} description={`Beginner articles about ${label.data.name.toLowerCase()}.`}>
+<Base title={label.data.name} description={description}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1>{label.data.name}</h1>
-  {intro && <p class="lead">{intro}</p>}
-  <Break1 />
-  {guides.length === 0 ? (
-    <div class="card empty-card">
-      <NoticeLogo kind="empty" />
-      <h3>Nothing here yet</h3>
-      <p>{emptyMessage}</p>
-    </div>
-  ) : (
-    <div class="grid">
-      {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
-    </div>
+  <EntryHead data={label.data} />
+  {!notice && (
+    <Fragment>
+      <MainText hasBody={hasBody}><Content /></MainText>
+      {guides.length > 0 && (
+        <div class="grid">
+          {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
+        </div>
+      )}
+    </Fragment>
   )}
 </Base>

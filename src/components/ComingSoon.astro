@@ -2,8 +2,9 @@
 // The notice card with its picture (builder shrimp or curtain): "Coming soon" or "Nothing here yet".
 // Chosen per page, article or story in the CMS (Notice). The message is optional.
 import NoticeLogo from './NoticeLogo.astro';
-interface Props { kind?: 'coming' | 'empty'; message?: string; }
-const { kind = 'coming', message } = Astro.props;
+import Recommend from './Recommend.astro';
+interface Props { kind?: 'coming' | 'empty'; message?: string; recommend?: boolean; }
+const { kind = 'coming', message, recommend = false } = Astro.props;
 const title = kind === 'empty' ? 'Nothing here yet' : 'Coming soon';
 const fallback = kind === 'empty' ? 'There is nothing here yet. Check back soon.' : 'This is not ready yet. Check back soon.';
 ---
@@ -12,3 +13,4 @@ const fallback = kind === 'empty' ? 'There is nothing here yet. Check back soon.
   <h3>{title}</h3>
   <p>{message ?? fallback}</p>
 </div>
+{recommend && <Recommend />}

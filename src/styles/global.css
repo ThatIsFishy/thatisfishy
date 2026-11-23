@@ -193,6 +193,15 @@ nav.main > a, .has-sub > a { display: inline-flex; align-items: center; min-heig
 
 /* Home rows: 4 cards per row, the 5th starts a new row */
 .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+/* "While you wait" picks under a notice card: three side by side, like the home page */
+.rec { margin-top: 2rem; }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid.three > .rec-item[hidden] { display: none; }
+.grid.three .tiles-home { display: block; margin: 0; height: 100%; }
+.grid.three .rec-item { display: flex; }
+.grid.three .rec-item > a.card, .grid.three .rec-item .tiles-home { flex: 1; }
+.grid.three .rec-item .tile { height: 100%; min-height: 11rem; }
+@media (max-width: 50rem) { .grid.three { grid-template-columns: 1fr; } }
 @media (max-width: 70rem) { .grid.four { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 40rem) { .grid.four { grid-template-columns: 1fr; } }
 .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; margin-top: 2.5rem; }
@@ -248,6 +257,7 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
   transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s;
 }
 .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tile[hidden] { display: none; }
 .tile:hover { transform: translateY(-3px); box-shadow: 0 10px 22px color-mix(in srgb, var(--water) 25%, transparent); }
 .tile .cap {
   position: absolute; inset: auto 0 0 0; padding: 1.6rem .8rem .6rem; font: 500 .95rem/1.25 var(--head);

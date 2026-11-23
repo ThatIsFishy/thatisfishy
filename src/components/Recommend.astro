@@ -1,0 +1,60 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import StoryCard from './StoryCard.astro';
+import GalleryTile from './GalleryTile.astro';
+import { getLabels, getGallery, noticeOf } from '../lib/content';
+
+// "Have a look at these": three random picks (articles, Fishy Stories, gallery photos) under a notice card,
+// so a visitor never ends at a dead end. Shown only when a Notice is chosen in the CMS.
+// It never offers the page you are on, or anything that is itself marked Coming soon / Nothing here yet.
+// Every candidate is drawn here; a small script picks three new ones on each visit
+// (without the script, the three chosen at build time stay).
+const here = Astro.url.pathname;
+const labels = await getLabels();
+const articles = (await getCollection('guides')).filter((g) => !noticeOf(g.data) && `/knowledge-center/${g.id}/` !== here);
+const stories = (await getCollection('journal')).filter((s) => !noticeOf(s.data) && `/fishy-stories/${s.id}/` !== here);
+const photos = await getGallery();
+
+type Item = { kind: 'article' | 'story' | 'photo'; node: any };
+const pool: Item[] = [
+  ...articles.map((node) => ({ kind: 'article' as const, node })),
+  ...stories.map((node) => ({ kind: 'story' as const, node })),
+  ...photos.map((node) => ({ kind: 'photo' as const, node })),
+];
+// The same pick as the script makes: one of each kind first, then whatever is left.
+const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+const byKind = shuffle(['article', 'story', 'photo'] as const).map((k) => shuffle(pool.filter((p) => p.kind === k)));
+const picked = new Set<Item>();
+for (let round = 0; picked.size < 3 && round < pool.length; round++) {
+  for (const list of byKind) { if (picked.size < 3 && list[round]) picked.add(list[round]); }
+}
+---
+{pool.length > 0 && (
+  <section class="rec" data-rec>
+    <div class="section-head">
+      <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> While you wait, have a look at</h2>
+    </div>
+    <div class="grid three">
+      {pool.map((p) => (
+        <div class="rec-item" data-kind={p.kind} hidden={!picked.has(p)}>
+          {p.kind === 'article' && <ArticleCard guide={p.node} labels={labels} />}
+          {p.kind === 'story' && <StoryCard story={p.node} />}
+          {p.kind === 'photo' && <div class="tiles-home"><GalleryTile entry={p.node} home /></div>}
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+<script>
+  document.querySelectorAll<HTMLElement>('[data-rec]').forEach((box) => {
+    const items = Array.from(box.querySelectorAll<HTMLElement>('.rec-item'));
+    const shuffle = <T,>(a: T[]) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+    const kinds = shuffle(['article', 'story', 'photo']).map((k) => shuffle(items.filter((i) => i.dataset.kind === k)));
+    const pick = new Set<HTMLElement>();
+    for (let round = 0; pick.size < 3 && round < items.length; round++) {
+      for (const list of kinds) { if (pick.size < 3 && list[round]) pick.add(list[round]); }
+    }
+    items.forEach((i) => { i.hidden = !pick.has(i); });
+  });
+</script>

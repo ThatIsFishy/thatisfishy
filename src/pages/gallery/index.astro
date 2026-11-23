@@ -4,10 +4,11 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import GalleryTile from '../../components/GalleryTile.astro';
-import { getGallery, getPage, fmtDate, noticeOf } from '../../lib/content';
+import { getGallery, getGalleryLabels, hasGalleryLabel, getPage, fmtDate, noticeOf, colorOf } from '../../lib/content';
 import { SOURCES } from '../../consts';
 
 const items = await getGallery();
+const labels = await getGalleryLabels();
 const { data, Content, hasBody } = await getPage('gallery');
 const notice = noticeOf(data);
 // Render each explanation now, so the page can show it instantly on a click.
@@ -18,9 +19,17 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
   <EntryHead data={data} />
   <MainText hasBody={hasBody && !notice}><Content /></MainText>
 
-  {items.length === 0 ? (
-    <ComingSoon message="The first photos are on their way." />
-  ) : (
+  {items.length === 0 ? null : (
+    <Fragment>
+    {labels.length > 0 && (
+      <div class="filters s-filters kc-filters" role="group" aria-label="Filter photos by label">
+        <button class="chip" type="button" data-filter="All" aria-pressed="true" style="--tc: var(--ink)"><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>All <span class="s-n">{items.length}</span></button>
+        {labels.map((l) => {
+          const n = items.filter((e) => hasGalleryLabel(e, l.id)).length;
+          return <button class="chip" type="button" data-filter={l.id} aria-pressed="false" disabled={n === 0} style={`--tc:${colorOf(l)}`}><svg class="bub dot" aria-hidden="true"><use href="#bub" /></svg>{l.data.name} <span class="s-n">{n}</span></button>;
+        })}
+      </div>
+    )}
     <div class="tiles" id="gallery">
       {items.map((entry) => <GalleryTile entry={entry} />)}
     </div>
@@ -63,8 +72,36 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
         </aside>
       </div>
     </div>
+    </Fragment>
   )}
 </Base>
+
+<script>
+  // Label chips: several can be on at once (a photo shows if it has any of them). "All" clears them.
+  {
+    const chips = document.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const tiles = document.querySelectorAll<HTMLElement>('#gallery .tile');
+    const selected = new Set<string>();
+    const apply = () => {
+      chips.forEach((c) => {
+        const f = c.dataset.filter ?? '';
+        c.setAttribute('aria-pressed', String(f === 'All' ? selected.size === 0 : selected.has(f)));
+      });
+      tiles.forEach((t) => {
+        const own = (t.dataset.labels ?? '').split('|');
+        t.hidden = !(selected.size === 0 || own.some((l) => selected.has(l)));
+      });
+    };
+    chips.forEach((chip) => chip.addEventListener('click', () => {
+      if (chip.disabled) return;
+      const f = chip.dataset.filter ?? 'All';
+      if (f === 'All') selected.clear();
+      else if (selected.has(f)) selected.delete(f);
+      else selected.add(f);
+      apply();
+    }));
+  }
+</script>
 
 <script>
   type Photo = { src: string; alt: string; source: string; credit: string };

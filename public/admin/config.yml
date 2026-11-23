@@ -75,6 +75,16 @@ collections:
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
       - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Fill it in when you change the article later. It shows as 'Updated' under the title." }
       - { label: Order number, name: order, widget: number, value_type: int, default: 100, hint: "1 comes first on the Gallery page. Same number = newest first." }
+      - label: Labels
+        name: labels
+        widget: relation
+        collection: galleryLabels
+        search_fields: [name]
+        value_field: "{{slug}}"
+        display_fields: [name]
+        multiple: true
+        required: false
+        hint: "Pick one or more Gallery labels, or none (then the photo only shows under All). All photos in this entry share them. You can add a new label with Add Label."
       - label: Photos
         name: photos
         widget: list
@@ -109,20 +119,48 @@ collections:
       - { label: Text, name: body, widget: markdown, hint: "Shown in the Important notes panel on the home page. When you delete the last note, the panel disappears." }
 
   - name: labels
-    label: Labels
-    label_singular: Label
+    label: Knowledge Center labels
+    label_singular: Knowledge Center label
+    description: "Labels for the articles. Each label has its own page, edited like the other pages. Do not mix them up with the Gallery labels (a separate list)."
     folder: src/content/labels
-    extension: json
-    format: json
+    extension: md
+    format: yaml-frontmatter
     create: true
     identifier_field: name
     summary: "{{order}}. {{name}}"
     fields:
-      - { label: Name, name: name, widget: string }
-      - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour. (Older labels may show the default here until you pick a colour and save.)" }
-      - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu." }
-      - { label: Short description, name: description, widget: text, required: false, hint: "Shown at the top of this label's page." }
-      - { label: Message while there are no articles, name: emptyMessage, widget: text, required: false, hint: "Optional. Shown under \"Nothing here yet\" on this label's page until the first article has this label. Leave empty for the standard message." }
+      - { label: Title, name: name, widget: string, hint: "The name of the label. Also the name in the menu and on the chips." }
+      - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour." }
+      - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu and on the chips." }
+      - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
+      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Show the published date, name: showDate, widget: boolean, default: false, required: false, hint: "Switch on to show Published under the title." }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Only shown when the switch above is on." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
+      - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+
+  - name: galleryLabels
+    label: Gallery labels
+    label_singular: Gallery label
+    description: "Labels for the Gallery photos. A separate list from the Knowledge Center labels: if you need the same label in both, add it in both lists."
+    folder: src/content/gallery-labels
+    extension: md
+    format: yaml-frontmatter
+    create: true
+    identifier_field: name
+    summary: "{{order}}. {{name}}"
+    fields:
+      - { label: Title, name: name, widget: string, hint: "The name of the label. Also the name in the menu and on the chips." }
+      - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour." }
+      - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu and on the chips." }
+      - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
+      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Show the published date, name: showDate, widget: boolean, default: false, required: false, hint: "Switch on to show Published under the title." }
+      - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Only shown when the switch above is on." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
+      - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
 
   - name: shops
     label: Shop Finder

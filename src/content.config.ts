@@ -24,16 +24,26 @@ const shared = {
 // The colours a label can have. The colours themselves are defined in global.css.
 // (Labels used fixed colour names before; those old names still work, see colorOf() in src/lib/content.ts.)
 
-// Labels: one small file per label in src/content/labels
+// Labels: one file per label, edited like a page (src/content/labels for the Knowledge Center,
+// src/content/gallery-labels for the Gallery). The colour and menu order are on top of the page fields.
+const labelFields = {
+  name: z.string(),                     // the label's title
+  color: z.string().default('#1596e0'),
+  order: z.coerce.number().default(50),
+  description: optionalText,            // for search engines
+  intro: optionalText,                  // the introduction text under the title
+  showDate: optionalBool,               // show "Published ..." under the title
+  date: optionalDate,
+  notice: z.preprocess(blank, z.enum(['none', 'coming', 'empty']).optional()),
+  comingSoonMessage: optionalText,      // the sentence on the notice card
+};
 const labels = defineCollection({
-  loader: glob({ pattern: '**/*.json', base: './src/content/labels' }),
-  schema: z.object({
-    name: z.string(),
-    color: z.string().default('#1596e0'),
-    order: z.coerce.number().default(50),
-    description: optionalText,
-    emptyMessage: optionalText,
-  }),
+  loader: glob({ pattern: '**/*.md', base: './src/content/labels' }),
+  schema: z.object(labelFields),
+});
+const galleryLabels = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/gallery-labels' }),
+  schema: z.object(labelFields),
 });
 
 // Articles: each one points to one or more labels
@@ -91,6 +101,8 @@ const gallery = defineCollection({
     date: z.coerce.date(),
     updated: optionalDate,
     order: z.coerce.number().default(100),
+    // Gallery label ids (the Gallery labels, not the Knowledge Center labels). All photos of the entry share them.
+    labels: z.array(z.string()).default([]),
     photos: z
       .array(z.object({
         image: z.string(),
@@ -113,4 +125,4 @@ const notices = defineCollection({
   }),
 });
 
-export const collections = { labels, guides, journal, shops, pages, gallery, notices };
+export const collections = { labels, galleryLabels, guides, journal, shops, pages, gallery, notices };

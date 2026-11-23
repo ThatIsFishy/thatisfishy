@@ -12,7 +12,7 @@ import '@fontsource/lora/700.css';
 import SideBubbles from '../components/SideBubbles.astro';
 import Break1 from '../components/Break1.astro';
 import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, SHOW_RATING } from '../consts';
-import { getLabels, hasLabel, colorOf, getAllPages } from '../lib/content';
+import { getLabels, hasLabel, getGalleryLabels, hasGalleryLabel, colorOf, getAllPages } from '../lib/content';
 
 // index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
 interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; }
@@ -30,16 +30,25 @@ const menuLabels = (await getLabels()).map((label) => ({
   count: guides.filter((g) => hasLabel(g, label.id)).length,
 }));
 
+// The same for the Gallery: its own labels, with the number of gallery entries each one has.
+const galleryEntries = await getCollection('gallery');
+const menuGalleryLabels = (await getGalleryLabels()).map((label) => ({
+  id: label.id,
+  name: label.data.name,
+  color: colorOf(label),
+  count: galleryEntries.filter((e) => hasGalleryLabel(e, label.id)).length,
+}));
+
 // Links come from the pages: each page says (Menu) whether it shows in the header, the footer or both, and its Position.
 // Home and Search always come first. Shop Finder and Rating System follow the switches in consts.ts.
 const allPages = await getAllPages();
 const shown = (e: { id: string }) => (e.id === 'shops' ? SHOW_SHOPS : e.id === 'rating-system' ? SHOW_RATING : e.id !== 'home');
-type NavItem = { href: string; label: string; sub?: boolean; pos: number };
+type NavItem = { href: string; label: string; sub?: 'knowledge-center' | 'gallery'; pos: number };
 const nav: NavItem[] = [
   { href: '/', label: 'Home', pos: -1 },
   ...allPages
     .filter((e) => shown(e) && (e.menu === 'header' || e.menu === 'both'))
-    .map((e) => ({ href: e.href, label: e.title, sub: e.id === 'knowledge-center', pos: e.position })),
+    .map((e) => ({ href: e.href, label: e.title, sub: e.id === 'knowledge-center' ? 'knowledge-center' as const : e.id === 'gallery' && menuGalleryLabels.length > 0 ? 'gallery' as const : undefined, pos: e.position })),
 ].sort((a, b) => a.pos - b.pos);
 const footerLinks: { href: string; label: string; pos: number }[] = allPages
   .filter((e) => shown(e) && (e.menu === 'footer' || e.menu === 'both'))
@@ -88,9 +97,9 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
                 <a href={n.href} aria-current={active(n.href) ? 'page' : undefined}>{n.label}</a>
                 <div class="sub">
                   <ul>
-                    {menuLabels.map((l) => (
+                    {(n.sub === 'gallery' ? menuGalleryLabels : menuLabels).map((l) => (
                       <li>
-                        <a href={`/knowledge-center/label/${l.id}/`} data-c="" style={`--tc:${l.color}`}>
+                        <a href={`/${n.sub === 'gallery' ? 'gallery' : 'knowledge-center'}/label/${l.id}/`} data-c="" style={`--tc:${l.color}`}>
                           {l.name}<span>{l.count > 0 ? l.count : 'soon'}</span>
                         </a>
                       </li>

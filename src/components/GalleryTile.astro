@@ -9,7 +9,7 @@ const { entry, home = false } = Astro.props;
 const cover = entry.data.photos[0];
 const count = entry.data.photos.length;
 ---
-<a class="tile" href={home ? `/gallery/#${entry.id}` : `/gallery/${entry.id}/`} data-slug={entry.id} data-src={cover.source}>
+<a class="tile" href={home ? `/gallery/#${entry.id}` : `/gallery/${entry.id}/`} data-slug={entry.id} data-src={cover.source} data-labels={entry.data.labels.join('|')}>
   <img src={cover.image} alt={cover.alt} loading="lazy" decoding="async" />
   <SourceBadge source={cover.source} />
   {count > 1 && <span class="count" aria-label={`${count} photos`}>{count} photos</span>}
