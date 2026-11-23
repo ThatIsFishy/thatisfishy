@@ -81,8 +81,12 @@ const NOTICE = {
   coming: ['Coming soon', 'The rest of this is not ready yet. Check back soon.'],
   empty: ['Nothing here yet', 'There is nothing here yet. Check back soon.'],
 };
+const LOGO = {
+  coming: '<svg class="nlogo" width="190" height="190" aria-hidden="true" focusable="false"><use href="#nl-base" width="100%" height="100%"></use></svg>',
+  empty: '<svg class="nlogo" width="219" height="190" aria-hidden="true" focusable="false"><use href="#nl-curtain" width="100%" height="100%"></use></svg>',
+};
 const notice = (kind, message) =>
-  `<div class="card empty-card coming-card"><div class="cl" aria-hidden="true">${BUB.replace('{c}', ' lg c1')}${BUB.replace('{c}', ' sm c2')}${BUB.replace('{c}', ' c3')}</div><h3>${NOTICE[kind][0]}</h3><p>${esc(message || NOTICE[kind][1])}</p></div>`;
+  `<div class="card empty-card coming-card">${LOGO[kind]}<h3>${NOTICE[kind][0]}</h3><p>${esc(message || NOTICE[kind][1])}</p></div>`;
 
 export default function remarkPhotos() {
   return (tree) => {

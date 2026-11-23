@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../../../layouts/Base.astro';
 import Break1 from '../../../components/Break1.astro';
 import ArticleCard from '../../../components/ArticleCard.astro';
+import NoticeLogo from '../../../components/NoticeLogo.astro';
 import { getLabels, hasLabel } from '../../../lib/content';
 
 export async function getStaticPaths() {
@@ -31,7 +32,7 @@ const emptyMessage = label.data.emptyMessage ?? 'Articles with this label are on
   <Break1 />
   {guides.length === 0 ? (
     <div class="card empty-card">
-      <div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div>
+      <NoticeLogo kind="empty" />
       <h3>Nothing here yet</h3>
       <p>{emptyMessage}</p>
     </div>

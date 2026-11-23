@@ -499,6 +499,8 @@ footer.site .brk1 { margin: 0 0 1.5rem; }
 
 /* Empty states and loading */
 .s-empty { text-align: center; }
+/* The picture on Coming soon / Nothing here yet cards (builder shrimp or curtain); drawn in Base.astro */
+.nlogo { display: block; margin: 0 auto .3rem; max-width: 100%; color: var(--water); }
 .cl { position: relative; height: 3.4rem; width: 5rem; margin: 0 auto .4rem; }
 .cl .bub { position: absolute; }
 .cl .c1 { left: 1.4rem; top: 1rem; } .cl .c2 { left: .2rem; top: 2.2rem; } .cl .c3 { left: 3.5rem; top: 0; }
