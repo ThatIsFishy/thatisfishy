@@ -23,13 +23,15 @@ export async function getStaticPaths() {
 const { label, labels, guides } = Astro.props;
 const { Content } = await render(label);
 const hasBody = Boolean(label.body?.trim());
-const notice = noticeOf(label.data);
+// A label that has guides shows them, whatever notice is set: the notice only applies while the label is empty.
+const head = guides.length > 0 ? { ...label.data, notice: 'none' } : label.data;
+const notice = noticeOf(head);
 const description = label.data.description ?? label.data.intro ?? `Beginner articles about ${label.data.name.toLowerCase()}.`;
 ---
 <Base title={label.data.name} description={description}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1 class="label-title" style={`--tc:${colorOf(label)}`}>{label.data.name}</h1>
-  <EntryHead data={label.data} />
+  <EntryHead data={head} />
   {!notice && (
     <Fragment>
       {guides.length > 0 && (
