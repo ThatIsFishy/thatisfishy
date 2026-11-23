@@ -7,7 +7,7 @@ intro: Introduction
 showDate: true
 date: 2026-11-23
 notice: coming
-comingSoonMessage: ''
+comingSoonMessage: Notice message
 ---
 
 Main
