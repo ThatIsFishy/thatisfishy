@@ -1,9 +1,15 @@
 ---
 title: The water tests worth owning
+description: ''
+intro: Which test kits a first tank needs, and what each reading tells you.
+showDate: true
+date: 2026-11-17
+showUpdated: true
+updated: 2026-11-23
 labels:
   - water
-intro: Which test kits a first tank needs, and what each reading tells you.
-date: 2026-11-17
+notice: none
+comingSoonMessage: ''
 ---
 
 You can’t see most water problems, so tests are your eyes.
