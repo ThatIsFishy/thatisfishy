@@ -264,11 +264,6 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
   background: linear-gradient(transparent, rgb(7 26 46 / .78));
 }
 .tile .tl { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .35rem; }
-.tile .tl-chip {
-  font: 500 .85rem/1.35 var(--head); padding: .1rem .65rem; border-radius: 99px;
-  background: #fff; color: color-mix(in srgb, var(--tc) 55%, #0b2a4a); border: 1.5px solid var(--tc);
-  -webkit-font-smoothing: antialiased;
-}
 .lb-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin: 0 0 .6rem; }
 .lb-tags a { text-decoration: none; }
 .lb-tags:empty { display: none; }

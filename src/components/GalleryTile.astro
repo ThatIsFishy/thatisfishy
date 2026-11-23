@@ -16,7 +16,7 @@ const own = galleryLabelsOf(entry, await getGalleryLabels());
   <SourceBadge source={cover.source} />
   {count > 1 && <span class="count" aria-label={`${count} photos`}>{count} photos</span>}
   <span class="cap">
-    {own.length > 0 && <span class="tl">{own.map((l) => <span class="tl-chip" style={`--tc:${colorOf(l)}`}>{l.data.name}</span>)}</span>}
+    {own.length > 0 && <span class="tl">{own.map((l) => <span class="tag" data-c="" style={`--tc:${colorOf(l)}`}>{l.data.name}</span>)}</span>}
     {entry.data.title}
   </span>
 </a>
