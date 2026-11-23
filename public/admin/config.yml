@@ -36,6 +36,7 @@ collections:
         value_field: "{{slug}}"
         display_fields: [name]
         multiple: true
+        dropdown_threshold: 0
         required: false
         hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
@@ -83,6 +84,7 @@ collections:
         value_field: "{{slug}}"
         display_fields: [name]
         multiple: true
+        dropdown_threshold: 0
         required: false
         hint: "Pick one or more Gallery labels, or none (then the photo only shows under All). All photos in this entry share them. You can add a new label with Add Label."
       - label: Photos
