@@ -34,7 +34,6 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
         <figure class="lb-photo" id="lb-photo">
           <div class="lb-imgwrap">
             <img id="lb-img" alt="" />
-            <span id="lb-src"></span>
             <button class="lb-nav lb-prev" id="lb-prev" type="button" aria-label="Previous photo"><span aria-hidden="true">‹</span></button>
             <button class="lb-nav lb-next" id="lb-next" type="button" aria-label="Next photo"><span aria-hidden="true">›</span></button>
             <span class="lb-count" id="lb-count"></span>
@@ -89,7 +88,6 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
       img.alt = p.alt;
       img.src = p.src;
       img.dataset.src = p.source;
-      $('lb-src').innerHTML = badge(p.source);
       $('lb-srcline').innerHTML = badge(p.source, 'inline');
       $('lb-count').textContent = photos.length > 1 ? `${index + 1} / ${photos.length}` : '';
       lb.classList.toggle('single', photos.length < 2);
