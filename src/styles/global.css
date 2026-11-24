@@ -598,3 +598,12 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 .wip { display: flex; align-items: center; gap: .55rem; color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
 .wip strong { color: var(--ink); font-weight: 600; }
 .wip-logo { flex: none; width: 1.9rem; height: 1.9rem; color: var(--water); }
+
+/* Introduction text with headings, links and lists (written in the CMS like the Main text) */
+.lead h2, .lead h3 { color: var(--ink); margin: .9rem 0 .35rem; }
+.lead h2 { font-size: 1.45rem; }
+.lead h3 { font-size: 1.2rem; }
+.lead > :first-child { margin-top: 0; }
+.lead ul, .lead ol { margin: .2rem 0 .7rem; padding-left: 1.3rem; }
+.lead blockquote { margin: .4rem 0 .7rem; padding: .1rem 0 .1rem 1rem; border-left: 4px solid var(--sand); font-style: italic; }
+.lead blockquote p { margin: 0; }

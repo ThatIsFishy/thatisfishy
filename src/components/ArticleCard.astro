@@ -1,6 +1,6 @@
 ---
 import type { Guide, Label } from '../lib/content';
-import { labelsOf, colorOf, noticeOf, coverOf, hasTextNotice } from '../lib/content';
+import { labelsOf, colorOf, noticeOf, coverOf, hasTextNotice, plainText } from '../lib/content';
 import CardPhoto from './CardPhoto.astro';
 import CardWip from './CardWip.astro';
 
@@ -17,7 +17,7 @@ const inProgress = !notice && hasTextNotice(guide.body);
     {notice && <span class="tag">{notice === 'empty' ? 'Nothing here yet' : 'Coming soon'}</span>}
   </div>
   <h3>{guide.data.title}</h3>
-  <p>{guide.data.intro ?? guide.data.description}</p>
+  <p>{plainText(guide.data.intro ?? guide.data.description)}</p>
   {cover && <CardPhoto cover={cover} />}
   {inProgress && <CardWip />}
 </a>

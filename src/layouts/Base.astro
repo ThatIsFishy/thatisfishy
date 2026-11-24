@@ -12,11 +12,13 @@ import '@fontsource/lora/700.css';
 import SideBubbles from '../components/SideBubbles.astro';
 import Break1 from '../components/Break1.astro';
 import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, SHOW_RATING } from '../consts';
-import { getLabels, hasLabel, getGalleryLabels, hasGalleryLabel, colorOf, getAllPages } from '../lib/content';
+import { getLabels, hasLabel, getGalleryLabels, hasGalleryLabel, colorOf, getAllPages, plainText } from '../lib/content';
 
 // index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
 interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; }
-const { title, description = TAGLINE, noindex = false, index = false, kind = 'Page', image } = Astro.props;
+const { title, description: rawDescription = TAGLINE, noindex = false, index = false, kind = 'Page', image } = Astro.props;
+// The description may come from the Introduction text, which can hold headings and links: use plain text.
+const description = plainText(rawDescription) || TAGLINE;
 const fullTitle = title ? `${title} – ${SITE_NAME}` : `${SITE_NAME} – ${TAGLINE}`;
 const path = Astro.url.pathname;
 const canonical = new URL(path, SITE_URL).toString();

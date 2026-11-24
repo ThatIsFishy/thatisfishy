@@ -121,3 +121,27 @@ export async function coverBodyHtml(cover?: Cover): Promise<string> {
 // "In progress": the Main text has at least one inserted Coming soon / Nothing here yet card
 // (the Insert buttons write {{notice:coming}} or {{notice:empty}}).
 export const hasTextNotice = (body?: string) => /\{\{notice:(coming|empty)\b/.test(body ?? '');
+
+// ----- The introduction text (written with the same kind of editor as the Main text) -----
+// As HTML for the heading of a page (headings, bold, italic, links and lists work).
+let introMd: Awaited<ReturnType<typeof createMarkdownProcessor>> | undefined;
+export async function introHtml(text?: string): Promise<string> {
+  const t = String(text ?? '').trim();
+  if (!t) return '';
+  introMd ??= await createMarkdownProcessor();
+  return (await introMd.render(t)).code;
+}
+// As plain text, for the cards, search engines and share previews (no #, *, link addresses).
+// Only the first paragraph is used (headings and lists further down are left out).
+export function plainText(text?: string): string {
+  const first = String(text ?? '').split(/\n\s*\n/).map((b) => b.trim()).find((b) => b && !/^#{1,6}\s/.test(b)) ?? '';
+  return first
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, '')            // images
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')         // [text](link) -> text
+    .replace(/^\s{0,3}#{1,6}\s+/gm, '')              // headings
+    .replace(/^\s{0,3}>\s?/gm, '')                   // quotes
+    .replace(/^\s*([-*+]|\d+\.)\s+/gm, '')           // list markers
+    .replace(/(\*\*|__|\*|_|`)/g, '')                // bold, italic, code
+    .replace(/\s*\n\s*/g, ' ')
+    .trim();
+}

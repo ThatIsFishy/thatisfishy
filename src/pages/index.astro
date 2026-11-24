@@ -9,7 +9,7 @@ import Break3 from '../components/Break3.astro';
 import GalleryRow from '../components/GalleryRow.astro';
 import Notices from '../components/Notices.astro';
 import HeadPhoto from '../components/HeadPhoto.astro';
-import { getLabels, getPage, coverOf } from '../lib/content';
+import { getLabels, getPage, coverOf, introHtml } from '../lib/content';
 import { TAGLINE } from '../consts';
 
 type Dated = { data: { date: Date } };
@@ -18,7 +18,7 @@ const labels = await getLabels();
 const articles = (await getCollection('guides')).sort(newest).slice(0, 8);
 const stories = (await getCollection('journal')).sort(newest).slice(0, 8);
 const { data } = await getPage('home');
-const intro = String(data.intro ?? '').trim();
+const intro = await introHtml(data.intro);
 const cover = coverOf(data);
 ---
 <Base description={data.description ?? data.intro ?? TAGLINE} image={cover?.image}>
@@ -26,7 +26,7 @@ const cover = coverOf(data);
     <h1>{data.title}</h1>
     <div class:list={['head', { 'has-photo': cover }]}>
       <div class="head-text">
-        {intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+        {intro && <div class="lead" set:html={intro} />}
         <div class="actions">
           <a class="btn" href="/knowledge-center/">Knowledge Center</a>
           <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>

@@ -23,7 +23,7 @@ collections:
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title (and on the cards). The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title (and on the cards). The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: true, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
@@ -76,7 +76,7 @@ collections:
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title (and on the cards). The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title (and on the cards). The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: true, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
@@ -121,7 +121,7 @@ collections:
     fields:
       - { label: Title, name: title, widget: string }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title. The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: true, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. The Gallery is sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
@@ -185,7 +185,7 @@ collections:
       - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour." }
       - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu and on the chips." }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title. The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: false, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Only shown when the switch above is on." }
       - label: Heading photo
@@ -229,7 +229,7 @@ collections:
       - { label: Colour, name: color, widget: color, default: "#1596e0", allowInput: true, hint: "Pick any colour." }
       - { label: Menu order, name: order, widget: number, value_type: int, default: 50, hint: "Lower numbers come first in the menu and on the chips." }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title. The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title. The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: false, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Only shown when the switch above is on." }
       - label: Heading photo
@@ -290,7 +290,7 @@ collections:
       - { label: Header position, name: position, widget: number, value_type: int, default: 100, hint: "Used when the link shows in the header. Lower numbers come first. Now: Knowledge Center 20, Fishy Stories 30, Gallery 40, Shop Finder 50, About 60. 100 puts it last." }
       - { label: Footer position, name: footerPosition, widget: number, value_type: int, default: 100, hint: "Used when the link shows in the footer. Lower numbers come first. Now: About 10, Contact 20, Rating System 30, Ground rules 40, Privacy 50. 100 puts it last." }
       - { label: Short description (for search engines), name: description, widget: text, required: false, hint: "Optional. The grey text Google shows. If you leave it empty, the Introduction text is used." }
-      - { label: Introduction text, name: intro, widget: text, required: false, hint: "Shown under the title (and on the cards). The line with a bubble comes right after it." }
+      - { label: Introduction text, name: intro, widget: markdown, required: false, buttons: [heading-two, heading-three, bold, italic, link, bulleted-list, numbered-list, quote], editor_components: [], hint: "Shown under the title (and on the cards). The line with a bubble comes right after it. You can use headings, bold, italic, links and lists." }
       - { label: Show the published date, name: showDate, widget: boolean, default: false, required: false, hint: "Switch on to show Published under the title." }
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }

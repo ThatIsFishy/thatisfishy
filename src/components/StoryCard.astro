@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 
-import { noticeOf, coverOf, hasTextNotice } from '../lib/content';
+import { noticeOf, coverOf, hasTextNotice, plainText } from '../lib/content';
 import CardPhoto from './CardPhoto.astro';
 import CardWip from './CardWip.astro';
 
@@ -15,7 +15,7 @@ const inProgress = !notice && hasTextNotice(story.body);
   <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span>
     {notice && <span class="tag">{notice === 'empty' ? 'Nothing here yet' : 'Coming soon'}</span>}</div>
   <h3>{story.data.title}</h3>
-  {(story.data.intro ?? story.data.description) && <p>{story.data.intro ?? story.data.description}</p>}
+  {(story.data.intro ?? story.data.description) && <p>{plainText(story.data.intro ?? story.data.description)}</p>}
   {cover && <CardPhoto cover={cover} />}
   {inProgress && <CardWip />}
 </a>

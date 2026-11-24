@@ -1,7 +1,7 @@
 ---
 import { render } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
-import { fmtDate, getGalleryLabels, galleryLabelsOf, colorOf } from '../lib/content';
+import { fmtDate, getGalleryLabels, galleryLabelsOf, colorOf, introHtml } from '../lib/content';
 import { SOURCES } from '../consts';
 
 // The big-photo view, shared by the Gallery page and the Gallery label pages.
@@ -10,20 +10,20 @@ interface Props { items: CollectionEntry<'gallery'>[]; }
 const { items } = Astro.props;
 // Render each explanation now, so the page can show it instantly on a click.
 const allLabels = await getGalleryLabels();
-const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (await render(entry)).Content })));
+const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (await render(entry)).Content, intro: await introHtml(entry.data.intro) })));
 ---
 <!-- Hidden copies of every explanation; the script copies one into the big-photo view. -->
     <div hidden id="store" data-sources={JSON.stringify(SOURCES)}>
-      {details.map(({ entry, Body }) => (
+      {details.map(({ entry, Body, intro }) => (
         <article
           data-for={entry.id}
           data-title={entry.data.title}
           data-published={entry.data.showDate !== false ? fmtDate(entry.data.date) : ''}
           data-labels={JSON.stringify(galleryLabelsOf(entry, allLabels).map((l) => ({ id: l.id, name: l.data.name, color: colorOf(l) })))}
           data-updated={entry.data.showUpdated !== false && entry.data.updated ? fmtDate(entry.data.updated) : ''}
-          data-intro={entry.data.intro ?? ''}
           data-photos={JSON.stringify(entry.data.photos.map((p) => ({ src: p.image, alt: p.alt, source: p.source ?? '', credit: p.credit ?? '' })))}
         >
+          <div class="intro-src" set:html={intro} />
           <div class="prose"><Body /></div>
         </article>
       ))}
@@ -44,7 +44,7 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
           <button class="lb-close" id="lb-close" type="button" aria-label="Close photo">×</button>
           <h2 id="lb-title"></h2>
           <p class="src-line" id="lb-srcline"></p>
-          <p class="lead" id="lb-intro"></p>
+          <div class="lead" id="lb-intro"></div>
           <p class="dates" id="lb-dates"></p>
           <div class="tags lb-tags" id="lb-tags"></div>
           <div class="brk1" aria-hidden="true"><span class="ln ln1"></span><svg class="bub lg"><use href="#bub" /></svg><span class="ln ln2"></span></div>
@@ -116,7 +116,7 @@ const details = await Promise.all(items.map(async (entry) => ({ entry, Body: (aw
       index = 0;
       $('lb-title').textContent = source.dataset.title ?? '';
       $('lb-dates').textContent = [source.dataset.published && `Published ${source.dataset.published}`, source.dataset.updated && `Updated ${source.dataset.updated}`].filter(Boolean).join(' · ');
-      $('lb-intro').textContent = source.dataset.intro ?? '';
+      $('lb-intro').innerHTML = source.querySelector('.intro-src')?.innerHTML ?? '';
       const tags = $('lb-tags');
       tags.replaceChildren();
       for (const l of JSON.parse(source.dataset.labels ?? '[]') as { id: string; name: string; color: string }[]) {

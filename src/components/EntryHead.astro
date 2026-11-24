@@ -1,5 +1,5 @@
 ---
-import { fmtDate, colorOf, noticeOf, coverOf, hasTextNotice, type Label, type GalleryLabel } from '../lib/content';
+import { fmtDate, colorOf, noticeOf, coverOf, hasTextNotice, introHtml, type Label, type GalleryLabel } from '../lib/content';
 import HeadPhoto from './HeadPhoto.astro';
 import Break1 from './Break1.astro';
 import ComingSoon from './ComingSoon.astro';
@@ -19,7 +19,7 @@ interface Props {
 }
 const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/', body = '' } = Astro.props;
 const notice = noticeOf(data, noticeFallback);
-const intro = String(data.intro ?? '').trim();
+const intro = await introHtml(data.intro);
 const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
 const updated = (data.showUpdated ?? true) && data.updated ? fmtDate(data.updated) : '';
 const cover = coverOf(data);
@@ -29,7 +29,7 @@ const dateLine = [published && `Published ${published}`, updated && `Updated ${u
 ---
 <div class:list={['head', { 'has-photo': cover }]}>
   <div class="head-text">
-    {intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+    {intro && <div class="lead" set:html={intro} />}
     {(published || updated) && (
       <p class="dates" data-pagefind-ignore>
         {published && <span>Published {published}</span>}
