@@ -1,5 +1,5 @@
 ---
-title: Learning the aquarium hobby, out loud.
+title: Welcome
 menu: none
 position: 10
 footerPosition: 100
