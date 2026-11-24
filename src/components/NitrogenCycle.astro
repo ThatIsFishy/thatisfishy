@@ -197,13 +197,17 @@ const { foldable = true, articleLink = true } = Astro.props;
   });
 
   // ---------- idea 3: "Is my tank ready?" ----------
+  // The rules, from top to bottom (the first that fits is shown):
+  //   all 0 -> not started · ammonia, no nitrite -> cycling starts · ammonia + nitrite -> first bacteria
+  //   no ammonia, nitrite 1 or more -> nitrite peak · no ammonia, nitrite below 1 -> almost there
+  //   no ammonia, no nitrite, some nitrate -> fully cycled (do the last check first)
   function verdict(a, n, t) {
     if (a === 0 && n === 0 && t === 0) return ['start', 'Not started yet', 'There is nothing to work with yet. Add an ammonia source (for example a pinch of fish food), then test again in 2 to 3 days.'];
     if (a > 0 && n === 0) return ['wait', 'Cycling starts: waiting for the first bacteria', 'Ammonia is there, but nothing is eating it yet. This is normal at the start. Keep the ammonia source going and test again in 2 to 3 days.'];
     if (a > 0 && n > 0) return ['wait', 'First bacteria at work', 'Ammonia is being turned into nitrite. Keep the ammonia source going and test again in 2 to 3 days. Not ready for fish yet.'];
-    if (a === 0 && n > 0) return ['wait', 'Nitrite peak or almost there: waiting for nitrite to drop', 'Ammonia is handled. Now the second bacteria need time. Keep the ammonia source going. ' + (n >= 5 ? 'Nitrite is very high: a 30–50% water change can help it move again. ' : '') + 'Test again in 2 to 3 days.'];
-    if (t > 20) return ['go', 'Fully cycled: do a big water change first', 'Ammonia and nitrite are 0. Do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Then do a big water change so nitrate is under 20 ppm, and add your first few fish.'];
-    return ['go', 'Fully cycled: ready for your first fish', 'Ammonia and nitrite are 0 and nitrate is low. If you did not yet, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Add a few fish, not all at once, and keep testing the first weeks.'];
+    if (n >= 1) return ['wait', 'Nitrite peak', 'Ammonia is handled and nitrite is high. That is normal: the second bacteria need time. Keep the ammonia source going and test again in 2 to 3 days.'];
+    if (n > 0) return ['wait', 'Almost there', 'Ammonia is handled and nitrite is low. Keep the ammonia source going and test again in 2 to 3 days. When nitrite reaches 0, do the last check.'];
+    return ['go', 'Fully cycled', 'Ammonia and nitrite are 0. Do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your fish can move in. Add a few, not all at once, and keep testing the first weeks.'];
   }
   document.querySelectorAll('[data-checker]').forEach((box) => {
     const field = (id, label, dot, ph) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><input data-k="${id}" type="text" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="${ph}" /></label>`;
