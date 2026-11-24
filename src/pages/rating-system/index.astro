@@ -2,7 +2,7 @@
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
-import { getPage, noticeOf } from '../../lib/content';
+import { getPage, noticeOf, coverOf } from '../../lib/content';
 import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 
 // If the Rating System is switched off in consts.ts, send visitors to the home page.
@@ -13,7 +13,7 @@ const { data, Content, hasBody } = await getPage('rating-system');
 const fallback = RATING_COMING_SOON ? 'coming' : undefined;
 const notice = noticeOf(data, fallback);
 ---
-<Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Page">
+<Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Page" image={coverOf(data)?.image}>
   <div class="column">
     <h1>{data.title}</h1>
     <EntryHead data={data} noticeFallback={fallback} noticeMessage="The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon." />

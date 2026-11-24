@@ -8,6 +8,18 @@ const blank = (v: unknown) => (v === null || v === '' ? undefined : v);
 const optionalDate = z.preprocess(blank, z.coerce.date().optional());
 const optionalText = z.preprocess(blank, z.string().optional());
 const optionalBool = z.preprocess(blank, z.boolean().optional());
+// The heading photo: one photo on the right of the heading (and at the bottom of the cards).
+// Every part is optional; without a photo nothing shows. The intro and main text are the photo's own,
+// shown in the big photo view when someone clicks it.
+const cover = z.preprocess(blank, z.object({
+  image: optionalText,
+  alt: optionalText,
+  source: z.preprocess(blank, z.enum(['own', 'ai', 'external']).optional()),
+  credit: optionalText,
+  intro: optionalText,
+  body: optionalText,
+}).optional());
+
 // The same fields on pages, articles and stories (see the CMS form order):
 // title, search description, intro, dates, notice (none / coming soon / nothing here yet), message.
 const shared = {
@@ -16,6 +28,7 @@ const shared = {
   showDate: optionalBool,               // show "Published ..." under the title
   showUpdated: optionalBool,            // show "Updated ..." under the title
   updated: optionalDate,
+  cover,                                // the heading photo
   notice: z.preprocess(blank, z.enum(['none', 'coming', 'empty']).optional()),
   comingSoon: optionalBool,             // older switch, still understood
   comingSoonMessage: optionalText,      // the sentence on the notice card
@@ -34,6 +47,7 @@ const labelFields = {
   intro: optionalText,                  // the introduction text under the title
   showDate: optionalBool,               // show "Published ..." under the title
   date: optionalDate,
+  cover,                                // the heading photo
   notice: z.preprocess(blank, z.enum(['none', 'coming', 'empty']).optional()),
   comingSoonMessage: optionalText,      // the sentence on the notice card
 };

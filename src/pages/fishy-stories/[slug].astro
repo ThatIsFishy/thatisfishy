@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
-import { noticeOf } from '../../lib/content';
+import { noticeOf, coverOf } from '../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getCollection('journal');
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
-<Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Story">
+<Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Story" image={coverOf(entry.data)?.image}>
   <div class="column">
     <p class="back" data-pagefind-ignore><a href="/fishy-stories/">← All Fishy Stories</a></p>
     <h1>{entry.data.title}</h1>

@@ -4,14 +4,14 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import ArticleCard from '../../components/ArticleCard.astro';
-import { getLabels, getPage, hasLabel, colorOf, noticeOf } from '../../lib/content';
+import { getLabels, getPage, hasLabel, colorOf, noticeOf, coverOf } from '../../lib/content';
 
 const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
 const { data, Content, hasBody } = await getPage('knowledge-center');
 const notice = noticeOf(data);
 ---
-<Base title={data.title} description={data.description ?? data.intro}>
+<Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
   <div class="filters s-filters kc-filters" role="group" aria-label="Filter articles by label">

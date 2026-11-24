@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import EntryHead from '../components/EntryHead.astro';
 import MainText from '../components/MainText.astro';
-import { getPage, noticeOf, getNewPages } from '../lib/content';
+import { getPage, noticeOf, getNewPages, coverOf } from '../lib/content';
 
 // Every page that has no file of its own (About, Ground rules, Privacy and the pages made in the CMS).
 // Each one reads its text from src/content/pages/<id>.md
@@ -13,7 +13,7 @@ const { id } = Astro.props;
 const { data, Content, hasBody } = await getPage(id);
 const notice = noticeOf(data);
 ---
-<Base title={data.title} description={data.description ?? data.intro} index kind="Page">
+<Base title={data.title} description={data.description ?? data.intro} index kind="Page" image={coverOf(data)?.image}>
   <div class="column">
     <h1>{data.title}</h1>
     <EntryHead data={data} />

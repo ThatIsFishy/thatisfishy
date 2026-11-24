@@ -4,14 +4,14 @@ import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import GalleryTile from '../../components/GalleryTile.astro';
 import GalleryLightbox from '../../components/GalleryLightbox.astro';
-import { getGallery, getGalleryLabels, hasGalleryLabel, getPage, noticeOf, colorOf } from '../../lib/content';
+import { getGallery, getGalleryLabels, hasGalleryLabel, getPage, noticeOf, colorOf, coverOf } from '../../lib/content';
 
 const items = await getGallery();
 const labels = await getGalleryLabels();
 const { data, Content, hasBody } = await getPage('gallery');
 const notice = noticeOf(data);
 ---
-<Base title={data.title} description={data.description ?? data.intro}>
+<Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
   <h1>{data.title}</h1>
   <EntryHead data={data} />
   {items.length === 0 ? null : (

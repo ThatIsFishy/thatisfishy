@@ -99,3 +99,21 @@ export async function getGallery() {
   const items = await getCollection('gallery');
   return items.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || a.data.title.localeCompare(b.data.title));
 }
+
+// ----- The heading photo (the "Heading photo" group in the CMS) -----
+export type Cover = { image: string; alt: string; source?: 'own' | 'ai' | 'external'; credit?: string; intro?: string; body?: string };
+// The heading photo of a page, article, story or label, or nothing when no photo is picked.
+// An empty alt text falls back to the title.
+export function coverOf(data: any): Cover | undefined {
+  const c = data?.cover;
+  if (!c?.image) return undefined;
+  return { ...c, alt: c.alt || data.title || data.name || '' };
+}
+// The photo's own main text, turned into HTML (same rules as the Main text).
+let md: Awaited<ReturnType<typeof createMarkdownProcessor>> | undefined;
+export async function coverBodyHtml(cover?: Cover): Promise<string> {
+  const text = cover?.body?.trim();
+  if (!text) return '';
+  md ??= await createMarkdownProcessor({ remarkPlugins: [remarkPhotos] });
+  return (await md.render(text)).code;
+}

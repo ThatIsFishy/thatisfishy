@@ -1,0 +1,13 @@
+---
+import SourceBadge from './SourceBadge.astro';
+import type { Cover } from '../lib/content';
+
+// The cover photo at the bottom of an article or story card: the heading photo, smaller,
+// with the frame in the source colour and the source label. It is part of the card link (no big view here).
+interface Props { cover: Cover; }
+const { cover } = Astro.props;
+---
+<span class="card-pw"><span class="card-photo" data-src={cover.source}>
+  <img src={cover.image} alt="" loading="lazy" decoding="async" />
+  <SourceBadge source={cover.source} />
+</span></span>

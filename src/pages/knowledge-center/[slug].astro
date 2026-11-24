@@ -3,7 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
-import { getLabels, labelsOf, noticeOf } from '../../lib/content';
+import { getLabels, labelsOf, noticeOf, coverOf } from '../../lib/content';
 
 export async function getStaticPaths() {
   const guides = await getCollection('guides');
@@ -13,7 +13,7 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 const own = labelsOf(entry, await getLabels());
 ---
-<Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Article">
+<Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Article" image={coverOf(entry.data)?.image}>
   <div class="column">
     <p class="back" data-pagefind-ignore><a href="/knowledge-center/">← Knowledge Center</a></p>
     <h1>{entry.data.title}</h1>

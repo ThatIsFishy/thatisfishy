@@ -298,10 +298,10 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
 .lb-inner { display: flex; gap: 1.2rem; align-items: flex-start; justify-content: center; width: 100%; }
 .lb-photo { margin: 0; flex: none; }
 .lb-imgwrap { position: relative; line-height: 0; }
-.lb-imgwrap #lb-img { display: block; height: auto; max-height: 86vh; object-fit: contain; border-radius: 10px; border: 3px solid var(--line); background: var(--surface); }
-.lb-imgwrap #lb-img[data-src="own"] { border-color: var(--src-own); }
-.lb-imgwrap #lb-img[data-src="ai"] { border-color: var(--src-ai); }
-.lb-imgwrap #lb-img[data-src="external"] { border-color: var(--src-external); }
+.lb-imgwrap #lb-img, .lb-imgwrap .lb-img { display: block; height: auto; max-height: 86vh; object-fit: contain; border-radius: 10px; border: 3px solid var(--line); background: var(--surface); }
+.lb-imgwrap #lb-img[data-src="own"], .lb-imgwrap .lb-img[data-src="own"] { border-color: var(--src-own); }
+.lb-imgwrap #lb-img[data-src="ai"], .lb-imgwrap .lb-img[data-src="ai"] { border-color: var(--src-ai); }
+.lb-imgwrap #lb-img[data-src="external"], .lb-imgwrap .lb-img[data-src="external"] { border-color: var(--src-external); }
 .lb-nav {
   position: absolute; top: 0; bottom: 0; width: 28%; border: 0; background: none; cursor: pointer;
   color: #fff; font: 400 3rem/1 var(--head); display: flex; align-items: center; opacity: .0; transition: opacity .15s;
@@ -479,7 +479,7 @@ strong, b { font-weight: 600; }
 /* Home page intro: a slightly darker blue band across the whole page width */
 .band { background: color-mix(in srgb, var(--water) 11%, var(--bg)); padding: 2rem 1.2rem; box-shadow: 0 0 0 100vmax color-mix(in srgb, var(--water) 11%, var(--bg)); clip-path: inset(0 -100vmax); }
 .band > h1 { margin-top: 0; }
-.band > .actions { margin-bottom: 0; }
+.band > .actions, .band .head-text > .actions:last-child { margin-bottom: 0; }
 
 /* Dropdown: the bubble in the label colour */
 nav.main .sub a::before {
@@ -552,3 +552,43 @@ footer.site .brk1 { margin: 0 0 1.5rem; }
   :root:not([data-theme="light"]) .btn.alt:hover { box-shadow: 0 7px 0 var(--be); }
   :root:not([data-theme="light"]) .btn.alt:active { box-shadow: 0 1px 0 var(--be); }
 }
+
+/* ===== Heading photo: on the right of the heading, between the title and the line with a bubble ===== */
+.head.has-photo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.6rem; align-items: start; }
+.head.has-photo .lead { max-width: none; }
+.head-photo { margin: .3rem 0 0; max-width: 22rem; width: 100%; justify-self: end; }
+.hp-btn {
+  position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; overflow: hidden; cursor: zoom-in;
+  border-radius: 12px; border: 3px solid var(--line); background: var(--surface);
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s;
+}
+.hp-btn img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hp-btn[data-src="own"] { border-color: var(--src-own); }
+.hp-btn[data-src="ai"] { border-color: var(--src-ai); }
+.hp-btn[data-src="external"] { border-color: var(--src-external); }
+/* A bit more than the cards, so it is clear the photo opens */
+.hp-btn:hover, .hp-btn:focus-visible { transform: translateY(-4px) scale(1.03); box-shadow: 0 14px 28px color-mix(in srgb, var(--water) 32%, transparent); }
+.hp-credit { font-size: .8rem; color: var(--muted); margin: .45rem 0 0; overflow-wrap: anywhere; }
+/* Phone: the photo goes full width under the introduction, dates and labels */
+@media (max-width: 44rem) {
+  .head.has-photo { grid-template-columns: 1fr; gap: .4rem; }
+  .head-photo { max-width: none; justify-self: stretch; }
+}
+@media (prefers-reduced-motion: reduce) { .hp-btn { transition: none; } .hp-btn:hover, .hp-btn:focus-visible { transform: none; } }
+
+/* ===== Cover photo at the bottom of the article and story cards ===== */
+a.card:has(.card-photo) { display: flex; flex-direction: column; }
+.card-pw { display: block; margin-top: auto; padding-top: .9rem; }   /* pushes the photo to the bottom of the card */
+.card-photo {
+  position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden;
+  border-radius: 10px; border: 2px solid var(--line); background: var(--bg);
+}
+.card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card-photo[data-src="own"] { border-color: var(--src-own); }
+.card-photo[data-src="ai"] { border-color: var(--src-ai); }
+.card-photo[data-src="external"] { border-color: var(--src-external); }
+.card-photo .src { top: .4rem; left: .4rem; font-size: .7rem; }
+/* Cards keep their own height: the tops in a row line up, a card without a photo does not stretch
+   to match a card with a photo next to it. The next row starts under the tallest card. */
+.grid > a.card { align-self: start; }
+.grid.three .rec-item:has(> a.card) { align-self: start; }

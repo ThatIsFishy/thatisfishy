@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
-import { getPage, noticeOf } from '../../lib/content';
+import { getPage, noticeOf, coverOf } from '../../lib/content';
 import { SHOW_SHOPS, SHOPS_COMING_SOON, SHOW_RATING } from '../../consts';
 
 // If Shop Finder is switched off in consts.ts, send visitors to the home page.
@@ -17,7 +17,7 @@ const { data, Content, hasBody } = await getPage('shops');
 const fallback = SHOPS_COMING_SOON ? 'coming' : undefined;
 const notice = noticeOf(data, fallback);
 ---
-<Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Shop Finder">
+<Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Shop Finder" image={coverOf(data)?.image}>
   {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <EntryHead data={data} noticeFallback={fallback} noticeMessage="A hand-picked list of local aquarium shops, to help you find where to buy. I don’t sell anything here. It isn’t ready yet, so check back soon." />

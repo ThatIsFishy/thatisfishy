@@ -1,0 +1,96 @@
+---
+import SourceBadge from './SourceBadge.astro';
+import { coverBodyHtml, type Cover } from '../lib/content';
+
+// The heading photo on the right of the heading, and its big view (opens on a click).
+// The big view has the same look as the Gallery one: the photo on the left, a text box on the right with
+// the page title, the source, the photo's own introduction, the page's dates and labels (only when the page
+// shows them), the line with a bubble, the photo's own main text and the credit.
+interface Props {
+  cover: Cover;
+  title: string;
+  dates?: string;                                   // "Published … · Updated …", as on the page
+  labels?: { name: string; color: string; href: string }[];
+}
+const { cover, title, dates = '', labels = [] } = Astro.props;
+const bodyHtml = await coverBodyHtml(cover);
+const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
+---
+<div class="head-photo">
+  <button class="hp-btn" type="button" data-src={cover.source} aria-haspopup="dialog" aria-label={`Show the photo bigger: ${cover.alt}`} data-hp-open>
+    <img src={cover.image} alt={cover.alt} decoding="async" />
+    <SourceBadge source={cover.source} />
+  </button>
+  {cover.credit && <p class="hp-credit" data-pagefind-ignore>Credit: {isLink ? <a href={cover.credit} rel="noopener">{cover.credit}</a> : cover.credit}</p>}
+</div>
+
+<div class="lb single" hidden role="dialog" aria-modal="true" aria-labelledby="hp-title" data-hp data-pagefind-ignore>
+  <div class="lb-inner">
+    <figure class="lb-photo">
+      <div class="lb-imgwrap">
+        <img class="lb-img" data-src={cover.source} src={cover.image} alt={cover.alt} loading="lazy" decoding="async" />
+      </div>
+    </figure>
+    <aside class="lb-text">
+      <button class="lb-close" type="button" aria-label="Close photo" data-hp-close>×</button>
+      <h2 id="hp-title">{title}</h2>
+      {cover.source && <p class="src-line"><SourceBadge source={cover.source} inline /></p>}
+      {cover.intro && <div class="lead">{cover.intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+      {dates && <p class="dates">{dates}</p>}
+      {labels.length > 0 && (
+        <div class="tags lb-tags">
+          {labels.map((l) => <a class="tag" data-c="" style={`--tc:${l.color}`} href={l.href}>{l.name}</a>)}
+        </div>
+      )}
+      <div class="brk1" aria-hidden="true"><span class="ln ln1"></span><svg class="bub lg"><use href="#bub" /></svg><span class="ln ln2"></span></div>
+      {bodyHtml && <div class="prose" set:html={bodyHtml} />}
+      {cover.credit && <p class="credit">Credit: {isLink ? <a href={cover.credit} rel="noopener">{cover.credit}</a> : cover.credit}</p>}
+    </aside>
+  </div>
+</div>
+
+<script>
+  const lb = document.querySelector<HTMLElement>('[data-hp]');
+  const openBtn = document.querySelector<HTMLElement>('[data-hp-open]');
+  if (lb && openBtn) {
+    const img = lb.querySelector<HTMLImageElement>('.lb-img')!;
+    const closeBtn = lb.querySelector<HTMLElement>('[data-hp-close]')!;
+
+    // Same size rule as the Gallery: about half the page width, never more than fits the screen.
+    function size() {
+      if (lb!.hidden || !img.naturalWidth) return;
+      const r = img.naturalWidth / img.naturalHeight;
+      const W = innerWidth, H = innerHeight;
+      const w = W > 960 ? Math.min(W * 0.5, H * 0.86 * r, W - 24 * 16 - 80) : Math.min(W - 32, H * 0.6 * r);
+      img.style.width = `${Math.max(w, 200)}px`;
+    }
+    img.addEventListener('load', size);
+    addEventListener('resize', size);
+
+    function open() {
+      lb!.hidden = false;
+      img.loading = 'eager';
+      size();
+      document.documentElement.classList.add('lb-open');
+      closeBtn.focus();
+    }
+    function close() {
+      lb!.hidden = true;
+      document.documentElement.classList.remove('lb-open');
+      openBtn!.focus();
+    }
+    openBtn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    lb.addEventListener('click', (e) => { const t = e.target as HTMLElement; if (t === lb || t.classList.contains('lb-inner')) close(); });
+    document.addEventListener('keydown', (e) => {
+      if (lb!.hidden) return;
+      if (e.key === 'Escape') close();
+      else if (e.key === 'Tab') {                  // keep the keyboard focus inside the view
+        const f = [...lb!.querySelectorAll<HTMLElement>('button, a[href]')].filter((el) => el.offsetParent !== null);
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
+    });
+  }
+</script>

@@ -4,7 +4,7 @@ import Base from '../../../layouts/Base.astro';
 import EntryHead from '../../../components/EntryHead.astro';
 import MainText from '../../../components/MainText.astro';
 import ArticleCard from '../../../components/ArticleCard.astro';
-import { getLabels, hasLabel, noticeOf, colorOf } from '../../../lib/content';
+import { getLabels, hasLabel, noticeOf, colorOf, coverOf } from '../../../lib/content';
 
 export async function getStaticPaths() {
   const labels = await getLabels();
@@ -28,7 +28,7 @@ const head = guides.length > 0 ? { ...label.data, notice: 'none' } : label.data;
 const notice = noticeOf(head);
 const description = label.data.description ?? label.data.intro ?? `Beginner articles about ${label.data.name.toLowerCase()}.`;
 ---
-<Base title={label.data.name} description={description}>
+<Base title={label.data.name} description={description} image={coverOf(label.data)?.image}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1 class="label-title" style={`--tc:${colorOf(label)}`}>{label.data.name}</h1>
   <EntryHead data={head} />

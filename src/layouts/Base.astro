@@ -71,6 +71,8 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={SITE_NAME} />
+    {image && <meta property="og:image" content={new URL(image, SITE_URL).toString()} />}
+    {image && <meta name="twitter:card" content="summary_large_image" />}
     <script is:inline>
       try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     </script>

@@ -1,10 +1,12 @@
 ---
-import { fmtDate, colorOf, noticeOf, type Label, type GalleryLabel } from '../lib/content';
+import { fmtDate, colorOf, noticeOf, coverOf, type Label, type GalleryLabel } from '../lib/content';
+import HeadPhoto from './HeadPhoto.astro';
 import Break1 from './Break1.astro';
 import ComingSoon from './ComingSoon.astro';
 
 // Everything between the title and the main text, in the same order on every page, article and story:
 //   introduction, "Published · Updated", labels, the line with a bubble, the notice card.
+// With a heading photo, the introduction, dates and labels sit on the left and the photo on the right.
 interface Props {
   data: any;                       // the page / article / story fields
   labels?: (Label | GalleryLabel)[];                // the article's labels (articles only)
@@ -18,19 +20,26 @@ const notice = noticeOf(data, noticeFallback);
 const intro = String(data.intro ?? '').trim();
 const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
 const updated = (data.showUpdated ?? true) && data.updated ? fmtDate(data.updated) : '';
+const cover = coverOf(data);
+const dateLine = [published && `Published ${published}`, updated && `Updated ${updated}`].filter(Boolean).join(' · ');
 ---
-{intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
-{(published || updated) && (
-  <p class="dates" data-pagefind-ignore>
-    {published && <span>Published {published}</span>}
-    {published && updated && <span class="sep" aria-hidden="true"> · </span>}
-    {updated && <span>Updated {updated}</span>}
-  </p>
-)}
-{labels.length > 0 && (
-  <div class="tags">
-    {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`${labelBase}${l.id}/`}>{l.data.name}</a>)}
+<div class:list={['head', { 'has-photo': cover }]}>
+  <div class="head-text">
+    {intro && <div class="lead">{intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+    {(published || updated) && (
+      <p class="dates" data-pagefind-ignore>
+        {published && <span>Published {published}</span>}
+        {published && updated && <span class="sep" aria-hidden="true"> · </span>}
+        {updated && <span>Updated {updated}</span>}
+      </p>
+    )}
+    {labels.length > 0 && (
+      <div class="tags">
+        {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`${labelBase}${l.id}/`}>{l.data.name}</a>)}
+      </div>
+    )}
   </div>
-)}
+  {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}
+</div>
 <Break1 />
 {notice && <ComingSoon kind={notice} message={data.comingSoonMessage ?? noticeMessage} recommend />}
