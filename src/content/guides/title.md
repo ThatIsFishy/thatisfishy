@@ -13,4 +13,4 @@ notice: none
 comingSoonMessage: ''
 ---
 
-Main
+Main{{notice:coming|notice message}}
