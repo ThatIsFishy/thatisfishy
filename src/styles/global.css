@@ -363,9 +363,10 @@ html.lb-open { overflow: hidden; }
 .search-btn:hover, .search-btn[aria-expanded="true"] { color: var(--ink); background: var(--surface); }
 /* The header and search bar sit together in .top, which does the sticking */
 .top { position: sticky; top: 0; z-index: 5; }
-header.site { position: relative; z-index: auto; }
+/* The header (with its dropdown menus) sits above the search bar, so a dropdown always opens over it */
+header.site { position: relative; z-index: 2; }
 .searchbar {
-  position: absolute; left: 0; right: 0; top: 100%;
+  position: absolute; left: 0; right: 0; top: 100%; z-index: 1;
   background: color-mix(in srgb, var(--bg) 70%, transparent);
   -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--line); box-shadow: 0 12px 24px rgb(7 26 46 / .12);
