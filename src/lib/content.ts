@@ -64,7 +64,7 @@ export async function getPage(id: string) {
   const entry: any = await getEntry('pages', id);
   if (!entry) throw new Error(`Missing page: src/content/pages/${id}.md`);
   const { Content } = await render(entry);
-  return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()) };
+  return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()), body: String(entry.body ?? '') };
 }
 
 // Pages that have their own file in src/pages (they are not made by [page].astro).
@@ -117,3 +117,7 @@ export async function coverBodyHtml(cover?: Cover): Promise<string> {
   md ??= await createMarkdownProcessor({ remarkPlugins: [remarkPhotos] });
   return (await md.render(text)).code;
 }
+
+// "In progress": the Main text has at least one inserted Coming soon / Nothing here yet card
+// (the Insert buttons write {{notice:coming}} or {{notice:empty}}).
+export const hasTextNotice = (body?: string) => /\{\{notice:(coming|empty)\b/.test(body ?? '');

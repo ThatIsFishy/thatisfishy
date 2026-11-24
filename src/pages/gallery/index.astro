@@ -8,12 +8,12 @@ import { getGallery, getGalleryLabels, hasGalleryLabel, getPage, noticeOf, color
 
 const items = await getGallery();
 const labels = await getGalleryLabels();
-const { data, Content, hasBody } = await getPage('gallery');
+const { data, Content, hasBody, body } = await getPage('gallery');
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
   <h1>{data.title}</h1>
-  <EntryHead data={data} />
+  <EntryHead data={data} body={body} />
   {items.length === 0 ? null : (
     <Fragment>
     {labels.length > 0 && (

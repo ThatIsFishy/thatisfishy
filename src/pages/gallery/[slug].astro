@@ -20,7 +20,7 @@ const isUrl = (t: string) => /^https?:\/\//i.test(t);
   <div class="column wide">
     <p class="back" data-pagefind-ignore><a href="/gallery/">← Gallery</a></p>
     <h1>{entry.data.title}</h1>
-    <EntryHead data={entry.data} labels={own} labelBase="/gallery/label/" showDateByDefault />
+    <EntryHead data={entry.data} body={entry.body} labels={own} labelBase="/gallery/label/" showDateByDefault />
     <div class="entry-photos">
       {entry.data.photos.map((p) => (
         <figure class="entry-photo" data-src={p.source}>

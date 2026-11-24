@@ -7,12 +7,12 @@ import StoryCard from '../../components/StoryCard.astro';
 import { getPage, noticeOf, coverOf } from '../../lib/content';
 
 const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const { data, Content, hasBody } = await getPage('fishy-stories');
+const { data, Content, hasBody, body } = await getPage('fishy-stories');
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
   <h1>{data.title}</h1>
-  <EntryHead data={data} />
+  <EntryHead data={data} body={body} />
   <div class="grid">
     {entries.map((e) => <StoryCard story={e} />)}
   </div>

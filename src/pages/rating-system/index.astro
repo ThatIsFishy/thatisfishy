@@ -8,7 +8,7 @@ import { SHOW_RATING, RATING_COMING_SOON } from '../../consts';
 // If the Rating System is switched off in consts.ts, send visitors to the home page.
 if (!SHOW_RATING) return Astro.redirect('/');
 
-const { data, Content, hasBody } = await getPage('rating-system');
+const { data, Content, hasBody, body } = await getPage('rating-system');
 // The notice is chosen in the CMS (Page texts → Rating System). Until the page has been saved once with that choice, consts.ts decides.
 const fallback = RATING_COMING_SOON ? 'coming' : undefined;
 const notice = noticeOf(data, fallback);
@@ -16,7 +16,7 @@ const notice = noticeOf(data, fallback);
 <Base title={data.title} description={data.description ?? data.intro} index={!notice} kind="Page" image={coverOf(data)?.image}>
   <div class="column">
     <h1>{data.title}</h1>
-    <EntryHead data={data} noticeFallback={fallback} noticeMessage="The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon." />
+    <EntryHead data={data} body={body} noticeFallback={fallback} noticeMessage="The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon." />
     <MainText hasBody={hasBody && !notice}><Content /></MainText>
   </div>
 </Base>

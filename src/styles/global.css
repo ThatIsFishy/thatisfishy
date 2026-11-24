@@ -593,3 +593,8 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
    to match a card with a photo next to it. The next row starts under the tallest card. */
 .grid > a.card { align-self: start; }
 .grid.three .rec-item:has(> a.card) { align-self: start; }
+
+/* "In progress": the Main text has an inserted Coming soon / Nothing here yet card. Small and calm, under the labels. */
+.wip { display: flex; align-items: center; gap: .55rem; color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
+.wip strong { color: var(--ink); font-weight: 600; }
+.wip-logo { flex: none; width: 1.9rem; height: 1.9rem; color: var(--water); }

@@ -31,7 +31,7 @@ const description = label.data.description ?? label.data.intro ?? `Beginner arti
 <Base title={label.data.name} description={description} image={coverOf(label.data)?.image}>
   <p class="back"><a href="/knowledge-center/">← Knowledge Center</a></p>
   <h1 class="label-title" style={`--tc:${colorOf(label)}`}>{label.data.name}</h1>
-  <EntryHead data={head} />
+  <EntryHead data={head} body={label.body} />
   {!notice && (
     <Fragment>
       {guides.length > 0 && (

@@ -16,7 +16,7 @@ const { Content } = await render(entry);
   <div class="column">
     <p class="back" data-pagefind-ignore><a href="/fishy-stories/">← All Fishy Stories</a></p>
     <h1>{entry.data.title}</h1>
-    <EntryHead data={entry.data} showDateByDefault />
+    <EntryHead data={entry.data} body={entry.body} showDateByDefault />
     <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)}><Content /></MainText>
   </div>
 </Base>

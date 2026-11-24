@@ -1,5 +1,5 @@
 ---
-import { fmtDate, colorOf, noticeOf, coverOf, type Label, type GalleryLabel } from '../lib/content';
+import { fmtDate, colorOf, noticeOf, coverOf, hasTextNotice, type Label, type GalleryLabel } from '../lib/content';
 import HeadPhoto from './HeadPhoto.astro';
 import Break1 from './Break1.astro';
 import ComingSoon from './ComingSoon.astro';
@@ -7,6 +7,7 @@ import ComingSoon from './ComingSoon.astro';
 // Everything between the title and the main text, in the same order on every page, article and story:
 //   introduction, "Published · Updated", labels, the line with a bubble, the notice card.
 // With a heading photo, the introduction, dates and labels sit on the left and the photo on the right.
+// "In progress" (under the labels) shows when the Main text has an inserted Coming soon / Nothing here yet card.
 interface Props {
   data: any;                       // the page / article / story fields
   labels?: (Label | GalleryLabel)[];                // the article's labels (articles only)
@@ -14,13 +15,16 @@ interface Props {
   noticeFallback?: 'coming' | 'empty';
   noticeMessage?: string;          // used when the notice has no message of its own
   labelBase?: string;              // where the label links go (Knowledge Center by default)
+  body?: string;                   // the Main text as written, to spot an inserted notice card ("In progress")
 }
-const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/' } = Astro.props;
+const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/', body = '' } = Astro.props;
 const notice = noticeOf(data, noticeFallback);
 const intro = String(data.intro ?? '').trim();
 const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
 const updated = (data.showUpdated ?? true) && data.updated ? fmtDate(data.updated) : '';
 const cover = coverOf(data);
+// Only when the page itself is not a notice: then the Main text is shown and a card inside it means "partly ready".
+const inProgress = !notice && hasTextNotice(body);
 const dateLine = [published && `Published ${published}`, updated && `Updated ${updated}`].filter(Boolean).join(' · ');
 ---
 <div class:list={['head', { 'has-photo': cover }]}>
@@ -37,6 +41,12 @@ const dateLine = [published && `Published ${published}`, updated && `Updated ${u
       <div class="tags">
         {labels.map((l) => <a class="tag" data-c="" style={`--tc:${colorOf(l)}`} href={`${labelBase}${l.id}/`}>{l.data.name}</a>)}
       </div>
+    )}
+    {inProgress && (
+      <p class="wip" data-pagefind-ignore>
+        <svg class="wip-logo" width="30" height="30" aria-hidden="true" focusable="false"><use href="#nl-base" width="100%" height="100%" /></svg>
+        <span><strong>In progress:</strong> certain parts of the text are not ready yet.</span>
+      </p>
     )}
   </div>
   {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}

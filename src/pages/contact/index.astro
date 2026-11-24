@@ -4,13 +4,13 @@ import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import { getPage, noticeOf, coverOf } from '../../lib/content';
 
-const { data, Content, hasBody } = await getPage('contact');
+const { data, Content, hasBody, body } = await getPage('contact');
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
   <div class="column">
   <h1>{data.title}</h1>
-  <EntryHead data={data} />
+  <EntryHead data={data} body={body} />
   <MainText hasBody={hasBody && !notice}><Content /></MainText>
 
   <form class="form" name="contact" method="POST" action="/contact/thanks/" data-netlify="true" netlify-honeypot="bot-field">

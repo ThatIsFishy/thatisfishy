@@ -26,7 +26,7 @@ const description = label.data.description ?? label.data.intro ?? `Aquarium phot
 <Base title={label.data.name} description={description} image={coverOf(label.data)?.image}>
   <p class="back"><a href="/gallery/">← Gallery</a></p>
   <h1 class="label-title" style={`--tc:${colorOf(label)}`}>{label.data.name}</h1>
-  <EntryHead data={head} />
+  <EntryHead data={head} body={label.body} />
   {!notice && (
     <Fragment>
       {entries.length > 0 && (

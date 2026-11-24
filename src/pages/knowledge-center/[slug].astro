@@ -17,7 +17,7 @@ const own = labelsOf(entry, await getLabels());
   <div class="column">
     <p class="back" data-pagefind-ignore><a href="/knowledge-center/">← Knowledge Center</a></p>
     <h1>{entry.data.title}</h1>
-    <EntryHead data={entry.data} labels={own} showDateByDefault />
+    <EntryHead data={entry.data} body={entry.body} labels={own} showDateByDefault />
     <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)}><Content /></MainText>
   </div>
 </Base>
