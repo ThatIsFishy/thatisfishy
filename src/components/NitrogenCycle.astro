@@ -3,7 +3,7 @@
 //   a slider over an example cycle of about four weeks (bars, or a graph with "Show as graph"),
 //   a box with what happens / what you do / what you measure that week,
 //   and "Is my tank fully cycled?": the visitor fills in their own test results and sees where they are.
-// With foldable (default), the guide (slider, bars/graph, week box) starts closed with an "Open the cycle guide" button;
+// With foldable (default), the guide (slider, bars/graph, week box) starts closed with an "Open for more details" button;
 // "Is my tank fully cycled?" is always open.
 interface Props { foldable?: boolean; articleLink?: boolean; }
 const { foldable = true, articleLink = true } = Astro.props;
@@ -11,7 +11,7 @@ const { foldable = true, articleLink = true } = Astro.props;
 <div class="panel" id="cycle">
   <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
   <p>A new tank has no helpful bacteria yet. Below is an example of a typical cycle of about four weeks, with what to do each week and when your fish can move in.</p>
-  {foldable && <p><button class="nc-fold" id="nc-fold" type="button" aria-expanded="false" aria-controls="nc-body">Open the cycle guide ▾</button></p>}
+  {foldable && <p><button class="nc-fold" id="nc-fold" type="button" aria-expanded="false" aria-controls="nc-body">Open for more details ▾</button></p>}
   <div class="nc-body" id="nc-body" hidden={foldable}>
     <p class="nc-method">Your own cycling method decides when your aquarium is ready for fish: an ammonia source, and/or bottled bacteria, and/or filter media or water from an established aquarium. Yours can be faster or slower than this example.</p>
 
@@ -19,7 +19,7 @@ const { foldable = true, articleLink = true } = Astro.props;
       <span class="nc-day" id="nc-day"></span>
       <button class="nc-toggle" id="nc-toggle" type="button" aria-pressed="false">📈 Show as graph</button>
     </div>
-    <input class="nc-slider" id="c-day" type="range" min="0" max="35" value="10" aria-label="Day of the cycle" />
+    <input class="nc-slider" id="c-day" type="range" min="1" max="35" value="10" aria-label="Day of the cycle" />
 
     <div class="nc-bars" id="nc-bars">
       <div class="row"><span><i class="dot d-nh3"></i>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><b id="v-nh3"></b></div>
@@ -28,7 +28,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     </div>
     <div class="nc-chart-wrap" id="nc-chart-wrap" hidden>
       <div class="nc-legend"><span><i class="dot d-nh3"></i>Ammonia</span><span><i class="dot d-no2"></i>Nitrite</span><span><i class="dot d-no3"></i>Nitrate</span></div>
-      <svg class="nc-chart" id="chart" viewBox="0 25 700 235" role="img" aria-label="Ammonia, nitrite and nitrate over five weeks"></svg>
+      <svg class="nc-chart" id="chart" viewBox="0 18 900 160" role="img" aria-label="Ammonia, nitrite and nitrate over five weeks"></svg>
     </div>
 
     <div class="nc-week" id="c-week"></div>
@@ -65,6 +65,7 @@ const { foldable = true, articleLink = true } = Astro.props;
   .nc-chart .flag text { font: 600 11px var(--head); fill: var(--ink); }
   .nc-chart .fish line { stroke: var(--plant); stroke-width: 2; stroke-dasharray: none; }
   .nc-chart .fish text { fill: var(--plant); font-size: 12px; }
+  .nc-chart.narrow .flag text, .nc-chart.narrow .wk { font-size: 19px; }
   .nc-chart .marker { stroke: var(--water); stroke-width: 2.5; }
   .nc-legend { display: flex; gap: 1rem; flex-wrap: wrap; font: 500 .9rem var(--head); margin: .3rem 0 .6rem; }
   .nc-slider { width: 100%; margin: .4rem 0 1rem; accent-color: var(--water); }
@@ -94,7 +95,6 @@ const { foldable = true, articleLink = true } = Astro.props;
   .nc-bars .row { grid-template-columns: 5.5rem 1fr 6.5rem; }
   .nc-bars .row b { font: 600 .9rem var(--head); text-align: right; }
   .nc-method { border-left: 4px solid var(--plant); padding: .2rem 1rem; color: var(--muted); margin: .2rem 0 1rem; }
-  @media (max-width: 44rem) { .nc-chart .flag text { font-size: 20px; } .nc-chart .wk { font-size: 20px; } }
   .nc-chart-wrap[hidden], .nc-bars[hidden] { display: none; }
 
   /* Open / close */
@@ -123,39 +123,51 @@ const { foldable = true, articleLink = true } = Astro.props;
       <div><h4>What you measure</h4><ul class="nc-read">${w.read.map((r, k) => `<li><span><i class="dot ${ICON[k]}"></i>${NAME[k]}</span><b>${r}</b></li>`).join('')}</ul></div>
     </div>`;
   }
-  const D = 35;
+  // The example in days 1 to 35. t = days since the start (day 1 = t 0).
+  const D = 34;
   const sig = (d, m, w) => 1 / (1 + Math.exp(-(d - m) / w));
   // Shapes like a typical real cycle: a small ammonia hill, then a higher nitrite hill, then nitrate keeps rising.
   const bell = (d, m, a, b) => Math.exp(-((d - m) ** 2) / (2 * (d < m ? a : b) ** 2));
   // ease: 0 at t<=0, 1 at t>=1. Each curve is exactly 0 before it starts and after it ends.
   const ease = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
-  const nh3 = (d) => 0.35 * bell(d, 8.5, 2.8, 2.6) * ease(d / 1.5) * (1 - ease((d - 12) / 3));     // day 0 to 15
-  const no2 = (d) => 0.55 * bell(d, 15, 3.5, 5) * ease((d - 4) / 2) * (1 - ease((d - 25) / 4));    // day 4 to 29
-  const no3 = (d) => (d <= 11 ? 0 : 0.9 * Math.min(1, (d - 11) / 24) ** 1.5);                        // from day 11, keeps rising
+  const nh3 = (t) => 0.35 * bell(t, 8.5, 2.8, 2.6) * ease(t / 1.5) * (1 - ease((t - 12) / 3));     // day 1 to 16
+  const no2 = (t) => 0.55 * bell(t, 15, 3.5, 5) * ease((t - 4) / 2) * (1 - ease((t - 24) / 4));    // day 5 to 29 (0 on day 29)
+  const no3 = (t) => (t <= 11 ? 0 : 0.9 * Math.min(1, (t - 11) / 23) ** 1.5);                        // from day 12, keeps rising
   const PEAK = { nh3: 0.35, no2: 0.55, no3: 0.9 };
-  const X0 = 30, X1 = 690, Y0 = 215, Y1 = 50;
-  const x = (d) => X0 + (d / D) * (X1 - X0), y = (v) => Y0 - v * (Y0 - Y1);
-  const path = (f) => Array.from({ length: D * 2 + 1 }, (_, i) => { const d = i / 2; return `${i ? 'L' : 'M'}${x(d).toFixed(1)},${y(f(d)).toFixed(1)}`; }).join('');
-  const FLAGS = [[0, 'Start'], [5, 'Nitrite appears'], [15, 'Ammonia 0'], [29, 'Nitrite 0']];
-  document.getElementById('chart').innerHTML =
-    `<line class="ax" x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}"/>` +
-    [1, 2, 3, 4, 5].map((w) => `<text class="wk" x="${x(w * 7 - 3.5)}" y="${Y0 + 24}">Week ${w}</text><line class="ax" x1="${x(w * 7)}" y1="${Y0}" x2="${x(w * 7)}" y2="${Y0 + 6}"/>`).join('') +
-    FLAGS.map(([d, t]) => `<g class="flag"><line x1="${x(d)}" y1="${Y1 - 8}" x2="${x(d)}" y2="${Y0}"/><text x="${x(d) + 4}" y="${Y1 + 4}">${t}</text></g>`).join('') +
-    `<path d="${path(nh3)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--warn) 22%, transparent)"/>` +
-    `<path d="${path(no2)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--sand) 28%, transparent)"/>` +
-    `<path d="${path(no3)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--plant) 20%, transparent)"/>` +
-    `<path d="${path(nh3)}" fill="none" stroke="var(--warn)" stroke-width="3"/>` +
-    `<path d="${path(no2)}" fill="none" stroke="var(--sand)" stroke-width="3"/>` +
-    `<path d="${path(no3)}" fill="none" stroke="var(--plant)" stroke-width="3"/>` +
-    `<line class="marker" id="mk" y1="${Y1 - 12}" y2="${Y0}"/>`;
+  const FLAGS = [[0, 'Start'], [5, 'Nitrite appears'], [15, 'Ammonia 0'], [28, 'Nitrite 0']];
+  // The graph is wide and low on a computer, a bit taller on a phone. It is redrawn when the width changes a lot.
+  const svg = document.getElementById('chart');
+  let G = { W: 0, X0: 0, X1: 0, Y0: 0, Y1: 0 };
+  const x = (t) => G.X0 + (t / D) * (G.X1 - G.X0), y = (v) => G.Y0 - v * (G.Y0 - G.Y1);
+  const path = (f) => Array.from({ length: D * 2 + 1 }, (_, i) => { const t = i / 2; return `${i ? 'L' : 'M'}${x(t).toFixed(1)},${y(f(t)).toFixed(1)}`; }).join('');
+  function draw() {
+    const narrow = (svg.parentElement?.clientWidth || 900) < 600;
+    const W = narrow ? 560 : 900;
+    if (W === G.W) return;
+    G = { W, X0: 18, X1: W - 10, Y1: narrow ? 52 : 42, Y0: narrow ? 185 : 150 };
+    svg.setAttribute('viewBox', `0 18 ${W} ${G.Y0 + 10}`);
+    svg.classList.toggle('narrow', narrow);
+    svg.innerHTML =
+      `<line class="ax" x1="${G.X0}" y1="${G.Y0}" x2="${G.X1}" y2="${G.Y0}"/>` +
+      [1, 2, 3, 4, 5].map((w) => `<text class="wk" x="${x(w * 7 - 3.5)}" y="${G.Y0 + 22}">Week ${w}</text>` + (w < 5 ? `<line class="ax" x1="${x(w * 7)}" y1="${G.Y0}" x2="${x(w * 7)}" y2="${G.Y0 + 6}"/>` : '')).join('') +
+      FLAGS.map(([t, label]) => `<g class="flag"><line x1="${x(t)}" y1="${G.Y1 - 14}" x2="${x(t)}" y2="${G.Y0}"/><text x="${x(t) + 4}" y="${G.Y1 - 2}">${label}</text></g>`).join('') +
+      `<path d="${path(nh3)}L${x(D)},${G.Y0}L${x(0)},${G.Y0}Z" fill="color-mix(in srgb, var(--warn) 22%, transparent)"/>` +
+      `<path d="${path(no2)}L${x(D)},${G.Y0}L${x(0)},${G.Y0}Z" fill="color-mix(in srgb, var(--sand) 28%, transparent)"/>` +
+      `<path d="${path(no3)}L${x(D)},${G.Y0}L${x(0)},${G.Y0}Z" fill="color-mix(in srgb, var(--plant) 20%, transparent)"/>` +
+      `<path d="${path(nh3)}" fill="none" stroke="var(--warn)" stroke-width="3"/>` +
+      `<path d="${path(no2)}" fill="none" stroke="var(--sand)" stroke-width="3"/>` +
+      `<path d="${path(no3)}" fill="none" stroke="var(--plant)" stroke-width="3"/>` +
+      `<line class="marker" id="mk" y1="${G.Y1 - 14}" y2="${G.Y0}"/>`;
+  }
   const cday = document.getElementById('c-day');
   function setBar(k, v, label) { document.getElementById('b-' + k).style.width = (v <= 0.005 ? 0 : Math.min(100, v * 100)) + '%'; document.getElementById('v-' + k).textContent = label; }
   function upd() {
-    const d = +cday.value, w = Math.min(4, Math.floor(d / 7));
-    const mk = document.getElementById('mk'); mk.setAttribute('x1', x(d)); mk.setAttribute('x2', x(d));
-    const lvl = (f, k) => f(d) / PEAK[k];
+    const d = +cday.value, t = d - 1, w = Math.min(4, Math.floor(t / 7));
+    draw();
+    const mk = document.getElementById('mk'); mk.setAttribute('x1', x(t)); mk.setAttribute('x2', x(t));
+    const lvl = (f, k) => f(t) / PEAK[k];
     // The word always matches the bar: 0 only when the bar is empty.
-    const hill = (v, peakDay) => v <= 0.005 ? '0' : v >= 0.7 ? 'high' : d < peakDay ? 'rising' : 'dropping';
+    const hill = (v, peakT) => v <= 0.005 ? '0' : v >= 0.7 ? 'high' : t < peakT ? 'rising' : 'dropping';
     setBar('nh3', lvl(nh3, 'nh3'), hill(lvl(nh3, 'nh3'), 8.5));
     setBar('no2', lvl(no2, 'no2'), hill(lvl(no2, 'no2'), 15));
     const n3 = lvl(no3, 'no3');
@@ -164,6 +176,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     document.getElementById('c-week').innerHTML = weekHtml(w);
   }
   cday.addEventListener('input', upd); upd();
+  addEventListener('resize', upd);
   const tog = document.getElementById('nc-toggle');
   tog.addEventListener('click', () => {
     const on = tog.getAttribute('aria-pressed') !== 'true';
@@ -171,6 +184,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     tog.textContent = on ? '📊 Show as bars' : '📈 Show as graph';
     document.getElementById('nc-chart-wrap').hidden = !on;
     document.getElementById('nc-bars').hidden = on;
+    upd();
   });
 
   // ---------- idea 3: "Is my tank ready?" ----------
@@ -183,7 +197,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     return ['go', 'Ready for your first fish 🐟', 'Ammonia and nitrite are 0 and nitrate is low. If you did not yet, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Add a few fish, not all at once, and keep testing the first weeks.'];
   }
   document.querySelectorAll('[data-checker]').forEach((box) => {
-    const field = (id, label, dot, ph) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><input data-k="${id}" type="text" inputmode="decimal" autocomplete="off" placeholder="${ph}" /></label>`;
+    const field = (id, label, dot, ph) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><input data-k="${id}" type="text" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="${ph}" /></label>`;
     box.innerHTML = `<h3>Is my tank fully cycled?</h3><p>Type in your own test results and see where you are.</p>
       <div class="nc-fields">${field('nh3', 'Ammonia', 'd-nh3', 'e.g. 0.25')}${field('no2', 'Nitrite', 'd-no2', 'e.g. 0')}${field('no3', 'Nitrate', 'd-no3', 'e.g. 10')}</div>
       <div class="nc-result" aria-live="polite"></div>`;
@@ -200,7 +214,17 @@ const { foldable = true, articleLink = true } = Astro.props;
       const [tone, h, p] = verdict(a, n, t);
       r.dataset.tone = tone; r.innerHTML = `<h4>${h}</h4><p>${p}</p>`;
     };
-    box.addEventListener('input', run); run();
+    // Keep each box to a realistic number: up to 3 digits, then . or , and up to 3 decimals (e.g. 160 or 0,25).
+    box.addEventListener('input', (e) => {
+      const el = e.target;
+      if (el.matches?.('[data-k]')) {
+        const m = el.value.replace(/[^0-9.,]/g, '').match(/^(\d{0,3})([.,]\d{0,3})?/);
+        const clean = m ? m[1] + (m[2] ?? '') : '';
+        if (clean !== el.value) el.value = clean;
+      }
+      run();
+    });
+    run();
   });
 
   // Open / close the whole tool (the home page starts closed, so it does not take much space)
@@ -210,7 +234,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     const open = ncBody!.hidden;
     ncBody!.hidden = !open;
     fold.setAttribute('aria-expanded', String(open));
-    fold.textContent = open ? 'Close ▴' : 'Open the cycle guide ▾';
+    fold.textContent = open ? 'Close ▴' : 'Open for more details ▾';
     if (!open) document.getElementById('cycle')?.scrollIntoView({ block: 'nearest' });
   });
 </script>
