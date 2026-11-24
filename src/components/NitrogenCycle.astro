@@ -86,6 +86,8 @@ const { foldable = true, articleLink = true } = Astro.props;
   .nc-result[data-tone="go"] { border-color: var(--plant); }
   .nc-result[data-tone="start"] { border-color: var(--water); }
   .nc-result[data-tone="warn"] { border-color: var(--warn); }
+  .nc-live { border-left: 4px solid var(--warn); padding: .2rem 1rem; margin: 1rem 0 0; color: var(--muted); }
+  .nc-live strong { color: var(--ink); }
 
   .nc-head { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap; margin:.6rem 0 .4rem; }
   .nc-day { font: 600 1.05rem var(--head); }
@@ -112,7 +114,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     { t: 'Stage 2: First bacteria at work', happens: 'The first bacteria eat the ammonia: it peaks and then drops. They turn it into nitrite, which keeps rising. At the end of this stage the first nitrate appears.', todo: 'Keep adding the ammonia source. Test every 2 to 3 days.', read: ['high, then dropping', 'rising', 'appears'] },
     { t: 'Stage 3: Nitrite peak', happens: 'Ammonia drops to 0. Nitrite peaks: that is normal and a good sign. Nitrate is rising. With bottled bacteria or media from an established tank, things often go faster.', todo: 'Keep adding the ammonia source. Do you measure 0 for both ammonia and nitrite? Then do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your fish can move in.', read: ['dropping to 0', 'high', 'rising'], fish: true },
     { t: 'Stage 4: Almost there', happens: 'The second bacteria turn nitrite into nitrate. Nitrite falls to 0 and nitrate rises. At the end of this stage the tank is cycled.', todo: 'When ammonia and nitrite are both 0, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your tank is cycled.', read: ['0', 'dropping to 0', 'rising'], fish: true },
-    { t: 'Stage 5: Fully cycled', happens: 'The tank is cycled. Nitrate keeps rising from all the ammonia that was turned over.', todo: 'Do a big water change so nitrate is under 20 ppm. Add a few fish, not all at once, and keep testing the first weeks.', read: ['0', '0', 'high (under 20 after the water change)'], fish: true },
+    { t: 'Stage 5: Fully cycled', happens: 'The tank is cycled. Nitrate keeps rising from all the ammonia that was turned over.', todo: 'Add a few fish, not all at once, and keep testing the first weeks. Read the note below about ammonia and nitrite once animals live in the tank.', read: ['0', '0', 'high'], fish: true },
   ];
   const ICON = ['d-nh3', 'd-no2', 'd-no3'], NAME = ['Ammonia', 'Nitrite', 'Nitrate'];
   function weekHtml(i: number) {
@@ -213,7 +215,8 @@ const { foldable = true, articleLink = true } = Astro.props;
     const field = (id, label, dot, ph) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><input data-k="${id}" type="text" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="${ph}" /></label>`;
     box.innerHTML = `<h3>Is my tank fully cycled?</h3><p>Type in your own test results and see where you are.</p>
       <div class="nc-fields">${field('nh3', 'Ammonia', 'd-nh3', 'e.g. 0.25')}${field('no2', 'Nitrite', 'd-no2', 'e.g. 0')}${field('no3', 'Nitrate', 'd-no3', 'e.g. 10')}</div>
-      <div class="nc-result" aria-live="polite"></div>`;
+      <div class="nc-result" aria-live="polite"></div>
+      <p class="nc-live"><strong>With fish or other animals in the tank:</strong> any ammonia or nitrite you measure is a warning sign, so do a water change straight away. Before any animals move in, both are a normal part of cycling. Right after your first animals move in, a small ammonia or nitrite spike is common: there is suddenly more waste than the bacteria can handle yet. Test often in the first weeks.</p>`;
     const r = box.querySelector('.nc-result');
     const run = () => {
       // Accept 0.25 and 0,25. Empty or not a number = not filled in yet.
