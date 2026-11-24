@@ -88,11 +88,47 @@ const LOGO = {
 const notice = (kind, message) =>
   `<div class="card empty-card coming-card">${LOGO[kind]}<h3>${NOTICE[kind][0]}</h3><p>${esc(message || NOTICE[kind][1])}</p></div>`;
 
+// A notice or break marker may also end up inside a sentence (for example "Main{{notice:coming}}",
+// when it was inserted without an empty line). Such a paragraph is split: the text before it,
+// the card or line, and the text after it.
+const MARKER = /\{\{(?:notice:(coming|empty)(?:\|([^}]*))?|break:(three|line))\}\}/g;
+const markerHtml = (m) => (m[3] ? (m[3] === 'line' ? brk1() : brk3()) : notice(m[1], (m[2] || '').trim()));
+function splitMarkers(par) {
+  const kids = par.children ?? [];
+  if (!kids.some((k) => k.type === 'text' && /\{\{(?:notice|break):/.test(k.value))) return null;
+  const out = [];
+  let cur = [];
+  const flush = () => {
+    // drop empty text and line breaks at the start and end of a piece
+    while (cur.length && ((cur[0].type === 'text' && !cur[0].value.trim()) || cur[0].type === 'break')) cur.shift();
+    while (cur.length && ((cur.at(-1).type === 'text' && !cur.at(-1).value.trim()) || cur.at(-1).type === 'break')) cur.pop();
+    if (cur.length) out.push({ type: 'paragraph', children: cur });
+    cur = [];
+  };
+  for (const k of kids) {
+    if (k.type !== 'text') { cur.push(k); continue; }
+    let last = 0;
+    for (const m of k.value.matchAll(MARKER)) {
+      if (m.index > last) cur.push({ type: 'text', value: k.value.slice(last, m.index) });
+      flush();
+      out.push({ type: 'html', value: markerHtml(m) });
+      last = m.index + m[0].length;
+    }
+    if (last < k.value.length) cur.push({ type: 'text', value: k.value.slice(last) });
+  }
+  flush();
+  return out;
+}
+
 export default function remarkPhotos() {
   return (tree) => {
     const walk = (node) => {
       if (!node.children) return;
-      node.children = node.children.map((child) => {
+      node.children = node.children.flatMap((child) => {
+        if (child.type === 'paragraph') {
+          const parts = splitMarkers(child);
+          if (parts) return parts.map((p) => { if (p.type === 'paragraph') walk(p); return p; });
+        }
         if (child.type === 'thematicBreak') return { type: 'html', value: brk3() };
         if (child.type === 'paragraph' && child.children?.length === 1 && child.children[0].type === 'text') {
           const text = child.children[0].value.trim();
