@@ -1,13 +1,15 @@
 ---
 import type { Guide, Label } from '../lib/content';
-import { labelsOf, colorOf, noticeOf, coverOf } from '../lib/content';
+import { labelsOf, colorOf, noticeOf, coverOf, hasTextNotice } from '../lib/content';
 import CardPhoto from './CardPhoto.astro';
+import CardWip from './CardWip.astro';
 
 interface Props { guide: Guide; labels: Label[]; }
 const { guide, labels } = Astro.props;
 const own = labelsOf(guide, labels);
 const notice = noticeOf(guide.data);
 const cover = coverOf(guide.data);
+const inProgress = !notice && hasTextNotice(guide.body);
 ---
 <a class="card" href={`/knowledge-center/${guide.id}/`} data-labels={own.map((l) => l.id).join('|')} data-c={own[0] ? '' : undefined} style={own[0] ? `--tc:${colorOf(own[0])}` : undefined}>
   <div class="tags">
@@ -17,4 +19,5 @@ const cover = coverOf(guide.data);
   <h3>{guide.data.title}</h3>
   <p>{guide.data.intro ?? guide.data.description}</p>
   {cover && <CardPhoto cover={cover} />}
+  {inProgress && <CardWip />}
 </a>

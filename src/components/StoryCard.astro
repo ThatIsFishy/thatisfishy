@@ -1,13 +1,15 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 
-import { noticeOf, coverOf } from '../lib/content';
+import { noticeOf, coverOf, hasTextNotice } from '../lib/content';
 import CardPhoto from './CardPhoto.astro';
+import CardWip from './CardWip.astro';
 
 interface Props { story: CollectionEntry<'journal'>; }
 const { story } = Astro.props;
 const notice = noticeOf(story.data);
 const cover = coverOf(story.data);
+const inProgress = !notice && hasTextNotice(story.body);
 ---
 <a class="card story" href={`/fishy-stories/${story.id}/`}>
   <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span>
@@ -15,4 +17,5 @@ const cover = coverOf(story.data);
   <h3>{story.data.title}</h3>
   {(story.data.intro ?? story.data.description) && <p>{story.data.intro ?? story.data.description}</p>}
   {cover && <CardPhoto cover={cover} />}
+  {inProgress && <CardWip />}
 </a>
