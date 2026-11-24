@@ -1,16 +1,16 @@
 ---
 // The nitrogen cycle panel on the home page:
-//   a slider over an example cycle of about four weeks (bars, or a graph with "Show as graph"),
-//   a box with what happens / what you do / what you measure that week,
+//   a slider over an example cycle in five stages (bars, or a graph with "Show as graph"),
+//   a box with what happens / what you do / what you measure at that stage,
 //   and "Is my tank fully cycled?": the visitor fills in their own test results and sees where they are.
-// With foldable (default), the guide (slider, bars/graph, week box) starts closed with an "Open for more details" button;
+// With foldable (default), the details (slider, bars/graph, stage box) starts closed with an "Open for more details" button;
 // "Is my tank fully cycled?" is always open.
 interface Props { foldable?: boolean; articleLink?: boolean; }
 const { foldable = true, articleLink = true } = Astro.props;
 ---
 <div class="panel" id="cycle">
   <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
-  <p>A new tank has no helpful bacteria yet. Below is an example of a typical cycle of about four weeks, with what to do each week and when your fish can move in.</p>
+  <p>A new tank has no helpful bacteria yet. Growing them usually takes several weeks. Below is an example of a typical cycle in five stages, with what to do at each stage and when your fish can move in.</p>
   {foldable && <p><button class="nc-fold" id="nc-fold" type="button" aria-expanded="false" aria-controls="nc-body">Open for more details ▾</button></p>}
   <div class="nc-body" id="nc-body" hidden={foldable}>
     <p class="nc-method">Your own cycling method decides when your aquarium is ready for fish: an ammonia source, and/or bottled bacteria, and/or filter media or water from an established aquarium. Yours can be faster or slower than this example.</p>
@@ -19,7 +19,7 @@ const { foldable = true, articleLink = true } = Astro.props;
       <span class="nc-day" id="nc-day"></span>
       <button class="nc-toggle" id="nc-toggle" type="button" aria-pressed="false">📈 Show as graph</button>
     </div>
-    <input class="nc-slider" id="c-day" type="range" min="1" max="35" value="10" aria-label="Day of the cycle" />
+    <input class="nc-slider" id="c-day" type="range" min="1" max="35" value="10" aria-label="Stage of the cycle" />
 
     <div class="nc-bars" id="nc-bars">
       <div class="row"><span><i class="dot d-nh3"></i>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><b id="v-nh3"></b></div>
@@ -28,7 +28,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     </div>
     <div class="nc-chart-wrap" id="nc-chart-wrap" hidden>
       <div class="nc-legend"><span><i class="dot d-nh3"></i>Ammonia</span><span><i class="dot d-no2"></i>Nitrite</span><span><i class="dot d-no3"></i>Nitrate</span></div>
-      <svg class="nc-chart" id="chart" viewBox="0 18 900 160" role="img" aria-label="Ammonia, nitrite and nitrate over five weeks"></svg>
+      <svg class="nc-chart" id="chart" viewBox="0 18 900 160" role="img" aria-label="Ammonia, nitrite and nitrate over the five stages of a cycle"></svg>
     </div>
 
     <div class="nc-week" id="c-week"></div>
@@ -108,11 +108,11 @@ const { foldable = true, articleLink = true } = Astro.props;
 <script>
 
   const WEEKS = [
-    { t: 'Week 1: ammonia builds up', happens: 'You add an ammonia source. There are no helpful bacteria yet, so ammonia builds up. Near the end of the week the first bacteria start and a little nitrite appears.', todo: 'Keep the ammonia source going. Leave the filter running day and night. No water changes.', read: ['rising', 'appears at the end', '0'] },
-    { t: 'Week 2: the first bacteria get to work', happens: 'The first bacteria eat the ammonia: it peaks and then drops. They turn it into nitrite, which keeps rising. At the end of the week the first nitrate appears.', todo: 'Keep adding the ammonia source. Test every 2 to 3 days.', read: ['high, then dropping', 'rising', 'appears at the end'] },
-    { t: 'Week 3: ammonia is handled', happens: 'Ammonia drops to 0. Nitrite peaks: that is normal and a good sign. Nitrate is rising. With bottled bacteria or media from an established tank, things often go faster.', todo: 'Keep adding the ammonia source. Do you measure 0 for both ammonia and nitrite? Then do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your fish can move in.', read: ['dropping to 0', 'high', 'rising'], fish: true },
-    { t: 'Week 4: nitrite drops to 0', happens: 'The second bacteria turn nitrite into nitrate. Nitrite falls and nitrate rises. In this example the tank is cycled by the end of the week.', todo: 'When ammonia and nitrite are both 0, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your tank is cycled.', read: ['0', 'dropping to 0', 'rising'], fish: true },
-    { t: 'Week 5: add your first fish 🐟', happens: 'The tank is cycled. Nitrate keeps rising from all the ammonia that was turned over.', todo: 'Do a big water change so nitrate is under 20 ppm. Add a few fish, not all at once, and keep testing the first weeks.', read: ['0', '0', 'high (under 20 after the water change)'], fish: true },
+    { t: 'Stage 1: Cycling starts', happens: 'You add an ammonia source. There are no helpful bacteria yet, so ammonia builds up. Near the end of this stage the first bacteria start and a little nitrite appears.', todo: 'Keep the ammonia source going. Leave the filter running day and night. No water changes.', read: ['rising', 'appears', '0'] },
+    { t: 'Stage 2: First bacteria at work', happens: 'The first bacteria eat the ammonia: it peaks and then drops. They turn it into nitrite, which keeps rising. At the end of this stage the first nitrate appears.', todo: 'Keep adding the ammonia source. Test every 2 to 3 days.', read: ['high, then dropping', 'rising', 'appears'] },
+    { t: 'Stage 3: Nitrite peak', happens: 'Ammonia drops to 0. Nitrite peaks: that is normal and a good sign. Nitrate is rising. With bottled bacteria or media from an established tank, things often go faster.', todo: 'Keep adding the ammonia source. Do you measure 0 for both ammonia and nitrite? Then do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your fish can move in.', read: ['dropping to 0', 'high', 'rising'], fish: true },
+    { t: 'Stage 4: Almost there', happens: 'The second bacteria turn nitrite into nitrate. Nitrite falls to 0 and nitrate rises. At the end of this stage the tank is cycled.', todo: 'When ammonia and nitrite are both 0, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your tank is cycled.', read: ['0', 'dropping to 0', 'rising'], fish: true },
+    { t: 'Stage 5: Fully cycled', happens: 'The tank is cycled. Nitrate keeps rising from all the ammonia that was turned over.', todo: 'Do a big water change so nitrate is under 20 ppm. Add a few fish, not all at once, and keep testing the first weeks.', read: ['0', '0', 'high (under 20 after the water change)'], fish: true },
   ];
   const ICON = ['d-nh3', 'd-no2', 'd-no3'], NAME = ['Ammonia', 'Nitrite', 'Nitrate'];
   function weekHtml(i: number) {
@@ -134,22 +134,31 @@ const { foldable = true, articleLink = true } = Astro.props;
   const no2 = (t) => 0.55 * bell(t, 15, 3.5, 5) * ease((t - 4) / 2) * (1 - ease((t - 24) / 4));    // day 5 to 29 (0 on day 29)
   const no3 = (t) => (t <= 11 ? 0 : 0.9 * Math.min(1, (t - 11) / 23) ** 1.5);                        // from day 12, keeps rising
   const PEAK = { nh3: 0.35, no2: 0.55, no3: 0.9 };
+  const STAGES = ['Cycling starts', 'First bacteria at work', 'Nitrite peak', 'Almost there', 'Fully cycled'];
   const FLAGS = [[0, 'Start'], [5, 'Nitrite appears'], [15, 'Ammonia 0'], [28, 'Nitrite 0']];
   // The graph is wide and low on a computer, a bit taller on a phone. It is redrawn when the width changes a lot.
   const svg = document.getElementById('chart');
   let G = { W: 0, X0: 0, X1: 0, Y0: 0, Y1: 0 };
   const x = (t) => G.X0 + (t / D) * (G.X1 - G.X0), y = (v) => G.Y0 - v * (G.Y0 - G.Y1);
   const path = (f) => Array.from({ length: D * 2 + 1 }, (_, i) => { const t = i / 2; return `${i ? 'L' : 'M'}${x(t).toFixed(1)},${y(f(t)).toFixed(1)}`; }).join('');
+  // A stage name under the graph: one line on a computer, split over two lines on a phone.
+  function stageLabel(name, cx, top, narrow) {
+    if (!narrow) return `<text class="wk" x="${cx}" y="${top}">${name}</text>`;
+    const words = name.split(' '), half = Math.ceil(words.length / 2);
+    const lines = words.length > 1 ? [words.slice(0, half).join(' '), words.slice(half).join(' ')] : [name];
+    return `<text class="wk" x="${cx}" y="${top}">` + lines.map((l, i) => `<tspan x="${cx}" dy="${i ? '1.1em' : 0}">${l}</tspan>`).join('') + '</text>';
+  }
   function draw() {
     const narrow = (svg.parentElement?.clientWidth || 900) < 600;
     const W = narrow ? 560 : 900;
     if (W === G.W) return;
     G = { W, X0: 18, X1: W - 10, Y1: narrow ? 52 : 42, Y0: narrow ? 185 : 150 };
-    svg.setAttribute('viewBox', `0 18 ${W} ${G.Y0 + 10}`);
+    const bottom = narrow ? 42 : 10;
+    svg.setAttribute('viewBox', `0 18 ${W} ${G.Y0 + bottom}`);
     svg.classList.toggle('narrow', narrow);
     svg.innerHTML =
       `<line class="ax" x1="${G.X0}" y1="${G.Y0}" x2="${G.X1}" y2="${G.Y0}"/>` +
-      [1, 2, 3, 4, 5].map((w) => `<text class="wk" x="${x(w * 7 - 3.5)}" y="${G.Y0 + 22}">Week ${w}</text>` + (w < 5 ? `<line class="ax" x1="${x(w * 7)}" y1="${G.Y0}" x2="${x(w * 7)}" y2="${G.Y0 + 6}"/>` : '')).join('') +
+      [1, 2, 3, 4, 5].map((w) => stageLabel(STAGES[w - 1], x(w * 7 - 3.5), G.Y0 + 22, narrow) + (w < 5 ? `<line class="ax" x1="${x(w * 7)}" y1="${G.Y0}" x2="${x(w * 7)}" y2="${G.Y0 + 6}"/>` : '')).join('') +
       FLAGS.map(([t, label]) => `<g class="flag"><line x1="${x(t)}" y1="${G.Y1 - 14}" x2="${x(t)}" y2="${G.Y0}"/><text x="${x(t) + 4}" y="${G.Y1 - 2}">${label}</text></g>`).join('') +
       `<path d="${path(nh3)}L${x(D)},${G.Y0}L${x(0)},${G.Y0}Z" fill="color-mix(in srgb, var(--warn) 22%, transparent)"/>` +
       `<path d="${path(no2)}L${x(D)},${G.Y0}L${x(0)},${G.Y0}Z" fill="color-mix(in srgb, var(--sand) 28%, transparent)"/>` +
@@ -172,7 +181,7 @@ const { foldable = true, articleLink = true } = Astro.props;
     setBar('no2', lvl(no2, 'no2'), hill(lvl(no2, 'no2'), 15));
     const n3 = lvl(no3, 'no3');
     setBar('no3', n3, n3 <= 0.005 ? '0' : n3 >= 0.7 ? 'high' : 'rising');
-    document.getElementById('nc-day').textContent = `Week ${w + 1} · Day ${d}`;
+    document.getElementById('nc-day').textContent = `Stage ${w + 1} of 5 · ${STAGES[w]}`;
     document.getElementById('c-week').innerHTML = weekHtml(w);
   }
   cday.addEventListener('input', upd); upd();
@@ -190,11 +199,11 @@ const { foldable = true, articleLink = true } = Astro.props;
   // ---------- idea 3: "Is my tank ready?" ----------
   function verdict(a, n, t) {
     if (a === 0 && n === 0 && t === 0) return ['start', 'Not started yet', 'There is nothing to work with yet. Add an ammonia source (for example a pinch of fish food), then test again in 2 to 3 days.'];
-    if (a > 0 && n === 0) return ['wait', 'Week 1: waiting for the first bacteria', 'Ammonia is there, but nothing is eating it yet. This is normal at the start. Keep the ammonia source going and test again in 2 to 3 days.'];
-    if (a > 0 && n > 0) return ['wait', 'Week 2: the first bacteria are working', 'Ammonia is being turned into nitrite. Keep the ammonia source going and test again in 2 to 3 days. Not ready for fish yet.'];
-    if (a === 0 && n > 0) return ['wait', 'Week 3 to 4: waiting for nitrite to drop', 'Ammonia is handled. Now the second bacteria need time. Keep the ammonia source going. ' + (n >= 5 ? 'Nitrite is very high: a 30–50% water change can help it move again. ' : '') + 'Test again in 2 to 3 days.'];
-    if (t > 20) return ['go', 'Cycled: do a big water change first', 'Ammonia and nitrite are 0. Do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Then do a big water change so nitrate is under 20 ppm, and add your first few fish.'];
-    return ['go', 'Ready for your first fish 🐟', 'Ammonia and nitrite are 0 and nitrate is low. If you did not yet, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Add a few fish, not all at once, and keep testing the first weeks.'];
+    if (a > 0 && n === 0) return ['wait', 'Cycling starts: waiting for the first bacteria', 'Ammonia is there, but nothing is eating it yet. This is normal at the start. Keep the ammonia source going and test again in 2 to 3 days.'];
+    if (a > 0 && n > 0) return ['wait', 'First bacteria at work', 'Ammonia is being turned into nitrite. Keep the ammonia source going and test again in 2 to 3 days. Not ready for fish yet.'];
+    if (a === 0 && n > 0) return ['wait', 'Nitrite peak or almost there: waiting for nitrite to drop', 'Ammonia is handled. Now the second bacteria need time. Keep the ammonia source going. ' + (n >= 5 ? 'Nitrite is very high: a 30–50% water change can help it move again. ' : '') + 'Test again in 2 to 3 days.'];
+    if (t > 20) return ['go', 'Fully cycled: do a big water change first', 'Ammonia and nitrite are 0. Do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Then do a big water change so nitrate is under 20 ppm, and add your first few fish.'];
+    return ['go', 'Fully cycled: ready for your first fish', 'Ammonia and nitrite are 0 and nitrate is low. If you did not yet, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Add a few fish, not all at once, and keep testing the first weeks.'];
   }
   document.querySelectorAll('[data-checker]').forEach((box) => {
     const field = (id, label, dot, ph) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><input data-k="${id}" type="text" inputmode="decimal" autocomplete="off" maxlength="7" placeholder="${ph}" /></label>`;
