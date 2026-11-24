@@ -1,48 +1,207 @@
+---
+// The nitrogen cycle panel on the home page:
+//   a slider over an example cycle of about four weeks (bars, or a graph with "Show as graph"),
+//   a box with what happens / what you do / what you measure that week,
+//   and "Is my tank fully cycled?": the visitor fills in their own test results and sees where they are.
+// With foldable (default), the guide (slider, bars/graph, week box) starts closed with an "Open the cycle guide" button;
+// "Is my tank fully cycled?" is always open.
+interface Props { foldable?: boolean; articleLink?: boolean; }
+const { foldable = true, articleLink = true } = Astro.props;
+---
 <div class="panel" id="cycle">
-  <div class="cycle-layout">
-    <div class="cycle-copy">
-      <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
-      <p>Fish make ammonia. Bacteria turn it into nitrite, then into nitrate. A new tank has no bacteria yet, so it takes about five weeks to grow them. Drag the slider to see what a typical cycle looks like.</p>
-      <p class="note">This is an illustrative curve, not a measurement. Real tanks vary, so test with a liquid kit.</p>
+  <h2 style="margin-top:0">The first thing every tank needs: the nitrogen cycle</h2>
+  <p>A new tank has no helpful bacteria yet. Below is an example of a typical cycle of about four weeks, with what to do each week and when your fish can move in.</p>
+  {foldable && <p><button class="nc-fold" id="nc-fold" type="button" aria-expanded="false" aria-controls="nc-body">Open the cycle guide ▾</button></p>}
+  <div class="nc-body" id="nc-body" hidden={foldable}>
+    <p class="nc-method">Your own cycling method decides when your aquarium is ready for fish: an ammonia source, and/or bottled bacteria, and/or filter media or water from an established aquarium. Yours can be faster or slower than this example.</p>
+
+    <div class="nc-head">
+      <span class="nc-day" id="nc-day"></span>
+      <button class="nc-toggle" id="nc-toggle" type="button" aria-pressed="false">📈 Show as graph</button>
+    </div>
+    <input class="nc-slider" id="c-day" type="range" min="0" max="35" value="10" aria-label="Day of the cycle" />
+
+    <div class="nc-bars" id="nc-bars">
+      <div class="row"><span><i class="dot d-nh3"></i>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><b id="v-nh3"></b></div>
+      <div class="row"><span><i class="dot d-no2"></i>Nitrite</span><div class="track"><div class="fill" id="b-no2" style="background:var(--sand)"></div></div><b id="v-no2"></b></div>
+      <div class="row"><span><i class="dot d-no3"></i>Nitrate</span><div class="track"><div class="fill" id="b-no3" style="background:var(--plant)"></div></div><b id="v-no3"></b></div>
+    </div>
+    <div class="nc-chart-wrap" id="nc-chart-wrap" hidden>
+      <div class="nc-legend"><span><i class="dot d-nh3"></i>Ammonia</span><span><i class="dot d-no2"></i>Nitrite</span><span><i class="dot d-no3"></i>Nitrate</span></div>
+      <svg class="nc-chart" id="chart" viewBox="0 25 700 235" role="img" aria-label="Ammonia, nitrite and nitrate over five weeks"></svg>
+    </div>
+
+    <div class="nc-week" id="c-week"></div>
+    <p class="note" style="margin-top:1rem">An example of a typical cycle, not a measurement. Real tanks vary, so test with a liquid kit.</p>
+  </div>
+  <div class="nc-check" data-checker></div>
+  {articleLink && (
+    <div class="nc-foot">
       <p class="more"><a href="/knowledge-center/what-is-the-nitrogen-cycle/">Read the full article</a></p>
     </div>
-    <div class="sim">
-      <label for="day"><strong>Day <span id="dayv">0</span></strong>: <span id="stage" aria-live="polite"></span></label>
-      <input id="day" type="range" min="0" max="42" value="0" />
-      <div class="row"><span>Ammonia</span><div class="track"><div class="fill" id="b-nh3" style="background:var(--warn)"></div></div><span id="v-nh3"></span></div>
-      <div class="row"><span>Nitrite</span><div class="track"><div class="fill" id="b-no2" style="background:var(--sand)"></div></div><span id="v-no2"></span></div>
-      <div class="row"><span>Nitrate</span><div class="track"><div class="fill" id="b-no3" style="background:var(--plant)"></div></div><span id="v-no3"></span></div>
-    </div>
-  </div>
+  )}
 </div>
 
+<style is:global>
+  /* ---------- shared week info box ---------- */
+  .nc-week { border: 1px solid var(--line); border-radius: 12px; background: var(--bg); padding: 1rem 1.1rem; }
+  .nc-week h3 { margin: 0 0 .5rem; font-size: 1.2rem; }
+  .nc-cols { display: grid; gap: .9rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 44rem) { .nc-cols { grid-template-columns: 1fr; } }
+  .nc-cols h4 { margin: 0 0 .25rem; font: 600 .8rem var(--head); text-transform: uppercase; letter-spacing: .05em; color: var(--water); }
+  .nc-cols p { margin: 0; font-size: .95rem; }
+  .nc-read { list-style: none; margin: 0; padding: 0; display: grid; gap: .2rem; font-size: .92rem; }
+  .nc-read li { display: flex; justify-content: space-between; gap: .6rem; }
+  .nc-read b { font: 600 .9rem var(--head); }
+  .dot { display: inline-block; width: .65rem; height: .65rem; border-radius: 50%; margin-right: .35rem; vertical-align: 0; }
+  .d-nh3 { background: var(--warn); } .d-no2 { background: var(--sand); } .d-no3 { background: var(--plant); }
+
+  /* ---------- idea 1: chart ---------- */
+  .nc-chart { width: 100%; height: auto; display: block; overflow: visible; }
+  .nc-chart .ax { stroke: var(--line); stroke-width: 1.5; }
+  .nc-chart .wk { font: 500 12px var(--head); fill: var(--muted); text-anchor: middle; }
+  .nc-chart .ph { opacity: .5; }
+  .nc-chart .flag line { stroke: var(--muted); stroke-dasharray: 3 3; }
+  .nc-chart .flag text { font: 600 11px var(--head); fill: var(--ink); }
+  .nc-chart .fish line { stroke: var(--plant); stroke-width: 2; stroke-dasharray: none; }
+  .nc-chart .fish text { fill: var(--plant); font-size: 12px; }
+  .nc-chart .marker { stroke: var(--water); stroke-width: 2.5; }
+  .nc-legend { display: flex; gap: 1rem; flex-wrap: wrap; font: 500 .9rem var(--head); margin: .3rem 0 .6rem; }
+  .nc-slider { width: 100%; margin: .4rem 0 1rem; accent-color: var(--water); }
+
+
+  /* ---------- idea 3: checker ---------- */
+  .nc-check { margin-top: 1.4rem; border-top: 1px solid var(--line); padding-top: 1.2rem; }
+  .nc-check h3 { margin: 0 0 .3rem; }
+  .nc-check > p { margin: 0 0 .8rem; color: var(--muted); }
+  .nc-fields { display: grid; gap: .8rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  @media (max-width: 44rem) { .nc-fields { grid-template-columns: 1fr; } }
+  .nc-fields label { display: grid; gap: .3rem; font: 500 .95rem var(--head); }
+  .nc-fields select { font: inherit; padding: .5rem .6rem; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+  .nc-result { margin-top: 1rem; border-radius: 12px; padding: .9rem 1.1rem; border: 2px solid var(--line); background: var(--surface); }
+  .nc-result h4 { margin: 0 0 .3rem; font: 700 1.1rem var(--head); }
+  .nc-result p { margin: .2rem 0 0; }
+  .nc-result[data-tone="wait"] { border-color: var(--sand); }
+  .nc-result[data-tone="go"] { border-color: var(--plant); }
+  .nc-result[data-tone="start"] { border-color: var(--water); }
+  .nc-result[data-tone="warn"] { border-color: var(--warn); }
+
+  .nc-head { display:flex; justify-content:space-between; align-items:baseline; gap:1rem; flex-wrap:wrap; margin:.6rem 0 .4rem; }
+  .nc-day { font: 600 1.05rem var(--head); }
+  .nc-toggle { font: 500 .9rem var(--head); padding: .4rem .9rem; border-radius: 99px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .nc-toggle:hover { border-color: var(--water); }
+  .nc-bars { display: grid; gap: .6rem; margin: .4rem 0 1rem; }
+  .nc-bars .row { grid-template-columns: 5.5rem 1fr 6.5rem; }
+  .nc-bars .row b { font: 600 .9rem var(--head); text-align: right; }
+  .nc-method { border-left: 4px solid var(--plant); padding: .2rem 1rem; color: var(--muted); margin: .2rem 0 1rem; }
+  @media (max-width: 44rem) { .nc-chart .flag text { font-size: 20px; } .nc-chart .wk { font-size: 20px; } }
+  .nc-chart-wrap[hidden], .nc-bars[hidden] { display: none; }
+
+  /* Open / close */
+  .nc-fold { font: 600 .95rem var(--head); padding: .55rem 1.1rem; border-radius: 99px; border: 1px solid var(--water); background: var(--surface); color: var(--water); cursor: pointer; }
+  .nc-fold:hover { background: color-mix(in srgb, var(--water) 10%, var(--surface)); }
+  .nc-body[hidden] { display: none; }
+  .nc-foot { display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+  .nc-foot .more { margin: 0; }
+</style>
+
 <script>
-  const g = (d: number, m: number, w: number) => Math.exp(-((d - m) ** 2) / (2 * w * w));
-  const sig = (d: number, m: number, w: number) => 1 / (1 + Math.exp(-(d - m) / w));
-  const slider = document.getElementById('day') as HTMLInputElement | null;
-  function set(k: string, v: number, label: string) {
-    const bar = document.getElementById('b-' + k);
-    const out = document.getElementById('v-' + k);
-    if (bar) bar.style.width = Math.min(100, v * 100) + '%';
-    if (out) out.textContent = label;
+
+  const WEEKS = [
+    { t: 'Week 1: ammonia builds up', happens: 'You add an ammonia source. There are no helpful bacteria yet, so ammonia builds up. Near the end of the week the first bacteria start and a little nitrite appears.', todo: 'Keep the ammonia source going. Leave the filter running day and night. No water changes.', read: ['rising', 'appears', '0'] },
+    { t: 'Week 2: the first bacteria get to work', happens: 'The first bacteria eat the ammonia: it peaks and then drops. They turn it into nitrite, which keeps rising.', todo: 'Keep adding the ammonia source. Test every 2 to 3 days.', read: ['high, then dropping', 'rising', '0'] },
+    { t: 'Week 3: ammonia is handled', happens: 'Ammonia now drops to 0 within a day. Nitrite peaks: that is normal and a good sign. Nitrate appears. With bottled bacteria or media from an established tank, things often go faster.', todo: 'Keep adding the ammonia source. Do you measure 0 for both ammonia and nitrite? Then do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your fish can move in.', read: ['0 within a day', 'high', 'appears'], fish: true },
+    { t: 'Week 4: nitrite drops to 0', happens: 'The second bacteria turn nitrite into nitrate. Nitrite falls and nitrate rises. In this example the tank is cycled by the end of the week.', todo: 'When ammonia and nitrite are both 0, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Your tank is cycled.', read: ['0', 'falling to 0', 'rising'], fish: true },
+    { t: 'Week 5: add your first fish 🐟', happens: 'The tank is cycled. Nitrate keeps rising from all the ammonia that was turned over.', todo: 'Do a big water change so nitrate is under 20 ppm. Add a few fish, not all at once, and keep testing the first weeks.', read: ['0', '0', 'under 20 after the water change'], fish: true },
+  ];
+  const ICON = ['d-nh3', 'd-no2', 'd-no3'], NAME = ['Ammonia', 'Nitrite', 'Nitrate'];
+  function weekHtml(i: number) {
+    const w = WEEKS[i];
+    return `<h3>${w.t}</h3><div class="nc-cols">
+      <div><h4>What happens</h4><p>${w.happens}</p></div>
+      <div><h4>What you do</h4><p>${w.todo}</p></div>
+      <div><h4>What you measure</h4><ul class="nc-read">${w.read.map((r, k) => `<li><span><i class="dot ${ICON[k]}"></i>${NAME[k]}</span><b>${r}</b></li>`).join('')}</ul></div>
+    </div>`;
   }
-  function update() {
-    if (!slider) return;
-    const d = +slider.value;
-    const nh3 = d < 3 ? (d / 3) * 0.3 : Math.max(0, g(d, 9, 5) * (1 - sig(d, 17, 2) * 0.98));
-    const no2 = Math.max(0, g(d, 19, 5) * sig(d, 9, 2) * (1 - sig(d, 31, 2) * 0.97));
-    const no3 = sig(d, 22, 5) * 0.9;
-    set('nh3', nh3, nh3 > 0.05 ? 'high' : '0');
-    set('no2', no2, no2 > 0.05 ? 'high' : '0');
-    set('no3', no3, no3 > 0.1 ? 'rising' : 'low');
-    const dayv = document.getElementById('dayv');
-    const stage = document.getElementById('stage');
-    if (dayv) dayv.textContent = String(d);
-    if (stage) stage.textContent =
-      d < 7 ? 'ammonia starts to build' :
-      d < 18 ? 'ammonia bacteria are growing' :
-      d < 32 ? 'nitrite peaks, then falls' : 'cycled and stable';
+  const D = 35;
+  const sig = (d, m, w) => 1 / (1 + Math.exp(-(d - m) / w));
+  // Shapes like a typical real cycle: a small ammonia hill, then a higher nitrite hill, then nitrate keeps rising.
+  const bell = (d, m, a, b) => Math.exp(-((d - m) ** 2) / (2 * (d < m ? a : b) ** 2));
+  const nh3 = (d) => 0.35 * bell(d, 8.5, 2.8, 2.6);
+  const no2 = (d) => 0.55 * bell(d, 15, 3.5, 5);
+  const no3 = (d) => 0.9 * sig(d, 27, 4.5);
+  const PEAK = { nh3: 0.35, no2: 0.55, no3: 0.9 };
+  const X0 = 30, X1 = 690, Y0 = 215, Y1 = 50;
+  const x = (d) => X0 + (d / D) * (X1 - X0), y = (v) => Y0 - v * (Y0 - Y1);
+  const path = (f) => Array.from({ length: D * 2 + 1 }, (_, i) => { const d = i / 2; return `${i ? 'L' : 'M'}${x(d).toFixed(1)},${y(f(d)).toFixed(1)}`; }).join('');
+  const FLAGS = [[0, 'Start'], [5, 'Nitrite appears'], [14, 'Ammonia 0'], [28, 'Nitrite 0']];
+  document.getElementById('chart').innerHTML =
+    `<line class="ax" x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}"/>` +
+    [1, 2, 3, 4, 5].map((w) => `<text class="wk" x="${x(w * 7 - 3.5)}" y="${Y0 + 24}">Week ${w}</text><line class="ax" x1="${x(w * 7)}" y1="${Y0}" x2="${x(w * 7)}" y2="${Y0 + 6}"/>`).join('') +
+    FLAGS.map(([d, t]) => `<g class="flag"><line x1="${x(d)}" y1="${Y1 - 8}" x2="${x(d)}" y2="${Y0}"/><text x="${x(d) + 4}" y="${Y1 + 4}">${t}</text></g>`).join('') +
+    `<path d="${path(nh3)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--warn) 22%, transparent)"/>` +
+    `<path d="${path(no2)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--sand) 28%, transparent)"/>` +
+    `<path d="${path(no3)}L${x(D)},${Y0}L${x(0)},${Y0}Z" fill="color-mix(in srgb, var(--plant) 20%, transparent)"/>` +
+    `<path d="${path(nh3)}" fill="none" stroke="var(--warn)" stroke-width="3"/>` +
+    `<path d="${path(no2)}" fill="none" stroke="var(--sand)" stroke-width="3"/>` +
+    `<path d="${path(no3)}" fill="none" stroke="var(--plant)" stroke-width="3"/>` +
+    `<line class="marker" id="mk" y1="${Y1 - 12}" y2="${Y0}"/>`;
+  const cday = document.getElementById('c-day');
+  const word = (v, hi) => v > 0.6 ? 'high' : v > 0.08 ? (hi ? 'rising' : 'some') : '0';
+  function setBar(k, v, label) { document.getElementById('b-' + k).style.width = Math.min(100, v * 100) + '%'; document.getElementById('v-' + k).textContent = label; }
+  function upd() {
+    const d = +cday.value, w = Math.min(4, Math.floor(d / 7));
+    const mk = document.getElementById('mk'); mk.setAttribute('x1', x(d)); mk.setAttribute('x2', x(d));
+    const lvl = (f, k) => f(d) / PEAK[k];
+    const w3 = (v, rising) => v > 0.6 ? 'high' : v > 0.08 ? (rising ? 'rising' : 'some') : '0';
+    setBar('nh3', lvl(nh3, 'nh3'), w3(lvl(nh3, 'nh3'), d < 8.5));
+    setBar('no2', lvl(no2, 'no2'), w3(lvl(no2, 'no2'), d < 15));
+    setBar('no3', lvl(no3, 'no3'), lvl(no3, 'no3') > 0.6 ? 'high' : lvl(no3, 'no3') > 0.05 ? 'rising' : '0');
+    document.getElementById('nc-day').textContent = `Week ${w + 1} · Day ${d}`;
+    document.getElementById('c-week').innerHTML = weekHtml(w);
   }
-  slider?.addEventListener('input', update);
-  update();
+  cday.addEventListener('input', upd); upd();
+  const tog = document.getElementById('nc-toggle');
+  tog.addEventListener('click', () => {
+    const on = tog.getAttribute('aria-pressed') !== 'true';
+    tog.setAttribute('aria-pressed', String(on));
+    tog.textContent = on ? '📊 Show as bars' : '📈 Show as graph';
+    document.getElementById('nc-chart-wrap').hidden = !on;
+    document.getElementById('nc-bars').hidden = on;
+  });
+
+  // ---------- idea 3: "Is my tank ready?" ----------
+  const OPT = { nh3: ['0', '0.25', '0.5', '1', '2', '4', '8'], no2: ['0', '0.25', '0.5', '1', '2', '5'], no3: ['0', '5', '10', '20', '40', '80', '160'] };
+  function verdict(a, n, t) {
+    if (a === 0 && n === 0 && t === 0) return ['start', 'Not started yet', 'There is nothing to work with yet. Add an ammonia source (a pinch of fish food every day, or pure ammonia to about 2 ppm), then test again in 3 days.'];
+    if (a > 0 && n === 0) return ['wait', 'Week 1: waiting for the first bacteria', 'Ammonia is there, but nothing is eating it yet. This is normal at the start. Keep ammonia at about 2 ppm and test again in 2 to 3 days.'];
+    if (a > 0 && n > 0) return ['wait', 'Week 2: the first bacteria are working', 'Ammonia is being turned into nitrite. Keep adding ammonia when it drops and test again in 2 to 3 days. Not ready for fish yet.'];
+    if (a === 0 && n > 0) return ['wait', 'Week 3 to 4: waiting for nitrite to drop', 'Ammonia is handled. Now the second bacteria need time. Keep adding ammonia. ' + (n >= 5 ? 'Nitrite is very high: a 30–50% water change can help it move again. ' : '') + 'Test again in 2 to 3 days.'];
+    if (t > 20) return ['go', 'Cycled: do a big water change first', 'Ammonia and nitrite are 0. Do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Then do a big water change so nitrate is under 20 ppm, and add your first few fish.'];
+    return ['go', 'Ready for your first fish 🐟', 'Ammonia and nitrite are 0 and nitrate is low. If you did not yet, do a last check: add an ammonia source or a pinch of fish food and test again after 1 to 2 days. Still both 0? Add a few fish, not all at once, and keep testing the first weeks.'];
+  }
+  document.querySelectorAll('[data-checker]').forEach((box, k) => {
+    const sel = (id, label, list, def, dot) => `<label><span><i class="dot ${dot}"></i>${label} (ppm)</span><select data-k="${id}">${list.map((v) => `<option${v === def ? ' selected' : ''}>${v}</option>`).join('')}</select></label>`;
+    const defs = k === 0 ? ['0', '2', '10'] : ['0', '0', '40'];
+    box.innerHTML = `<h3>Is my tank fully cycled?</h3><p>Fill in your own test results and see where you are.</p>
+      <div class="nc-fields">${sel('nh3', 'Ammonia', OPT.nh3, defs[0], 'd-nh3')}${sel('no2', 'Nitrite', OPT.no2, defs[1], 'd-no2')}${sel('no3', 'Nitrate', OPT.no3, defs[2], 'd-no3')}</div>
+      <div class="nc-result" aria-live="polite"></div>`;
+    const run = () => {
+      const v = (key) => parseFloat(box.querySelector(`[data-k="${key}"]`).value);
+      const [tone, h, p] = verdict(v('nh3'), v('no2'), v('no3'));
+      const r = box.querySelector('.nc-result'); r.dataset.tone = tone; r.innerHTML = `<h4>${h}</h4><p>${p}</p>`;
+    };
+    box.addEventListener('change', run); run();
+  });
+
+  // Open / close the whole tool (the home page starts closed, so it does not take much space)
+  const fold = document.getElementById('nc-fold');
+  const ncBody = document.getElementById('nc-body');
+  fold?.addEventListener('click', () => {
+    const open = ncBody!.hidden;
+    ncBody!.hidden = !open;
+    fold.setAttribute('aria-expanded', String(open));
+    fold.textContent = open ? 'Close ▴' : 'Open the cycle guide ▾';
+    if (!open) document.getElementById('cycle')?.scrollIntoView({ block: 'nearest' });
+  });
 </script>
