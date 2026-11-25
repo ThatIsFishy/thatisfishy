@@ -6,7 +6,8 @@ description: ''
 intro: Introduction
 showDate: true
 date: 2026-11-23
-notice: coming
+cover: null
+notice: empty
 comingSoonMessage: Notice message
 ---
 
