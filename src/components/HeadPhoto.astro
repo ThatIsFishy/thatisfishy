@@ -24,7 +24,7 @@ const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
   {cover.credit && <p class="hp-credit" data-pagefind-ignore>Credit: {isLink ? <a href={cover.credit} rel="noopener">{cover.credit}</a> : cover.credit}</p>}
 </div>
 
-<div class="lb single" hidden role="dialog" aria-modal="true" aria-labelledby="hp-title" data-hp data-pagefind-ignore>
+<div class="lb single" hidden role="dialog" aria-modal="true" aria-labelledby="hp-title" data-hp data-pagefind-ignore="all">
   <div class="lb-inner">
     <figure class="lb-photo">
       <div class="lb-imgwrap">

@@ -54,7 +54,7 @@ const used = items.filter((i) => slots.some((s) => s.includes(i.key)));
 const title = kind === 'article' ? 'Other helpful knowledge' : 'More from my journey';
 ---
 {first.length > 0 && (
-  <section class="rec rel" data-rel data-slots={JSON.stringify(slots)} data-pagefind-ignore>
+  <section class="rec rel" data-rel data-slots={JSON.stringify(slots)} data-pagefind-ignore="all">
     <div class="section-head">
       <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> {title}</h2>
     </div>
