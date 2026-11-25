@@ -1,7 +1,7 @@
 ---
 title: Choosing your first tank size
 description: ''
-intro: Why a bigger tank is usually the easier tank, and a sensible size to start with.
+intro: Why a bigger tank is usually the easier tank, and a sensible size to start with. [Click here](https://thatisfishy.netlify.app/about/)
 showDate: true
 date: 2026-11-23
 showUpdated: true
