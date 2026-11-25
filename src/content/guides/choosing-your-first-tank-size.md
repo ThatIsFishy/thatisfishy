@@ -36,3 +36,9 @@ Around 60 litres is a good place to begin. It fits on a sturdy table or cabinet,
 - **Water changes:** think about how you will get water in and out. A bucket and a hose are fine.
 
 Pick the tank first, then choose fish that suit its size.
+
+{{note:yellow|justify}}
+
+Side note text
+
+{{/note}}
