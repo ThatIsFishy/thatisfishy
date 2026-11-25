@@ -6,6 +6,13 @@ showDate: true
 date: 2026-11-23
 showUpdated: true
 updated: 2026-11-23
+cover:
+  image: /images/uploads/sample-tank-1.svg
+  alt: ''
+  source: own
+  credit: Credit
+  intro: Photo introduction
+  body: Main text
 labels:
   - equipment
 notice: none
