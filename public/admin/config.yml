@@ -40,13 +40,12 @@ collections:
           - label: Source of the photo
             name: source
             widget: select
-            required: false
             default: own
             options:
               - { label: "My photo (green)", value: own }
               - { label: "AI generated (blue)", value: ai }
               - { label: "External source (orange)", value: external }
-            hint: "Shown as a coloured frame and label on the photo."
+            hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
@@ -93,13 +92,12 @@ collections:
           - label: Source of the photo
             name: source
             widget: select
-            required: false
             default: own
             options:
               - { label: "My photo (green)", value: own }
               - { label: "AI generated (blue)", value: ai }
               - { label: "External source (orange)", value: external }
-            hint: "Shown as a coloured frame and label on the photo."
+            hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
@@ -200,13 +198,12 @@ collections:
           - label: Source of the photo
             name: source
             widget: select
-            required: false
             default: own
             options:
               - { label: "My photo (green)", value: own }
               - { label: "AI generated (blue)", value: ai }
               - { label: "External source (orange)", value: external }
-            hint: "Shown as a coloured frame and label on the photo."
+            hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
@@ -244,13 +241,12 @@ collections:
           - label: Source of the photo
             name: source
             widget: select
-            required: false
             default: own
             options:
               - { label: "My photo (green)", value: own }
               - { label: "AI generated (blue)", value: ai }
               - { label: "External source (orange)", value: external }
-            hint: "Shown as a coloured frame and label on the photo."
+            hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
@@ -307,13 +303,12 @@ collections:
           - label: Source of the photo
             name: source
             widget: select
-            required: false
             default: own
             options:
               - { label: "My photo (green)", value: own }
               - { label: "AI generated (blue)", value: ai }
               - { label: "External source (orange)", value: external }
-            hint: "Shown as a coloured frame and label on the photo."
+            hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
