@@ -132,10 +132,9 @@ export async function introHtml(text?: string): Promise<string> {
   return (await introMd.render(t)).code;
 }
 // As plain text, for the cards, search engines and share previews (no #, *, link addresses).
-// Only the first paragraph is used (headings and lists further down are left out).
+// The whole text is used, all paragraphs.
 export function plainText(text?: string): string {
-  const first = String(text ?? '').split(/\n\s*\n/).map((b) => b.trim()).find((b) => b && !/^#{1,6}\s/.test(b)) ?? '';
-  return first
+  return String(text ?? '')
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')            // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')         // [text](link) -> text
     .replace(/^\s{0,3}#{1,6}\s+/gm, '')              // headings
