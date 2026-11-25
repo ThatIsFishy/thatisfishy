@@ -555,9 +555,10 @@ footer.site .brk1 { margin: 0 0 1.5rem; }
 }
 
 /* ===== Heading photo: on the right of the heading, between the title and the line with a bubble ===== */
-.head.has-photo { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 1.6rem; align-items: start; }
+.head.has-photo { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 1.6rem; align-items: start; }
 .head.has-photo .lead { max-width: none; }
-.head-photo { margin: .3rem 0 0; max-width: 22rem; width: 100%; justify-self: end; }
+.head-photo { margin: -.6rem 0 0; max-width: 30rem; width: 100%; justify-self: start; }  /* next to the text, a little higher */
+.band:has(.head.has-photo) { padding-bottom: 2.6rem; }  /* a little room under the credit on the home page */
 .hp-btn {
   position: relative; display: block; width: 100%; aspect-ratio: 4 / 3; padding: 0; overflow: hidden; cursor: zoom-in;
   border-radius: 12px; border: 3px solid var(--line); background: var(--surface);
@@ -615,3 +616,14 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 .grid.three .rec-item .tiles-home { height: auto; }
 .grid.three .rec-item .tile { width: 100%; height: auto; min-height: 0; aspect-ratio: 4 / 3; }
 .grid.three .rec-item:has(.tile) { align-self: start; }
+
+/* Articles, stories and text pages WITH a heading photo: the top part (back link, title, introduction + photo,
+   line with a bubble) uses a wider area than the reading column, so the photo can be big.
+   The Main text below stays in the narrow column. Without a heading photo nothing changes. */
+.column:has(> .head.has-photo) { --top-w: min(60rem, calc(100vw - 2 * clamp(1rem, 3vw, 3rem))); }
+.column:has(> .head.has-photo) > .back,
+.column:has(> .head.has-photo) > h1,
+.column:has(> .head.has-photo) > .head,
+.column:has(> .head.has-photo) > .head + .brk1 {
+  width: var(--top-w); max-width: none; margin-left: calc((100% - var(--top-w)) / 2); margin-right: calc((100% - var(--top-w)) / 2);
+}

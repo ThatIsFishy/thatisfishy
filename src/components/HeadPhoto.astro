@@ -53,6 +53,8 @@ const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
   const lb = document.querySelector<HTMLElement>('[data-hp]');
   const openBtn = document.querySelector<HTMLElement>('[data-hp-open]');
   if (lb && openBtn) {
+    // Move the big view to the end of the page: a coloured band (home page) would otherwise cut it off.
+    document.body.appendChild(lb);
     const img = lb.querySelector<HTMLImageElement>('.lb-img')!;
     const closeBtn = lb.querySelector<HTMLElement>('[data-hp-close]')!;
 
