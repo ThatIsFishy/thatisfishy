@@ -1,4 +1,4 @@
-// Adds "Coming soon" and "Nothing here yet" to the editor's Insert menu.
+// Adds "Coming soon" to the editor's Insert menu (for a text that is partly ready).
 // Use one at the end of a long text to show that it continues later. It writes
 // {{notice:coming}} or {{notice:empty}} (with the message after a bar, if you add one), which the site turns into the card.
 (function () {
@@ -15,5 +15,4 @@
     });
   }
   make('notice-coming', 'Coming soon', 'coming');
-  make('notice-empty', 'Nothing here yet', 'empty');
 })();

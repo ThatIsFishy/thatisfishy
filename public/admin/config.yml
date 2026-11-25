@@ -61,9 +61,9 @@ collections:
         dropdown_threshold: 0
         required: false
         hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
-      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, required: false, hint: "The article. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "The article. Use Insert for Photo, Section break and Coming soon." }
 
   - name: journal
     label: Fishy Stories
@@ -103,9 +103,9 @@ collections:
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
-      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, required: false, hint: "The story. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "The story. Use Insert for Photo, Section break and Coming soon." }
 
   - name: gallery
     label: Gallery
@@ -210,9 +210,9 @@ collections:
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
-      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break and Coming soon." }
 
   - name: galleryLabels
     label: Gallery labels
@@ -254,9 +254,9 @@ collections:
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
-      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break and Coming soon." }
 
   - name: shops
     label: Shop Finder
@@ -317,6 +317,6 @@ collections:
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
           - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
-      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Coming soon", value: coming }, { label: "Nothing here yet", value: empty }], hint: "Coming soon or Nothing here yet shows a card under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. To end a long text with a card instead, use Insert in the Main text." }
+      - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break, Coming soon and Nothing here yet." }
+      - { label: Main text, name: body, widget: markdown, required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break and Coming soon." }

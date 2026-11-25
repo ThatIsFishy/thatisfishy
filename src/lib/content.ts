@@ -86,12 +86,14 @@ export async function getNewPages() {
   return (await getAllPages()).filter((e) => !BUILT_IN.includes(e.id) && !RESERVED.includes(e.id));
 }
 
-// Which notice card to show: 'coming', 'empty' or nothing.
+// Which notice card to show for the whole page: 'empty' (Nothing here yet) or nothing.
+// A whole page is never "Coming soon" any more: an old "coming" setting, the old switch and the
+// Shop Finder / Rating System switches all show "Nothing here yet".
 // "fallback" is used only while the page has never been saved with the new notice selection.
 export function noticeOf(data: { notice?: string; comingSoon?: boolean }, fallback?: 'coming' | 'empty'): 'coming' | 'empty' | undefined {
-  if (data.notice === 'coming' || data.notice === 'empty') return data.notice;
+  if (data.notice === 'coming' || data.notice === 'empty') return 'empty';
   if (data.notice === 'none') return undefined;
-  return data.comingSoon ? 'coming' : fallback;
+  return data.comingSoon || fallback ? 'empty' : undefined;
 }
 
 // Gallery entries in the order you set in the CMS (1 first), newest first when the order is equal.

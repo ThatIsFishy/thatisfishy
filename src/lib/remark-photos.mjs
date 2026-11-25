@@ -85,8 +85,9 @@ const LOGO = {
   coming: '<svg class="nlogo" width="190" height="190" aria-hidden="true" focusable="false"><use href="#nl-base" width="100%" height="100%"></use></svg>',
   empty: '<svg class="nlogo" width="219" height="190" aria-hidden="true" focusable="false"><use href="#nl-curtain" width="100%" height="100%"></use></svg>',
 };
-const notice = (kind, message) =>
-  `<div class="card empty-card coming-card">${LOGO[kind]}<h3>${NOTICE[kind][0]}</h3><p>${esc(message || NOTICE[kind][1])}</p></div>`;
+// Inside the Main text it is always "Coming soon" (an older {{notice:empty}} is shown as Coming soon too).
+const notice = (_kind, message) =>
+  `<div class="card empty-card coming-card">${LOGO.coming}<h3>${NOTICE.coming[0]}</h3><p>${esc(message || NOTICE.coming[1])}</p></div>`;
 
 // A notice or break marker may also end up inside a sentence (for example "Main{{notice:coming}}",
 // when it was inserted without an empty line). Such a paragraph is split: the text before it,
