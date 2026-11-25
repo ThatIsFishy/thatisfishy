@@ -10,6 +10,8 @@ intro: |-
   Here you will find articles and stories based on real experiments from my own aquarium life. As a beginner myself, I would like to help other hobbyists who are just figuring things out, or anyone who is simply curious about the journey.
 
   I always say: "Beauty goes beyond the aquascape. It lies in the fact that, for the animals living there, it represents their entire world. A world for which we are responsible."
+
+  [Find out more here](https://thatisfishy.netlify.app/about/)
 showDate: false
 date: 2026-11-23
 showUpdated: false
