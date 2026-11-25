@@ -15,8 +15,9 @@ import { SITE_NAME, SITE_URL, TAGLINE, START_YEAR, SHOW_SHOPS, SHOW_RATING } fro
 import { getLabels, hasLabel, getGalleryLabels, hasGalleryLabel, colorOf, getAllPages, plainText } from '../lib/content';
 
 // index: put this page in the site search. kind: the small label in search results. image: a picture for the result.
-interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; }
-const { title, description: rawDescription = TAGLINE, noindex = false, index = false, kind = 'Page', image } = Astro.props;
+// labels / status: shown in the search results (up to 5 labels after the title; a small "Readable, more coming…" or "Nothing here yet…" box).
+interface Props { title?: string; description?: string; noindex?: boolean; index?: boolean; kind?: string; image?: string; labels?: { name: string; color: string }[]; status?: 'wip' | 'empty'; }
+const { title, description: rawDescription = TAGLINE, noindex = false, index = false, kind = 'Page', image, labels: searchLabels = [], status } = Astro.props;
 // The description may come from the Introduction text, which can hold headings and links: use plain text.
 const description = plainText(rawDescription) || TAGLINE;
 const fullTitle = title ? `${title} – ${SITE_NAME}` : `${SITE_NAME} – ${TAGLINE}`;
@@ -135,6 +136,8 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
     </div>
     <main id="main" data-pagefind-body={index ? '' : undefined} data-pagefind-meta={index ? `type:${kind}` : undefined} data-pagefind-filter={index ? 'type[data-kind]' : undefined} data-kind={index ? kind : undefined}>
       {index && image && <span hidden data-pagefind-meta={`image:${image}`}></span>}
+      {index && searchLabels.length > 0 && <span hidden data-pagefind-ignore data-pagefind-meta="labels">{JSON.stringify(searchLabels.slice(0, 5))}</span>}
+      {index && status && <span hidden data-pagefind-meta={`status:${status}`}></span>}
       <slot />
     </main>
     <SideBubbles />
@@ -188,6 +191,20 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
       const KINDS: Record<string, string> = {
         Article: 'Knowledge Center', Story: 'Fishy Stories', Gallery: 'Gallery', Page: 'Info pages', 'Shop Finder': 'Shop Finder',
       };
+      // Up to 5 labels after the title, in the label colours.
+      function tagsOf(json?: string) {
+        let list: { name: string; color: string }[] = [];
+        try { list = JSON.parse(json ?? '[]'); } catch { list = []; }
+        if (!list.length) return '';
+        return `<span class="s-tags">${list.slice(0, 5).map((l) => `<span class="tag" data-c="" style="--tc:${esc(l.color)}">${esc(l.name)}</span>`).join('')}</span>`;
+      }
+      // At the end of a result: "Readable, more coming…" (builder shrimp) or "Nothing here yet…" (curtain).
+      function statusOf(status?: string) {
+        if (status !== 'wip' && status !== 'empty') return '';
+        const logo = status === 'empty' ? '#nl-curtain' : '#nl-base';
+        const text = status === 'empty' ? 'Nothing here yet…' : 'Readable, more coming…';
+        return `<span class="s-status s-status-${status}"><svg width="34" height="34" aria-hidden="true" focusable="false"><use href="${logo}" width="100%" height="100%"></use></svg><span>${text}</span></span>`;
+      }
       const selected = new Set<string>();   // nothing selected = "All"
       const STEP = 8;                       // results shown at first, and per click on "Show more"
       let shown = STEP;
@@ -225,12 +242,16 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
           if (found.results.length === 0) { sOut.innerHTML = `<div class="s-empty"><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub"></use></svg><svg class="bub sm c2"><use href="#bub"></use></svg><svg class="bub c3"><use href="#bub"></use></svg></div><p>Nothing found for “${esc(term)}”. Try another word.</p></div>`; return; }
           const top = await Promise.all(found.results.slice(0, shown).map((r: any) => r.data()));
           const more = found.results.length - top.length;
+          // The photo: on a computer in a box outside the result, on the left (the titles stay in one line);
+          // on a phone inside the result, on the right. Both are in the page; the stylesheet shows one.
+          const pic = (d: any) => d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" loading="lazy" />` : '';
           sOut.innerHTML = '<ul>' + top.map((d: any) => `
-            <li><a href="${d.url}">
-              ${d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" loading="lazy" />` : ''}
+            <li><span class="s-photo">${pic(d)}</span><a href="${d.url}">
               <span class="s-text"><span class="s-kind">${esc(KINDS[d.meta.type] ?? d.meta.type ?? 'Page')}</span>
-              <strong>${esc(d.meta.title ?? '')}</strong>
+              <span class="s-title"><strong>${esc(d.meta.title ?? '')}</strong>${tagsOf(d.meta.labels)}</span>
               <span class="s-ex">${d.excerpt}</span></span>
+              ${d.meta.image ? `<span class="s-photo-in">${pic(d)}</span>` : ''}
+              ${statusOf(d.meta.status)}
             </a></li>`).join('') + '</ul>'
             + (more > 0 ? `<p class="s-more"><button class="chip" type="button" data-more>Show more <span class="s-n">${more} left</span></button></p>` : '');
         } catch (err) {

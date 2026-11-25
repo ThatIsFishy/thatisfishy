@@ -657,3 +657,36 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 .prose .sidenote[data-a="center"] :is(p, li) { text-align: center; }
 .prose .sidenote[data-a="right"] :is(p, li) { text-align: right; }
 .sidenote ul, .sidenote ol { padding-left: 1.2rem; }
+
+/* Search results: labels after the title (up to 5), and at the end a small status box with a vertical line:
+   the logo on top, "Readable, more coming…" or "Nothing here yet…" below it. */
+#search-results .s-title { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .5rem; }  /* title, then the labels on the same line */
+#search-results .s-tags { display: inline-flex; flex-wrap: wrap; gap: .3rem; }
+#search-results .s-tags .tag { font-size: .72rem; padding: .05rem .5rem; }
+#search-results .s-text { flex: 1; min-width: 0; }
+#search-results .s-status {
+  flex: none; width: 6.5rem; align-self: stretch; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .25rem;
+  border-left: 1px solid var(--line); padding-left: .7rem; margin-left: .2rem;
+  font: 400 .75rem/1.25 var(--body); color: var(--muted); text-align: center;
+}
+#search-results .s-status svg { color: var(--water); }
+#search-results .s-status-empty svg { width: 40px; }
+/* Phone: a smaller status box, so the text gets more room and the result gets shorter (the photo keeps its size). */
+@media (max-width: 40rem) {
+  #search-results .s-status { width: 3.6rem; padding-left: .45rem; margin-left: 0; gap: .15rem; font-size: .62rem; line-height: 1.2; }
+  #search-results .s-status svg { width: 24px; height: 24px; }
+  #search-results .s-status-empty svg { width: 28px; }
+}
+
+/* Search results: the photo. Computer: a 4:3 box outside the result, on the left (empty space when there is no photo,
+   so all titles start in one line). Phone: inside the result, on the right, before the status box. */
+#search-results li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: .6rem; align-items: center; }
+#search-results .s-photo img, #search-results .s-photo-in img { display: block; object-fit: cover; aspect-ratio: 4 / 3; border-radius: 8px; }
+#search-results .s-photo img { width: 100%; height: auto; border-radius: 10px; border: 1px solid var(--line); box-sizing: border-box; }
+#search-results .s-photo-in { display: none; flex: none; }
+#search-results .s-photo-in img { width: 4.5rem; height: auto; }
+@media (max-width: 40rem) {
+  #search-results li { display: block; }
+  #search-results .s-photo { display: none; }
+  #search-results .s-photo-in { display: block; }
+}
