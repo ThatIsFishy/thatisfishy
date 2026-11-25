@@ -10,13 +10,13 @@ export async function getStaticPaths() {
   return (await getNewPages()).map((e) => ({ params: { page: e.id }, props: { id: e.id } }));
 }
 const { id } = Astro.props;
-const { data, Content, hasBody, body } = await getPage(id);
+const { data, Content, hasBody, body, headings } = await getPage(id);
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} index kind="Page" image={coverOf(data)?.image}>
   <div class="column">
     <h1>{data.title}</h1>
     <EntryHead data={data} body={body} />
-    <MainText hasBody={hasBody && !notice}><Content /></MainText>
+    <MainText hasBody={hasBody && !notice} headings={headings} title={data.title}><Content /></MainText>
   </div>
 </Base>

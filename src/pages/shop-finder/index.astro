@@ -11,7 +11,7 @@ if (!SHOW_SHOPS) return Astro.redirect('/');
 
 const shops = (await getCollection('shops')).sort((a, b) => a.data.name.localeCompare(b.data.name));
 const types = [...new Set(shops.flatMap((s) => s.data.types))].sort();
-const { data, Content, hasBody, body } = await getPage('shops');
+const { data, Content, hasBody, body, headings } = await getPage('shops');
 // The notice (Coming soon / Nothing here yet) is chosen in the CMS (Page texts → Shop Finder).
 // Until the page has been saved once with that choice, SHOPS_COMING_SOON in consts.ts decides.
 const fallback = SHOPS_COMING_SOON ? 'coming' : undefined;
@@ -21,7 +21,7 @@ const notice = noticeOf(data, fallback);
   {SHOW_RATING && <p class="crossref">How do I rate shops? <a href="/rating-system/">See the Rating System →</a></p>}
   <h1>{data.title}</h1>
   <EntryHead data={data} body={body} noticeFallback={fallback} noticeMessage="A hand-picked list of local aquarium shops, to help you find where to buy. I don’t sell anything here. It isn’t ready yet, so check back soon." />
-  <MainText hasBody={hasBody && !notice}><Content /></MainText>
+  <MainText hasBody={hasBody && !notice} headings={headings} title={data.title}><Content /></MainText>
 
   {!notice && (
     <Fragment>

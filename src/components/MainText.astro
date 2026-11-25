@@ -1,15 +1,20 @@
 ---
 import Break3 from './Break3.astro';
+import Toc from './Toc.astro';
 
 // The main text, closed by three bubbles ("the text ends here"). Nothing shows when the text is empty.
 // With `before`, three bubbles also come first: use it when something else (cards, photos) sits above the text.
-interface Props { hasBody?: boolean; before?: boolean; }
-const { hasBody = true, before = false } = Astro.props;
+// With 3 or more headings (H2/H3) the text starts with "On this page" (a table of contents, see Toc.astro).
+interface Props { hasBody?: boolean; before?: boolean; headings?: { depth: number; slug: string; text: string }[]; title?: string; }
+const { hasBody = true, before = false, headings = [], title = '' } = Astro.props;
 ---
 {hasBody && (
   <Fragment>
     {before && <Break3 />}
-    <div class="prose"><slot /></div>
+    <div class="main-text">
+      <Toc headings={headings} title={title} />
+      <div class="prose"><slot /></div>
+    </div>
     <Break3 />
   </Fragment>
 )}

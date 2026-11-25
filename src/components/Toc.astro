@@ -1,0 +1,94 @@
+---
+// "On this page": a table of contents at the start of the Main text, built from its headings (H2 and H3).
+// Only when the Main text has 3 or more headings. Always closed when the page opens.
+// While the Main text is read it sticks under the top menu as a thin bar and shows the page title.
+// Open: click the bar. Close: click the bar again, click a heading (it scrolls there), click outside, or Esc.
+interface Props { headings?: { depth: number; slug: string; text: string }[]; title?: string; }
+const { headings = [], title = '' } = Astro.props;
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+{items.length >= 3 && (
+  <nav class="toc" aria-label="On this page" data-toc data-pagefind-ignore>
+    <button class="toc-bar" type="button" aria-expanded="false">
+      <svg class="toc-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+        <g fill="currentColor"><circle cx="4.5" cy="6" r="1.6" /><circle cx="4.5" cy="12" r="1.6" /><circle cx="4.5" cy="18" r="1.6" /></g>
+        <g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6h11M9 12h11M9 18h11" /></g>
+      </svg>
+      <span class="toc-label" data-title={title}>On this page</span>
+      <span class="toc-arrow" aria-hidden="true">▾</span>
+    </button>
+    <ol class="toc-list" hidden>
+      {items.map((h) => <li class:list={['toc-item', { 'toc-h3': h.depth === 3 }]}><a href={`#${h.slug}`}>{h.text}</a></li>)}
+    </ol>
+  </nav>
+)}
+
+<style is:global>
+  /* The bar sticks under the top menu while its Main text is on screen (the Main text wraps it). */
+  .toc { position: sticky; top: var(--top-h, 4rem); z-index: 4; margin: 0 0 1.4rem; }
+  .toc-bar {
+    display: flex; align-items: center; gap: .6rem; width: 100%; padding: .55rem .9rem; cursor: pointer;
+    font: 600 1rem var(--head); color: var(--ink); text-align: left;
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    transition: box-shadow .15s, border-radius .15s;
+  }
+  .toc-bar:hover { border-color: var(--water); }
+  .toc-icon { flex: none; color: var(--water); }
+  .toc-label { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .toc-arrow { flex: none; color: var(--muted); }
+  .toc.stuck .toc-bar { box-shadow: 0 6px 16px color-mix(in srgb, var(--ink) 14%, transparent); }
+  .toc.open .toc-bar { border-radius: 10px 10px 0 0; }
+  .toc-list {
+    position: absolute; left: 0; right: 0; top: 100%; margin: 0; padding: .4rem; list-style: none;
+    max-height: min(60vh, 26rem); overflow: auto;
+    background: var(--surface); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 10px 10px;
+    box-shadow: 0 10px 22px color-mix(in srgb, var(--ink) 16%, transparent);
+  }
+  .toc-list[hidden] { display: none; }
+  .toc-item a {
+    display: block; padding: .4rem .6rem; border-radius: 7px; text-decoration: none;
+    color: var(--ink); font: 400 1rem var(--body); text-align: left;
+  }
+  .toc-item.toc-h3 a { padding-left: 2rem; }   /* H3: same size, one step in */
+  .toc-item a:hover, .toc-item a:focus-visible { background: color-mix(in srgb, var(--water) 12%, var(--surface)); }
+  /* A heading reached from the list is not hidden under the menu and the bar. */
+  .main-text .prose :is(h2, h3) { scroll-margin-top: calc(var(--top-h, 4rem) + 4rem); }
+</style>
+
+<script>
+  // The height of the top menu (it changes when the search bar opens), used for the sticky position.
+  const topBar = document.querySelector<HTMLElement>('.top');
+  const setTop = () => document.documentElement.style.setProperty('--top-h', `${topBar?.offsetHeight ?? 64}px`);
+  setTop();
+  if (topBar && 'ResizeObserver' in window) new ResizeObserver(setTop).observe(topBar);
+
+  document.querySelectorAll<HTMLElement>('[data-toc]').forEach((toc) => {
+    const bar = toc.querySelector<HTMLButtonElement>('.toc-bar')!;
+    const list = toc.querySelector<HTMLElement>('.toc-list')!;
+    const label = toc.querySelector<HTMLElement>('.toc-label')!;
+    const arrow = toc.querySelector<HTMLElement>('.toc-arrow')!;
+
+    function setOpen(open: boolean) {
+      list.hidden = !open;
+      toc.classList.toggle('open', open);
+      bar.setAttribute('aria-expanded', String(open));
+      arrow.textContent = open ? '▴' : '▾';
+    }
+    bar.addEventListener('click', () => setOpen(list.hidden));
+    list.addEventListener('click', (e) => { if ((e.target as HTMLElement).closest('a')) setOpen(false); });
+    document.addEventListener('click', (e) => { if (!toc.contains(e.target as Node)) setOpen(false); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !list.hidden) { setOpen(false); bar.focus(); } });
+
+    // Stuck under the menu: show the page title instead of "On this page".
+    function onScroll() {
+      const topH = topBar?.offsetHeight ?? 64;
+      const stuck = toc.getBoundingClientRect().top <= topH + 1 && window.scrollY > 0;
+      if (stuck === toc.classList.contains('stuck')) return;
+      toc.classList.toggle('stuck', stuck);
+      label.textContent = stuck && label.dataset.title ? label.dataset.title : 'On this page';
+    }
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    onScroll();
+  });
+</script>

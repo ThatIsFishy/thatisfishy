@@ -21,7 +21,7 @@ export async function getStaticPaths() {
   }));
 }
 const { label, labels, guides } = Astro.props;
-const { Content } = await render(label);
+const { Content, headings } = await render(label);
 const hasBody = Boolean(label.body?.trim());
 // A label that has guides shows them, whatever notice is set: the notice only applies while the label is empty.
 const head = guides.length > 0 ? { ...label.data, notice: 'none' } : label.data;
@@ -39,7 +39,7 @@ const description = label.data.description ?? label.data.intro ?? `Beginner arti
           {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
         </div>
       )}
-      <MainText hasBody={hasBody} before={guides.length > 0}><Content /></MainText>
+      <MainText hasBody={hasBody} before={guides.length > 0} headings={headings} title={label.data.name}><Content /></MainText>
     </Fragment>
   )}
 </Base>

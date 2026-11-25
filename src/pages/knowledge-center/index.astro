@@ -8,7 +8,7 @@ import { getLabels, getPage, hasLabel, colorOf, noticeOf, coverOf } from '../../
 
 const labels = await getLabels();
 const guides = (await getCollection('guides')).sort((a, b) => a.data.title.localeCompare(b.data.title));
-const { data, Content, hasBody, body } = await getPage('knowledge-center');
+const { data, Content, hasBody, body, headings } = await getPage('knowledge-center');
 const notice = noticeOf(data);
 ---
 <Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
@@ -25,7 +25,7 @@ const notice = noticeOf(data);
     {guides.map((g) => <ArticleCard guide={g} labels={labels} />)}
   </div>
   <div id="empty" class="s-empty" hidden><div class="cl" aria-hidden="true"><svg class="bub lg c1"><use href="#bub" /></svg><svg class="bub sm c2"><use href="#bub" /></svg><svg class="bub c3"><use href="#bub" /></svg></div><p>No articles with this label yet. Coming soon.</p></div>
-  <MainText hasBody={hasBody && !notice} before><Content /></MainText>
+  <MainText hasBody={hasBody && !notice} before headings={headings} title={data.title}><Content /></MainText>
 </Base>
 
 <script>

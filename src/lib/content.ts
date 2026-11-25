@@ -63,8 +63,8 @@ export async function getNotices() {
 export async function getPage(id: string) {
   const entry: any = await getEntry('pages', id);
   if (!entry) throw new Error(`Missing page: src/content/pages/${id}.md`);
-  const { Content } = await render(entry);
-  return { data: entry.data, Content, hasBody: Boolean(entry.body?.trim()), body: String(entry.body ?? '') };
+  const { Content, headings } = await render(entry);
+  return { data: entry.data, Content, headings, hasBody: Boolean(entry.body?.trim()), body: String(entry.body ?? '') };
 }
 
 // Pages that have their own file in src/pages (they are not made by [page].astro).
