@@ -14,6 +14,13 @@ showDate: false
 date: 2026-11-23
 showUpdated: false
 updated: ''
+cover:
+  image: /images/uploads/sample-tank-1.svg
+  alt: Alt text
+  source: own
+  credit: Credit or link
+  intro: Photo introduction
+  body: Photo main text
 notice: none
 comingSoonMessage: ''
 ---
