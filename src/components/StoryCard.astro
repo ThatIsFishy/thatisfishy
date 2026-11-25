@@ -17,5 +17,6 @@ const inProgress = !notice && hasTextNotice(story.body);
   <h3>{story.data.title}</h3>
   {(story.data.intro ?? story.data.description) && <p>{plainText(story.data.intro ?? story.data.description)}</p>}
   {cover && <CardPhoto cover={cover} />}
-  {notice ? <CardWip kind={notice} /> : inProgress && <CardWip />}
+  {/* A page set to Coming soon or Nothing here yet: the card always says "Nothing here yet…". */}
+  {notice ? <CardWip kind="empty" /> : inProgress && <CardWip />}
 </a>
