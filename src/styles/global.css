@@ -627,3 +627,33 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 .column:has(> .head.has-photo) > .head + .brk1 {
   width: var(--top-w); max-width: none; margin-left: calc((100% - var(--top-w)) / 2); margin-right: calc((100% - var(--top-w)) / 2);
 }
+
+/* Text is justified (straight edges on both sides): introduction, Main text, cards, side notes, Important notes and
+   the nitrogen cycle tool. Words may be split at the line end so there are no big gaps.
+   Not on phones: short lines would get large gaps. Headings stay left. */
+@media (min-width: 44rem) {
+  .prose p, .prose li, .lead p, .lead li,
+  .card p,                                   /* article and story cards (their introduction) */
+  p.note, .nc-method, .nc-live, .sidenote p, .sidenote li,   /* side notes with a coloured line on the left */
+  .panel > p, .nc-cols p, .nc-check > p, .nc-result p   /* Important notes and the nitrogen cycle tool */
+  { text-align: justify; hyphens: auto; -webkit-hyphens: auto; }
+  /* These stay as they are: notice cards (centred), the line at the bottom of a card, photo captions. */
+  .coming-card p, .card-wip, .prose figcaption { text-align: center; hyphens: manual; -webkit-hyphens: manual; }
+  .prose figcaption { text-align: inherit; }
+}
+/* A little more room between the (justified) introduction and the heading photo; the photo keeps its size. */
+.head.has-photo .head-text { padding-right: 1.2rem; }
+@media (max-width: 44rem) { .head.has-photo .head-text { padding-right: 0; } }
+
+/* Side notes written in the Main text (Insert > Side note): muted text with a coloured line on the left.
+   Justified like all other text (not on phones); Left, Centre or Right when chosen in the editor. */
+.sidenote { border-left: 4px solid var(--sand); padding: .2rem 1rem; margin: 1.2rem 0; color: var(--muted); }
+.sidenote[data-c="green"] { border-left-color: var(--plant); }
+.sidenote[data-c="orange"] { border-left-color: var(--warn); }
+.sidenote[data-c="blue"] { border-left-color: var(--water); }
+.sidenote > :first-child { margin-top: 0; }
+.sidenote > :last-child { margin-bottom: 0; }
+.prose .sidenote[data-a="left"] :is(p, li) { text-align: left; }
+.prose .sidenote[data-a="center"] :is(p, li) { text-align: center; }
+.prose .sidenote[data-a="right"] :is(p, li) { text-align: right; }
+.sidenote ul, .sidenote ol { padding-left: 1.2rem; }

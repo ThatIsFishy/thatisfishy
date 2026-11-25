@@ -121,11 +121,39 @@ function splitMarkers(par) {
   return out;
 }
 
+// A side note (Insert > Side note): {{note:yellow|justify}} … {{/note}}, each marker on its own line.
+// Colours: yellow, green, orange, blue. Alignment: justify, left, center, right.
+// Everything between the two markers is normal Main text (bold, links, lists, more paragraphs).
+const NOTE_START = /^\{\{note:(yellow|green|orange|blue)(?:\|(justify|left|center|right))?\}\}$/;
+const NOTE_END = /^\{\{\/note\}\}$/;
+const onlyText = (n) => n.type === 'paragraph' && n.children?.length === 1 && n.children[0].type === 'text' ? n.children[0].value.trim() : null;
+function wrapNotes(children) {
+  const out = [];
+  let open = false;
+  for (const child of children) {
+    const t = onlyText(child);
+    const m = t && t.match(NOTE_START);
+    if (m) {
+      if (open) out.push({ type: 'html', value: '</div>' });
+      out.push({ type: 'html', value: `<div class="sidenote" data-c="${m[1]}" data-a="${m[2] || 'justify'}">` });
+      open = true;
+      continue;
+    }
+    if (t && NOTE_END.test(t)) {
+      if (open) { out.push({ type: 'html', value: '</div>' }); open = false; }
+      continue;
+    }
+    out.push(child);
+  }
+  if (open) out.push({ type: 'html', value: '</div>' });   // a forgotten {{/note}} closes at the end
+  return out;
+}
+
 export default function remarkPhotos() {
   return (tree) => {
     const walk = (node) => {
       if (!node.children) return;
-      node.children = node.children.flatMap((child) => {
+      node.children = wrapNotes(node.children).flatMap((child) => {
         if (child.type === 'paragraph') {
           const parts = splitMarkers(child);
           if (parts) return parts.map((p) => { if (p.type === 'paragraph') walk(p); return p; });
