@@ -9,6 +9,7 @@ showDate: false
 date: 2026-11-22
 showUpdated: false
 updated: ''
-notice: coming
+cover: null
+notice: empty
 comingSoonMessage: The way I rate aquarium shops, written down so you can see exactly how a score is reached. It isn’t ready yet, so check back soon. I have to improve it
 ---
