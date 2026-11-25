@@ -13,9 +13,9 @@ const inProgress = !notice && hasTextNotice(story.body);
 ---
 <a class="card story" href={`/fishy-stories/${story.id}/`}>
   <div class="tags"><span class="tag">{story.data.date.toISOString().slice(0, 10)}</span>
-    {notice && <span class="tag">{notice === 'empty' ? 'Nothing here yet' : 'Coming soon'}</span>}</div>
+</div>
   <h3>{story.data.title}</h3>
   {(story.data.intro ?? story.data.description) && <p>{plainText(story.data.intro ?? story.data.description)}</p>}
   {cover && <CardPhoto cover={cover} />}
-  {inProgress && <CardWip />}
+  {notice ? <CardWip kind={notice} /> : inProgress && <CardWip />}
 </a>

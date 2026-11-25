@@ -1,9 +1,14 @@
 ---
-// "Readable, more coming…" at the very bottom of an article or story card, under a thin line.
-// Shown when the Main text has an inserted Coming soon / Nothing here yet card (the page is partly ready).
-// Not shown when the whole page is set to a notice (the card then has its own "Coming soon" tag).
+// The line at the very bottom of an article or story card, under a thin line:
+//   wip    "Readable, more coming…"  the Main text has an inserted Coming soon / Nothing here yet card
+//   coming "Coming soon…"            the whole page is set to Coming soon (builder shrimp)
+//   empty  "Nothing here yet…"       the whole page is set to Nothing here yet (curtain)
+interface Props { kind?: 'wip' | 'coming' | 'empty'; }
+const { kind = 'wip' } = Astro.props;
+const text = { wip: 'Readable, more coming…', coming: 'Coming soon…', empty: 'Nothing here yet…' }[kind];
+const logo = kind === 'empty' ? '#nl-curtain' : '#nl-base';
 ---
-<p class="card-wip"><svg class="card-wip-logo" width="20" height="20" aria-hidden="true" focusable="false"><use href="#nl-base" width="100%" height="100%" /></svg>Readable, more coming…</p>
+<p class:list={['card-wip', `card-wip-${kind}`]}><svg class="card-wip-logo" width="20" height="20" aria-hidden="true" focusable="false"><use href={logo} width="100%" height="100%" /></svg>{text}</p>
 
 <style is:global>
   /* Thin line above, centred, body font, muted */
@@ -13,6 +18,7 @@
     font: 400 .85rem var(--body); color: var(--muted);
   }
   .card-wip-logo { width: 1.3rem; height: 1.3rem; color: var(--water); flex: none; }
+  .card-wip-empty .card-wip-logo { width: 1.5rem; }  /* the curtain picture is a little wider */
   /* Without a photo it still sits at the bottom of the card */
   a.card:has(.card-wip):not(:has(.card-photo)) { display: flex; flex-direction: column; }
 </style>
