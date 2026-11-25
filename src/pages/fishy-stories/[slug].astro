@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
+import Related from '../../components/Related.astro';
 import { noticeOf, coverOf } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -18,5 +19,7 @@ const { Content } = await render(entry);
     <h1>{entry.data.title}</h1>
     <EntryHead data={entry.data} body={entry.body} showDateByDefault />
     <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)}><Content /></MainText>
+    {/* Always the last block of the page: new modules go above this line. */}
+    {!noticeOf(entry.data) && <Related kind="story" id={entry.id} />}
   </div>
 </Base>

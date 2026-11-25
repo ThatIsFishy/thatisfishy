@@ -4,6 +4,7 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import NitrogenCycle from '../../components/NitrogenCycle.astro';
+import Related from '../../components/Related.astro';
 import { getLabels, labelsOf, noticeOf, coverOf } from '../../lib/content';
 
 export async function getStaticPaths() {
@@ -22,5 +23,7 @@ const own = labelsOf(entry, await getLabels());
     <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)}><Content /></MainText>
     {/* The nitrogen cycle article ends with the cycle tool, with the guide already open. */}
     {entry.id === 'what-is-the-nitrogen-cycle' && !noticeOf(entry.data) && <NitrogenCycle foldable={false} articleLink={false} />}
+    {/* Always the last block of the page: new modules go above this line. */}
+    {!noticeOf(entry.data) && <Related kind="article" id={entry.id} labels={entry.data.labels} />}
   </div>
 </Base>

@@ -607,3 +607,11 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 .lead ul, .lead ol { margin: .2rem 0 .7rem; padding-left: 1.3rem; }
 .lead blockquote { margin: .4rem 0 .7rem; padding: .1rem 0 .1rem 1rem; border-left: 4px solid var(--sand); font-style: italic; }
 .lead blockquote p { margin: 0; }
+
+/* Rows of three suggestion cards ("While you wait", "Other helpful knowledge", "More from my journey") */
+/* A gallery photo in a row of three cards: the gallery shape (4:3) at the width of its own column,
+   so it never grows sideways over the next card. Also fixes the same row in "While you wait". */
+.grid.three .rec-item { min-width: 0; }
+.grid.three .rec-item .tiles-home { height: auto; }
+.grid.three .rec-item .tile { width: 100%; height: auto; min-height: 0; aspect-ratio: 4 / 3; }
+.grid.three .rec-item:has(.tile) { align-self: start; }

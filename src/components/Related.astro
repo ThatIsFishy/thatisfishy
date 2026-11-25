@@ -1,0 +1,90 @@
+---
+import { getCollection } from 'astro:content';
+import ArticleCard from './ArticleCard.astro';
+import StoryCard from './StoryCard.astro';
+import GalleryTile from './GalleryTile.astro';
+import { getLabels, getGallery, noticeOf } from '../lib/content';
+
+// Three suggestions at the very end of an article or a Fishy Story (always the last block before the footer).
+// Same cards as "While you wait"; a small script picks new ones on every visit.
+//   After an article ("Other helpful knowledge"):
+//     1. an article that shares at least one label with this article
+//     2. an article with at least one label this article does not have (or with no labels at all)
+//     3. a Fishy Story or a gallery photo
+//   After a story ("More from my journey"):
+//     1. a story   2 + 3. an article, gallery photo or story
+// Never this page, never a page set to Coming soon / Nothing here yet. Fewer than three when there is not enough yet.
+interface Props { kind: 'article' | 'story'; id: string; labels?: string[]; }
+const { kind, id, labels: here = [] } = Astro.props;
+
+const labels = await getLabels();
+const articles = (await getCollection('guides')).filter((g) => !noticeOf(g.data) && !(kind === 'article' && g.id === id));
+const stories = (await getCollection('journal')).filter((s) => !noticeOf(s.data) && !(kind === 'story' && s.id === id));
+const photos = await getGallery();
+
+type Item = { key: string; kind: 'article' | 'story' | 'photo'; node: any };
+const items: Item[] = [
+  ...articles.map((node) => ({ key: `a:${node.id}`, kind: 'article' as const, node })),
+  ...stories.map((node) => ({ key: `s:${node.id}`, kind: 'story' as const, node })),
+  ...photos.map((node) => ({ key: `p:${node.id}`, kind: 'photo' as const, node })),
+];
+const keysOf = (list: Item[]) => list.map((i) => i.key);
+const shares = (g: any) => g.data.labels.some((l: string) => here.includes(l));
+const bringsNew = (g: any) => g.data.labels.length === 0 || g.data.labels.some((l: string) => !here.includes(l));
+const art = items.filter((i) => i.kind === 'article');
+
+// The pools for each of the three places, in order.
+const slots: string[][] = kind === 'article'
+  ? [keysOf(art.filter((i) => shares(i.node))), keysOf(art.filter((i) => bringsNew(i.node))), keysOf(items.filter((i) => i.kind !== 'article'))]
+  : [keysOf(items.filter((i) => i.kind === 'story')), keysOf(items), keysOf(items)];
+
+// The same pick as the script makes, so the page also works without the script.
+function pick(pools: string[][]): string[] {
+  const used = new Set<string>(), out: string[] = [];
+  for (const pool of pools) {
+    const left = pool.filter((k) => !used.has(k));
+    if (!left.length) continue;
+    const k = left[Math.floor(Math.random() * left.length)];
+    used.add(k); out.push(k);
+  }
+  return out;
+}
+const first = pick(slots);
+const used = items.filter((i) => slots.some((s) => s.includes(i.key)));
+const title = kind === 'article' ? 'Other helpful knowledge' : 'More from my journey';
+---
+{first.length > 0 && (
+  <section class="rec rel" data-rel data-slots={JSON.stringify(slots)} data-pagefind-ignore>
+    <div class="section-head">
+      <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> {title}</h2>
+    </div>
+    <div class="grid three">
+      {used.map((i) => (
+        <div class="rec-item" data-key={i.key} hidden={!first.includes(i.key)} style={first.includes(i.key) ? `order:${first.indexOf(i.key)}` : undefined}>
+          {i.kind === 'article' && <ArticleCard guide={i.node} labels={labels} />}
+          {i.kind === 'story' && <StoryCard story={i.node} />}
+          {i.kind === 'photo' && <div class="tiles-home"><GalleryTile entry={i.node} home /></div>}
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-rel]').forEach((box) => {
+    const slots = JSON.parse(box.dataset.slots ?? '[]') as string[][];
+    const used = new Set<string>(), picked: string[] = [];
+    for (const pool of slots) {
+      const left = pool.filter((k) => !used.has(k));
+      if (!left.length) continue;
+      const k = left[Math.floor(Math.random() * left.length)];
+      used.add(k); picked.push(k);
+    }
+    box.querySelectorAll<HTMLElement>('.rec-item').forEach((el) => {
+      const at = picked.indexOf(el.dataset.key ?? '');
+      el.hidden = at < 0;
+      el.style.order = at < 0 ? '' : String(at);
+    });
+  });
+</script>
+
