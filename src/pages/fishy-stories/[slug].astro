@@ -4,13 +4,24 @@ import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
 import Related from '../../components/Related.astro';
+import StoryNav from '../../components/StoryNav.astro';
 import { noticeOf, coverOf, hasTextNotice } from '../../lib/content';
 
 export async function getStaticPaths() {
   const entries = await getCollection('journal');
-  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  // All stories in the order they were written (oldest first), for "Previous story / Next story".
+  const ordered = [...entries].sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf() || a.id.localeCompare(b.id));
+  return ordered.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      // The nearest story before / after this one that is not set to "Nothing here yet".
+      prev: ordered.slice(0, i).reverse().find((s) => !noticeOf(s.data)),
+      next: ordered.slice(i + 1).find((s) => !noticeOf(s.data)),
+    },
+  }));
 }
-const { entry } = Astro.props;
+const { entry, prev, next } = Astro.props;
 const { Content, headings } = await render(entry);
 ---
 <Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Story" image={coverOf(entry.data)?.image}
@@ -20,7 +31,8 @@ const { Content, headings } = await render(entry);
     <h1>{entry.data.title}</h1>
     <EntryHead data={entry.data} body={entry.body} showDateByDefault />
     <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)} headings={headings} title={entry.data.title}><Content /></MainText>
+    <StoryNav prev={prev} next={next} />
     {/* Always the last block of the page: new modules go above this line. */}
-    {!noticeOf(entry.data) && <Related kind="story" id={entry.id} />}
+    {!noticeOf(entry.data) && <Related kind="story" id={entry.id} exclude={[prev?.id, next?.id].filter(Boolean) as string[]} />}
   </div>
 </Base>

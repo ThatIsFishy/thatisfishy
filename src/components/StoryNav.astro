@@ -1,0 +1,74 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { fmtDate, coverOf, hasTextNotice } from '../lib/content';
+
+// "Previous story / Next story" at the end of a Fishy Story: the stories written just before and just after this one
+// (by publishing date). Stories set to "Nothing here yet" are skipped. Small boxes with photo (when there is one),
+// title and date. Placed above "More from my journey", which stays the last block of the page.
+interface Props { prev?: CollectionEntry<'journal'>; next?: CollectionEntry<'journal'>; }
+const { prev, next } = Astro.props;
+const box = (s: CollectionEntry<'journal'>) => ({ href: `/fishy-stories/${s.id}/`, title: s.data.title, date: fmtDate(s.data.date), cover: coverOf(s.data), wip: hasTextNotice(s.body) });
+const items = [prev && { ...box(prev), dir: 'prev' as const }, next && { ...box(next), dir: 'next' as const }].filter(Boolean) as any[];
+---
+{items.length > 0 && (
+  <nav class="story-nav" aria-label="Previous and next story" data-pagefind-ignore="all">
+    {items.map((i) => (
+      <a class:list={['sn', `sn-${i.dir}`]} href={i.href} rel={i.dir}>
+        <span class="sn-arrow" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d={i.dir === 'prev' ? 'M20 12H5M11 5l-7 7 7 7' : 'M4 12h15M13 5l7 7-7 7'} /></svg></span>
+        {i.cover && <img class="sn-photo" data-src={i.cover.source} src={i.cover.image} alt="" loading="lazy" decoding="async" />}
+        <span class="sn-text">
+          <span class="sn-dir">{i.dir === 'prev' ? 'Previous story' : 'Next story'}</span>
+          <span class="sn-title">{i.title}</span>
+          <span class="sn-date">{i.date}</span>
+        </span>
+        {i.wip && (
+          <span class="sn-status">
+            <svg width="30" height="30" aria-hidden="true" focusable="false"><use href="#nl-base" width="100%" height="100%" /></svg>
+            <span>Readable, more coming…</span>
+          </span>
+        )}
+      </a>
+    ))}
+  </nav>
+)}
+
+<style is:global>
+  .story-nav { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 1.6rem 0 0; }
+  .sn {
+    display: flex; align-items: center; gap: .7rem; padding: .55rem .7rem; text-decoration: none; color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+    transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), box-shadow .18s, border-color .18s;
+  }
+  .sn:hover, .sn:focus-visible { border-color: var(--water); transform: translateY(-2px); box-shadow: 0 8px 18px color-mix(in srgb, var(--water) 22%, transparent); }
+  .sn-next { grid-column: 2; flex-direction: row-reverse; text-align: right; }   /* Next sits on the right, even alone */
+  .sn-photo { flex: none; width: 4.2rem; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 7px; border: 2px solid var(--line); }
+  .sn-photo[data-src="own"] { border-color: var(--src-own); }
+  .sn-photo[data-src="ai"] { border-color: var(--src-ai); }
+  .sn-photo[data-src="external"] { border-color: var(--src-external); }
+  .sn-text { display: grid; gap: .05rem; min-width: 0; }
+  .sn-dir { font: 600 .72rem var(--head); text-transform: uppercase; letter-spacing: .05em; color: var(--water); }
+  .sn-title { font: 600 .95rem/1.25 var(--head); overflow-wrap: anywhere; }   /* long titles wrap to a next line */
+  .sn-date { font-size: .78rem; color: var(--muted); }
+  .sn-text { flex: 1; }
+  /* Same status box as in the search results: a thin line, the builder shrimp, "Readable, more coming…" */
+  .sn-status {
+    flex: none; width: 5.7rem; align-self: stretch; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .15rem;
+    border-left: 1px solid var(--line); padding-left: .55rem;
+    font: 400 .7rem/1.25 var(--body); color: var(--muted); text-align: center;
+  }
+  .sn-status svg { color: var(--water); width: 28px; height: 28px; }
+  /* The big arrow at the start of the box (left for Previous, right for Next), with the same thin line as the status box */
+  .sn-arrow {
+    flex: none; align-self: stretch; display: flex; align-items: center; padding-right: .6rem; border-right: 1px solid var(--line);
+    color: var(--water);
+  }
+  .sn-next .sn-arrow { padding-right: 0; border-right: 0; padding-left: .6rem; border-left: 1px solid var(--line); }
+  .sn-next .sn-status { border-left: 0; padding-left: 0; border-right: 1px solid var(--line); padding-right: .55rem; }
+  @media (max-width: 40rem) {
+    .story-nav { grid-template-columns: 1fr; }
+    .sn-next { grid-column: 1; }
+    .sn-status { width: 3.6rem; gap: .15rem; font-size: .62rem; line-height: 1.2; }
+    .sn-status svg { width: 24px; height: 24px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .sn { transition: none; } .sn:hover { transform: none; } }
+</style>

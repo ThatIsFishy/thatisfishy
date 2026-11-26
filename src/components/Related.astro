@@ -14,12 +14,13 @@ import { getLabels, getGallery, noticeOf } from '../lib/content';
 //   After a story ("More from my journey"):
 //     1. a story   2 + 3. an article, gallery photo or story
 // Never this page, never a page set to Coming soon / Nothing here yet. Fewer than three when there is not enough yet.
-interface Props { kind: 'article' | 'story'; id: string; labels?: string[]; }
-const { kind, id, labels: here = [] } = Astro.props;
+// exclude: stories already shown on the page (Previous / Next story), so they are not suggested twice.
+interface Props { kind: 'article' | 'story'; id: string; labels?: string[]; exclude?: string[]; }
+const { kind, id, labels: here = [], exclude = [] } = Astro.props;
 
 const labels = await getLabels();
 const articles = (await getCollection('guides')).filter((g) => !noticeOf(g.data) && !(kind === 'article' && g.id === id));
-const stories = (await getCollection('journal')).filter((s) => !noticeOf(s.data) && !(kind === 'story' && s.id === id));
+const stories = (await getCollection('journal')).filter((s) => !noticeOf(s.data) && !(kind === 'story' && s.id === id) && !exclude.includes(s.id));
 const photos = await getGallery();
 
 type Item = { key: string; kind: 'article' | 'story' | 'photo'; node: any };
