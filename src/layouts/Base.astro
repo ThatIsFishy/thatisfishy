@@ -22,6 +22,10 @@ const { title, description: rawDescription = TAGLINE, noindex = false, index = f
 const description = plainText(rawDescription) || TAGLINE;
 const fullTitle = title ? `${title} – ${SITE_NAME}` : `${SITE_NAME} – ${TAGLINE}`;
 const path = Astro.url.pathname;
+// Share picture: the heading photo, or (no heading photo) a picture the site makes at the publish with the page title
+// (and an article's first label); the home page gets the picture with the slogan. See src/lib/share-card.mjs.
+const shareCard = image ? null : title ? { title, label: kind === 'Article' ? searchLabels[0] : undefined } : {};
+const shareImage = image ?? (path === '/' ? '/og/home.png' : `/og${path.replace(/\/$/, '')}.png`);
 const canonical = new URL(path, SITE_URL).toString();
 
 // The labels for the dropdown, with the number of articles each one has.
@@ -74,8 +78,9 @@ const active = (href: string) => (href === '/' ? path === '/' : path.startsWith(
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={SITE_NAME} />
-    {image && <meta property="og:image" content={new URL(image, SITE_URL).toString()} />}
-    {image && <meta name="twitter:card" content="summary_large_image" />}
+    <meta property="og:image" content={new URL(shareImage, SITE_URL).toString()} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {shareCard && <meta name="share-card" content={JSON.stringify(shareCard)} />}
     <script is:inline>
       try { var t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
     </script>
