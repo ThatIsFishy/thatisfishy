@@ -62,7 +62,27 @@ collections:
         hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The article. Use Insert for Photo, Section break and Coming soon." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The article. Use Insert for Photo, Section break, Coming soon and Source." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
 
   - name: journal
     label: Fishy Stories
@@ -103,7 +123,27 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The story. Use Insert for Photo, Section break and Coming soon." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The story. Use Insert for Photo, Section break, Coming soon and Source." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
 
   - name: gallery
     label: Gallery
@@ -153,6 +193,26 @@ collections:
             hint: "Required. Shown as a coloured label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
       - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The explanation. Shown on the right when someone clicks the photo, and under the photos on the photo's own page." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
 
   - name: notices
     label: Important notes
@@ -166,7 +226,7 @@ collections:
       - { label: Title, name: title, widget: string }
       - { label: Type, name: type, widget: select, options: [Correction, Site update, Policy, Other], default: Other }
       - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
-      - { label: Text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], hint: "Shown in the Important notes panel on the home page. When you delete the last note, the panel disappears." }
+      - { label: Text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], editor_components: [photo, section-break, notice-coming, side-note], hint: "Shown in the Important notes panel on the home page. When you delete the last note, the panel disappears." }
 
   - name: labels
     label: Knowledge Center labels
@@ -209,7 +269,27 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break and Coming soon." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break, Coming soon and Source." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
 
   - name: galleryLabels
     label: Gallery labels
@@ -252,7 +332,27 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break and Coming soon." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break, Coming soon and Source." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
 
   - name: shops
     label: Shop Finder
@@ -314,4 +414,24 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break and Coming soon." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break, Coming soon and Source." }
+      - label: Sources and useful links
+        name: references
+        widget: list
+        required: false
+        collapsed: true
+        add_to_top: false
+        label_singular: Source
+        summary: "{{fields.short}} – {{fields.title}}"
+        hint: "Optional. Shown under the Main text in a box that opens and closes. Mark a source in the Main text with Insert > Source and type its Short name: the site turns it into a small number (in the order you use them). Sources you never mark show under the heading below, without a number. Nothing is required."
+        fields:
+          - { label: Short name, name: short, widget: string, required: false, hint: "What you type in Insert > Source, e.g. Smith 2020. Never shown on the site. Empty: type the title instead." }
+          - { label: First author, name: author, widget: string, required: false, hint: "e.g. Smith J" }
+          - { label: Other authors, name: authors, widget: string, required: false, hint: "e.g. Brown K, Lee M. When filled, the small box on the number says \"Smith J et al.\"." }
+          - { label: Title, name: title, widget: string, required: false }
+          - { label: Journal or website, name: source, widget: string, required: false }
+          - { label: Published, name: published, widget: string, required: false, hint: "Year or date, as you like: 2020, or 12 Mar 2020." }
+          - { label: Short part of the introduction, name: summary, widget: text, required: false, hint: "Shown in the small box when a reader points at (or taps) the number. Long text is cut after about two lines." }
+          - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
+          - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
+      - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }

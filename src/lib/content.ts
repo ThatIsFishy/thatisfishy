@@ -1,6 +1,7 @@
 import { getCollection, getEntry, render, type CollectionEntry } from 'astro:content';
 import { createMarkdownProcessor } from '@astrojs/markdown-remark';
 import remarkPhotos from './remark-photos.mjs';
+import remarkRefs from './remark-refs.mjs';
 
 export type Label = CollectionEntry<'labels'>;
 export type Guide = CollectionEntry<'guides'>;
@@ -116,7 +117,7 @@ let md: Awaited<ReturnType<typeof createMarkdownProcessor>> | undefined;
 export async function coverBodyHtml(cover?: Cover): Promise<string> {
   const text = cover?.body?.trim();
   if (!text) return '';
-  md ??= await createMarkdownProcessor({ remarkPlugins: [remarkPhotos] });
+  md ??= await createMarkdownProcessor({ remarkPlugins: [remarkRefs, remarkPhotos] });
   return (await md.render(text)).code;
 }
 
@@ -130,13 +131,14 @@ let introMd: Awaited<ReturnType<typeof createMarkdownProcessor>> | undefined;
 export async function introHtml(text?: string): Promise<string> {
   const t = String(text ?? '').trim();
   if (!t) return '';
-  introMd ??= await createMarkdownProcessor();
+  introMd ??= await createMarkdownProcessor({ remarkPlugins: [remarkRefs] });   // removes source markers
   return (await introMd.render(t)).code;
 }
 // As plain text, for the cards, search engines and share previews (no #, *, link addresses).
 // The whole text is used, all paragraphs.
 export function plainText(text?: string): string {
   return String(text ?? '')
+    .replace(/\{\{ref:[^}]*\}\}/g, '')              // source markers
     .replace(/!\[[^\]]*\]\([^)]*\)/g, '')            // images
     .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')         // [text](link) -> text
     .replace(/^\s{0,3}#{1,6}\s+/gm, '')              // headings

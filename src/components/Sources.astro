@@ -1,0 +1,151 @@
+---
+// Styles and behaviour for "Sources and useful links" (the box itself is written by src/lib/remark-refs.mjs
+// at the end of the Main text). Loaded by MainText.astro, so it works on every page with a Main text.
+//   - The box is closed when the page opens (like "On this page").
+//   - Clicking a small number opens the box, scrolls to that source and highlights it.
+//   - ↩ goes back to the number that was clicked (or the first place the source is used).
+//   - Hover a number (computer): a small box with title, a short part of the introduction, date and first author.
+//     On a phone the first tap shows that box with a link to the source in the list.
+---
+<style is:global>
+  /* Only in the Main text of a page (not in copies of it, like the Gallery's big photo view). */
+  .prose sup.ref, .prose .refs { display: none; }
+  .main-text .prose sup.ref { display: inline; }
+  .main-text .prose .refs { display: block; }
+  .prose sup.ref { line-height: 0; margin-left: .08em; }
+  .prose sup.ref a {
+    font: 700 .72em var(--head); text-decoration: none; color: var(--water);
+    padding: 0 .12em; border-radius: 4px;
+  }
+  .prose sup.ref a:hover, .prose sup.ref a:focus-visible, .prose sup.ref a.ref-flash { background: color-mix(in srgb, var(--water) 16%, transparent); }
+  .prose sup.ref + sup.ref::before { content: ','; color: var(--water); font-size: .72em; }
+
+  .refs { margin: 2rem 0 0; scroll-margin-top: calc(var(--top-h, 4rem) + 1rem); }
+  .refs-bar {
+    display: flex; align-items: center; gap: .6rem; padding: .55rem .9rem; cursor: pointer; list-style: none;
+    font: 600 1rem var(--head); color: var(--ink);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  }
+  .refs-bar::-webkit-details-marker { display: none; }
+  .refs-bar:hover { border-color: var(--water); }
+  .refs[open] .refs-bar { border-radius: 10px 10px 0 0; }
+  .refs-icon { flex: none; color: var(--water); }
+  .refs-label { flex: 1; min-width: 0; }
+  .refs-count { font: 500 .8rem var(--body); color: var(--muted); }
+  .refs-arrow::before { content: '▾'; color: var(--muted); }
+  .refs[open] .refs-arrow::before { content: '▴'; }
+  .refs-body { padding: .6rem .9rem .9rem; background: var(--surface); border: 1px solid var(--line); border-top: 0; border-radius: 0 0 10px 10px; }
+  .prose .refs-list { list-style: none; margin: 0; padding: 0; }
+  .prose .refs-list .ref-item {
+    display: flex; align-items: baseline; gap: .6rem; margin: 0; padding: .5rem .5rem; border-radius: 8px;
+    font-size: .92rem; line-height: 1.5; text-align: left; scroll-margin-top: calc(var(--top-h, 4rem) + 2rem);
+    transition: background-color .6s;
+  }
+  .prose .refs-list .ref-item + .ref-item { border-top: 1px dashed var(--line); border-radius: 0; }
+  .ref-item.ref-flash { background: color-mix(in srgb, var(--water) 18%, var(--surface)); border-radius: 8px !important; }
+  .ref-n { flex: none; min-width: 1.5rem; height: 1.5rem; display: inline-grid; place-items: center; border-radius: 50%;
+    font: 700 .78rem var(--head); color: var(--surface); background: var(--water); }
+  /* Useful links (no number): the site's bubble bullet, lined up with the numbers above */
+  .prose .refs-useful > li.ref-plain { display: block; padding-left: 2.6rem; }
+  .prose .refs-useful > li.ref-plain::before { left: .75rem; top: .78rem; }
+  .ref-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  .ref-title { font-weight: 600; color: var(--ink); }
+  a.ref-title { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--water) 50%, transparent); }
+  .ref-source { color: var(--muted); }
+  .ref-link { text-decoration: none; color: var(--water); }
+  .ref-note { display: block; margin-top: .15rem; color: var(--muted); font-size: .88rem; }
+  .ref-back { flex: none; text-decoration: none; color: var(--water); font-weight: 700; padding: 0 .3rem; border-radius: 5px; }
+  .ref-back:hover, .ref-back:focus-visible { background: color-mix(in srgb, var(--water) 14%, transparent); }
+  .prose .refs-sub { margin: 1rem 0 .2rem; font: 600 .95rem var(--head); color: var(--ink); }
+
+  /* The small box when hovering / tapping a number */
+  .ref-tip {
+    position: absolute; z-index: 30; width: min(20rem, calc(100vw - 1.5rem)); padding: .7rem .85rem; display: grid; gap: .3rem;
+    background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--water); border-radius: 10px;
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--ink) 18%, transparent);
+    font: 400 .85rem/1.45 var(--body); color: var(--ink); text-align: left;
+  }
+  .ref-tip[hidden] { display: none; }
+  .ref-tip-title { font: 600 .95rem/1.3 var(--head); }
+  .ref-tip-text { color: var(--muted); }
+  .ref-tip-meta { font-size: .78rem; color: var(--muted); font-style: italic; }
+  .ref-tip-go { font: 600 .85rem var(--head); color: var(--water); text-decoration: none; }
+</style>
+
+<script>
+  const tipBox = document.createElement('div');
+  tipBox.className = 'ref-tip'; tipBox.hidden = true; tipBox.setAttribute('role', 'tooltip');
+  document.body.appendChild(tipBox);
+  const canHover = matchMedia('(hover: hover)').matches;
+  let lastCite: HTMLElement | null = null;   // the number that was clicked last (for ↩)
+  let tipFor: HTMLAnchorElement | null = null;
+
+  const flash = (el: Element) => { el.classList.add('ref-flash'); setTimeout(() => el.classList.remove('ref-flash'), 2200); };
+
+  function goToSource(a: HTMLAnchorElement) {
+    const item = document.querySelector<HTMLElement>(`.main-text #ref-${a.dataset.ref}`);
+    if (!item) return;
+    lastCite = a;
+    const box = item.closest('details');
+    if (box) box.open = true;
+    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    flash(item);
+    history.replaceState(null, '', `#ref-${a.dataset.ref}`);
+  }
+
+  function showTip(a: HTMLAnchorElement) {
+    const src = document.querySelector<HTMLTemplateElement>(`.main-text #ref-${a.dataset.ref} .ref-tip-src`);
+    if (!src) return;
+    tipBox.innerHTML = src.innerHTML + (canHover ? '' : `<a class="ref-tip-go" href="#ref-${a.dataset.ref}">Show in Sources ↓</a>`);
+    tipBox.hidden = false;
+    const r = a.getBoundingClientRect();
+    const w = tipBox.offsetWidth;
+    const left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, document.documentElement.clientWidth - w - 8));
+    const below = r.bottom + 8 + tipBox.offsetHeight < innerHeight;
+    tipBox.style.left = `${left + scrollX}px`;
+    tipBox.style.top = `${(below ? r.bottom + 8 : r.top - tipBox.offsetHeight - 8) + scrollY}px`;
+    tipFor = a;
+  }
+  const hideTip = () => { tipBox.hidden = true; tipFor = null; };
+
+  document.addEventListener('click', (e) => {
+    const t = e.target as HTMLElement;
+    const cite = t.closest<HTMLAnchorElement>('.main-text sup.ref a');
+    if (cite) {
+      e.preventDefault();
+      if (!canHover && tipFor !== cite) { showTip(cite); return; }   // phone: first tap shows the small box
+      hideTip(); goToSource(cite); return;
+    }
+    const go = t.closest<HTMLAnchorElement>('.ref-tip-go');
+    if (go && tipFor) { e.preventDefault(); const a = tipFor; hideTip(); goToSource(a); return; }
+    const back = t.closest<HTMLAnchorElement>('.ref-back');
+    if (back) {
+      e.preventDefault();
+      const n = back.closest('li')?.id.replace('ref-', '');
+      const target = lastCite?.dataset.ref === n ? lastCite : document.querySelector<HTMLElement>(`.main-text #cite-${n}`);
+      if (target) { target.scrollIntoView({ behavior: 'smooth', block: 'center' }); flash(target); }
+      return;
+    }
+    if (!tipBox.contains(t)) hideTip();
+  });
+  if (canHover) {
+    document.addEventListener('mouseover', (e) => {
+      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('sup.ref a');
+      if (a && a !== tipFor) showTip(a);
+    });
+    document.addEventListener('mouseout', (e) => {
+      const a = (e.target as HTMLElement).closest('sup.ref a');
+      if (a && !a.contains(e.relatedTarget as Node)) hideTip();
+    });
+  }
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideTip(); });
+  addEventListener('scroll', () => { if (!tipBox.hidden && canHover) hideTip(); }, { passive: true });
+
+  // Opened with a link to one source (…#ref-2): open the box and highlight it.
+  const m = location.hash.match(/^#ref-(\d+)$/);
+  if (m) {
+    const item = document.querySelector<HTMLElement>(`.main-text #ref-${m[1]}`);
+    const box = item?.closest('details');
+    if (box && item) { box.open = true; setTimeout(() => { item.scrollIntoView({ block: 'center' }); flash(item); }, 50); }
+  }
+</script>
