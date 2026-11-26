@@ -2,7 +2,7 @@
 // Made by the site itself at every publish (see astro.config.mjs), so new pages and new titles always get one.
 //   - Home page: the fish, "That Is Fishy", the slogan, the line with a bubble and the web address.
 //   - Other pages: the fish (with an article's first label next to it), the page title (max. 2 lines), "That Is Fishy".
-// The fish is public/favicon.svg: change that file (the logo) and every picture follows at the next publish.
+// The logo is public/logo.svg: change that file and every picture follows at the next publish.
 import fs from 'node:fs';
 import path from 'node:path';
 import satori from 'satori';
@@ -20,10 +20,10 @@ const getFonts = () => (fonts ??= [
   { name: 'Lora', data: font('lora', 'lora-latin-400-normal.woff'), weight: 400, style: 'normal' },
 ]);
 let fish;
-const getFish = () => (fish ??= 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(process.cwd(), 'public/favicon.svg')).toString('base64'));
+const getFish = () => (fish ??= 'data:image/svg+xml;base64,' + fs.readFileSync(path.join(process.cwd(), 'public/logo.svg')).toString('base64'));
 
 const h = (type, style, ...children) => ({ type, props: { style: { display: 'flex', ...style }, children: children.flat().filter((c) => c !== null && c !== undefined && c !== false) } });
-const img = (src, size) => ({ type: 'img', props: { src, width: size, height: size, style: { width: size, height: size } } });
+const img = (src, size) => ({ type: 'img', props: { src, width: size * 1.25, height: size, style: { width: size * 1.25, height: size } } });   // the logo is 5 : 4
 
 // Mix a colour with white / ink (like the labels on the site)
 const mix = (hex, pct, base) => {

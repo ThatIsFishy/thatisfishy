@@ -134,7 +134,15 @@ a.card:hover {
 
 /* 5. Logo */
 .logo { display: inline-flex; align-items: center; gap: .5rem; }
-.logo img { width: 36px; height: 36px; }
+.logo img { width: 50px; height: 40px; }
+/* The logo: own colours in light mode, the bright dark-mode blue and green in dark mode (public/logo.svg, logo-dark.svg) */
+.logo .logo-dark { display: none; }
+:root[data-theme="dark"] .logo .logo-light { display: none; }
+:root[data-theme="dark"] .logo .logo-dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo .logo-light { display: none; }
+  :root:not([data-theme="light"]) .logo .logo-dark { display: block; }
+}
 
 /* 6. Learn dropdown */
 .has-sub { position: relative; }
