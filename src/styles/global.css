@@ -43,6 +43,12 @@ header.site { position: sticky; top: 0; background: var(--bg); border-bottom: 1p
 nav.main { display: flex; gap: .2rem; flex-wrap: wrap; }
 nav.main a { font: 500 1rem var(--head); text-decoration: none; color: var(--muted); padding: .3rem .6rem; border-radius: 6px; }
 nav.main a[aria-current="page"] { color: var(--ink); background: var(--surface); box-shadow: inset 0 3px var(--water); }
+/* Pointing at a menu item: the blue top line appears (no white background, that stays for the page you are on) */
+nav.main > a, .has-sub > a { transition: box-shadow .15s, color .15s; }
+@media (hover: hover) {
+  nav.main > a:not([aria-current="page"]):hover, .has-sub:hover > a:not([aria-current="page"]) { color: var(--ink); box-shadow: inset 0 3px var(--water); }
+}
+nav.main > a:not([aria-current="page"]):focus-visible, .has-sub > a:not([aria-current="page"]):focus-visible { color: var(--ink); box-shadow: inset 0 3px var(--water); }
 .theme { background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); padding: .3rem .6rem; cursor: pointer; font: inherit; }
 
 main { max-width: var(--page-max); margin: auto; padding: 2rem 1.2rem 4rem; }
