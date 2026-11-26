@@ -10,6 +10,8 @@ import { getLabels, getGallery, noticeOf } from '../lib/content';
 // It never offers the page you are on, or anything that is itself marked Coming soon / Nothing here yet.
 // Every candidate is drawn here; a small script picks three new ones on each visit
 // (without the script, the three chosen at build time stay).
+interface Props { heading?: string; }
+const { heading = 'While you wait, have a look at' } = Astro.props;
 const here = Astro.url.pathname;
 const labels = await getLabels();
 const articles = (await getCollection('guides')).filter((g) => !noticeOf(g.data) && `/knowledge-center/${g.id}/` !== here);
@@ -33,7 +35,7 @@ for (let round = 0; picked.size < 3 && round < pool.length; round++) {
 {pool.length > 0 && (
   <section class="rec" data-rec data-pagefind-ignore="all">
     <div class="section-head">
-      <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> While you wait, have a look at</h2>
+      <h2><svg class="bub" aria-hidden="true"><use href="#bub" /></svg> {heading}</h2>
     </div>
     <div class="grid three">
       {pool.map((p) => (

@@ -370,6 +370,19 @@ collections:
       - { label: Website, name: url, widget: string, required: false }
       - { label: My notes, name: note, widget: text, required: false }
 
+  - name: special
+    label: Special pages
+    description: "Pages that are not in the menu. Page not found is shown when someone opens a link that leads nowhere (an old or mistyped link)."
+    files:
+      - name: not-found
+        label: Page not found (404)
+        file: src/data/not-found.json
+        format: json
+        fields:
+          - { label: Title, name: title, widget: string, required: false, hint: "Empty: This page swam away" }
+          - { label: Message, name: message, widget: markdown, required: false, buttons: [bold, italic, link], editor_components: [], hint: "The text under the title. Empty: a standard sentence." }
+          - { label: Heading above the cards, name: cardsHeading, widget: string, required: false, hint: "Above the three random articles, stories or photos. Empty: While you wait, have a look at" }
+
   - name: pages
     label: Pages
     label_singular: Page
