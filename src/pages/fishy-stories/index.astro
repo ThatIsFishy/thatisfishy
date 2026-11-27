@@ -13,7 +13,7 @@ import { getPage, noticeOf, coverOf, hasTextNotice, plainText, fmtDate } from '.
 // Stops hold 1–4 stories ("random but fixed": filled from the oldest story upwards, so old stops never change).
 // The phone groups its own stops (2–4 stories) in the script below. Wooden nature pieces and milestone boards
 // are placed by the script too, and never move. See claude/fishy-stories-redesign.md (project docs) for all decisions.
-const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id));
+const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id, 'en', { numeric: true }));   // same day: 10 after 9
 const { data, Content, hasBody, body, headings } = await getPage('fishy-stories');
 const notice = noticeOf(data);
 
@@ -111,7 +111,7 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
         </section>
       ))}
       <div class="jr-snote jr-snote-end" hidden data-pagefind-ignore>Where it all began</div>
-      <div class="jr-more" data-pagefind-ignore><button type="button" class="jr-btn" data-more>Swim back</button></div>
+      <div class="jr-more" data-pagefind-ignore><button type="button" class="jr-btn" data-more>Swim backward</button></div>
       <svg class="jr-token" viewBox="0 0 200 285" aria-hidden="true">
         <ellipse cx="100" cy="262" rx="52" ry="15" fill="#B8956A"/><rect x="48" y="250" width="104" height="12" fill="#B8956A"/>
         <ellipse cx="100" cy="250" rx="52" ry="15" fill="#EED8B0"/><ellipse cx="100" cy="250" rx="36" ry="9" fill="none" stroke="#DDBF8E" stroke-width="2"/>
@@ -131,7 +131,7 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
 <style is:global>
   .jr-page > h1 { margin-bottom: .3rem; }
   /* the sticky bar */
-  .jr-bar { position: sticky; top: var(--top-h, 64px); z-index: 5; display: grid; grid-template-columns: 1fr auto auto 1fr; gap: 1.4rem; align-items: center; padding: .35rem 0; margin: 0 0 1.2rem; transition: background-color .2s; }
+  .jr-bar { position: sticky; top: var(--top-h, 64px); z-index: 4;   /* under the top menu and its search bar (5) */ display: grid; grid-template-columns: 1fr auto auto 1fr; gap: 1.4rem; align-items: center; padding: .35rem 0; margin: 0 0 1.2rem; transition: background-color .2s; }
   .jr-bar.stuck { background: color-mix(in srgb, var(--bg) 94%, transparent); box-shadow: 0 6px 12px -8px rgb(60 40 10 / .25); }
   .jr-btn { font: 700 1.45rem var(--hand); color: var(--gold); background: none; border: 0; cursor: pointer; padding: .1rem .3rem; text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 4px; }
   @media (hover: hover) { .jr-btn:hover { text-decoration: underline; } }
@@ -159,7 +159,7 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
   .jr-lwip { flex: none; width: 5.6rem; display: grid; justify-items: center; gap: .1rem; border-left: 1px solid var(--line); padding-left: .6rem; font: 600 1rem/1.1 var(--hand); color: var(--muted); text-align: center; }
   .jr-lwip svg { color: var(--gold); }
   /* the river */
-  .journey { position: relative; padding: 110px 0 40px; }
+  .journey { position: relative; z-index: 0; padding: 110px 0 40px; }   /* everything on the river stays under the bar and its panels */
   .jr-stream { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   .jr-water { fill: none; stroke: var(--stream); stroke-width: 14; stroke-linecap: round; opacity: .9; }
   .jr-snote { position: absolute; z-index: 3; transform: translate(-50%, -50%); background: var(--beige); color: var(--beige-ink); font: 700 1.55rem var(--hand); padding: .55rem 1.3rem .65rem; box-shadow: 0 6px 14px rgb(60 40 10 / .18); white-space: nowrap; }
