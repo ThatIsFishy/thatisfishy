@@ -45,6 +45,15 @@ references:
     summary: ''
     note: ''
     link: ''
+  - short: 'new source : 4'
+    author: ''
+    authors: ''
+    title: ''
+    source: ''
+    published: ''
+    summary: ''
+    note: ''
+    link: ''
 useful_heading: other useful link
 signoff: Stay fishy,
 ---
@@ -68,3 +77,5 @@ Note message
 ## 3 heading
 
 reference goes here{{ref:AI test}}
+
+Another source here{{ref:4}}
