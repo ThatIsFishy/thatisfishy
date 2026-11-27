@@ -11,12 +11,14 @@ cover:
   alt: ''
   source: own
   credit: Credit
-  intro: Photo introduction
   body: Main text
+  intro: Photo introduction
 labels:
   - equipment
 notice: none
 comingSoonMessage: ''
+references: []
+useful_heading: ''
 ---
 
 It sounds backwards, but a small tank is harder to keep than a medium one.
@@ -25,7 +27,7 @@ It sounds backwards, but a small tank is harder to keep than a medium one.
 
 In a small volume of water, one mistake changes the chemistry quickly. A bit too much food, one dead snail, a missed water change, and the readings jump. A larger tank dilutes mistakes, so conditions change slowly and you have time to react.
 
-![{center, own | Caption} Photo description](/images/uploads/sample-tank-1.svg)
+![{middle, full, own} Photo description](/images/uploads/sample-tank-1.svg)
 
 ## A comfortable starting point
 
@@ -39,8 +41,18 @@ Around 60 litres is a good place to begin. It fits on a sturdy table or cabinet,
 
 Pick the tank first, then choose fish that suit its size.
 
-{{note:yellow|justify}}
-
+{{note:yellow|justify|full}}
 Side note text
+{{/note}}
 
+{{note:green|left|left}}
+txt
+{{/note}}
+
+{{note:orange|center|middle}}
+text
+{{/note}}
+
+{{note:blue|right|right}}
+text
 {{/note}}
