@@ -6,8 +6,14 @@ showDate: true
 date: 2026-11-17
 showUpdated: true
 updated: 2026-11-23
+milestone: true
+milestoneText: oldest milestone
+cover: null
 notice: none
 comingSoonMessage: ''
+references: []
+useful_heading: ''
+signoff: Stay fishy,
 ---
 
 Today I’m setting up this site as a place to keep what I learn. I’m a beginner, and I plan to share the mistakes along with the wins.
