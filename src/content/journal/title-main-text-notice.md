@@ -27,13 +27,20 @@ references:
     summary: Short introduction
     note: My note
     link: link
-useful_heading: other useful link, How can I go down to add more links?
+  - short: useful links
+    author: auther
+    authors: auther
+    title: title
+    source: journal
+    published: '2000'
+    summary: desription
+    note: my note
+    link: link
+useful_heading: other useful link
 signoff: Stay fishy,
 ---
 
-Main text before this text the source should be there.{{ref:Source name}}
-
-{{notice:coming|Notice message}}
+Main text{{ref:1.}} before this text the source should be there.
 
 {{note:yellow|justify|full}}
 
