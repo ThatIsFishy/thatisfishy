@@ -43,9 +43,10 @@
       },
       { name: 'text', label: 'Text', widget: 'text', hint: 'Bold (**word**), italic (*word*) and links ([text](https://…)) work. Leave an empty line for a new paragraph.' },
     ],
-    pattern: /^\{\{note:(yellow|green|orange|blue)\|(justify|left|center|right)(?:\|(left|right|middle|full))?\}\}\n([\s\S]*?)\n\{\{\/note\}\}$/,
+    // One note only: the text lines may not contain {{/note}} or an empty line, so two notes never merge into one.
+    pattern: /^\{\{note:(yellow|green|orange|blue)\|(justify|left|center|right)(?:\|(left|right|middle|full))?\}\}\n((?:(?![^\n]*\{\{\/note\}\})[^\n]*\S[^\n]*\n)*?)\{\{\/note\}\}(?![^\n])/,
     fromBlock: function (m) {
-      var text = String(m[4] || '').split('\n').map(function (l) { return l.trim() === '{{br}}' ? '' : l.replace(/^\\([-*+#>]|\d+\.)/, '$1'); }).join('\n');
+      var text = String(m[4] || '').replace(/\n$/, '').split('\n').map(function (l) { return l.trim() === '{{br}}' ? '' : l.replace(/^\\([-*+#>]|\d+\.)/, '$1'); }).join('\n');
       return { colour: m[1], align: m[2], pos: m[3] || 'full', text: text };
     },
     toBlock: function (o) {
