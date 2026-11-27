@@ -40,7 +40,7 @@ useful_heading: other useful link
 signoff: Stay fishy,
 ---
 
-Main text{{ref:1.}} before this text the source should be there.
+Main text{{ref:1.}} before this text the source should be there.{{ref:Short name}}
 
 {{note:yellow|justify|full}}
 
