@@ -43,8 +43,9 @@
       },
       { name: 'text', label: 'Text', widget: 'text', hint: 'Bold (**word**), italic (*word*) and links ([text](https://…)) work. Leave an empty line for a new paragraph.' },
     ],
-    // One note only: the text lines may not contain {{/note}} or an empty line, so two notes never merge into one.
-    pattern: /^\{\{note:(yellow|green|orange|blue)\|(justify|left|center|right)(?:\|(left|right|middle|full))?\}\}\n((?:(?![^\n]*\{\{\/note\}\})[^\n]*\S[^\n]*\n)*?)\{\{\/note\}\}(?![^\n])/,
+    // [\s\S] tells the CMS that a note spans several lines; the (?!{{/note}}) part stops each note at its OWN end,
+    // so two notes in a row never merge into one.
+    pattern: /^\{\{note:(yellow|green|orange|blue)\|(justify|left|center|right)(?:\|(left|right|middle|full))?\}\}\n((?:(?!\{\{\/note\}\})[\s\S])*?)\n\{\{\/note\}\}(?=\n|$)/,
     fromBlock: function (m) {
       var text = String(m[4] || '').replace(/\n$/, '').split('\n').map(function (l) { return l.trim() === '{{br}}' ? '' : l.replace(/^\\([-*+#>]|\d+\.)/, '$1'); }).join('\n');
       return { colour: m[1], align: m[2], pos: m[3] || 'full', text: text };
