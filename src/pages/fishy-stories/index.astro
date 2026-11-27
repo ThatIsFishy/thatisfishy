@@ -61,33 +61,33 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
 
     <div class="jr-bar" data-bar data-pagefind-ignore>
       <button type="button" class="jr-btn jr-newest" data-newest><span class="lg">Swim to the newest stories</span><span class="sm">Newest</span></button>
-      <button type="button" class="jr-btn jr-all" data-all><span class="lg">All Fishy Stories</span><span class="sm">All stories</span></button>
-      <button type="button" class="jr-btn jr-ms" data-ms>Milestones</button>
+      <button type="button" class="jr-btn jr-all" data-all aria-expanded="false"><span class="lg">All Fishy Stories</span><span class="sm">All stories</span></button>
+      <button type="button" class="jr-btn jr-ms" data-ms aria-expanded="false">Milestones</button>
       <button type="button" class="jr-btn jr-oldest" data-oldest><span class="lg">Swim to the oldest stories</span><span class="sm">Oldest</span></button>
       <button type="button" class="jr-btn jr-fwd off" data-fwd>Swim forward</button>
-    </div>
+      <!-- the two lists drop down from the bar, over the river (the river stays) -->
+      <div class="jr-listwrap" hidden data-list data-pagefind-ignore="all">
+        <ol class="jr-list">
+          {stories.map((s) => (
+            <li><a href={s.href}>
+              {s.img ? <img class="jr-lthumb" src={s.img} alt="" loading="lazy" /> : <span class="jr-lthumb jr-nophoto"><img src="/images/gourami-piece.svg" alt="" loading="lazy" /></span>}
+              <span class="jr-ltext"><span class="jr-date">{s.d}{s.u && <Fragment> · Updated {s.u}</Fragment>}</span><span class="jr-ltitle">{s.t}</span>{s.i && <span class="jr-lintro">{s.i}</span>}</span>
+              {s.w && <span class="jr-lwip"><svg width="30" height="30" aria-hidden="true"><use href={wipLogo(s.w)} width="100%" height="100%" /></svg><span>{wipText[s.w]}</span></span>}
+            </a></li>
+          ))}
+        </ol>
+      </div>
 
-    <div class="jr-listwrap" hidden data-list data-pagefind-ignore="all">
-      <ol class="jr-list">
-        {stories.map((s) => (
-          <li><a href={s.href}>
-            {s.img ? <img class="jr-lthumb" src={s.img} alt="" loading="lazy" /> : <span class="jr-lthumb jr-nophoto"><img src="/images/gourami-piece.svg" alt="" loading="lazy" /></span>}
-            <span class="jr-ltext"><span class="jr-date">{s.d}{s.u && <Fragment> · Updated {s.u}</Fragment>}</span><span class="jr-ltitle">{s.t}</span>{s.i && <span class="jr-lintro">{s.i}</span>}</span>
-            {s.w && <span class="jr-lwip"><svg width="30" height="30" aria-hidden="true"><use href={wipLogo(s.w)} width="100%" height="100%" /></svg><span>{wipText[s.w]}</span></span>}
-          </a></li>
-        ))}
-      </ol>
-    </div>
-
-    <div class="jr-listwrap" hidden data-mslist data-pagefind-ignore="all">
-      <ol class="jr-list jr-mslist">
-        {milestones.map((m) => (
-          <li><a href={m.href} data-goto={m.seed}>
-            <span class="jr-board">{m.m}</span>
-            <span class="jr-ltext"><span class="jr-date">{m.d}</span><span class="jr-ltitle">{m.t}</span></span>
-          </a></li>
-        ))}
-      </ol>
+      <div class="jr-listwrap" hidden data-mslist data-pagefind-ignore="all">
+        <ol class="jr-list jr-mslist">
+          {milestones.map((m) => (
+            <li><a href={m.href} data-goto={m.seed}>
+              <span class="jr-board">{m.m}</span>
+              <span class="jr-ltext"><span class="jr-date">{m.d}</span><span class="jr-ltitle">{m.t}</span></span>
+            </a></li>
+          ))}
+        </ol>
+      </div>
     </div>
 
     <div class="journey" data-journey>
@@ -143,7 +143,9 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
   .jr-btn .sm { display: none; }
   /* list view on a notebook page */
   .jr-listwrap[hidden] { display: none; }
-  .jr-listwrap { max-width: 42rem; margin: 0 auto 2.5rem; background-color: var(--paper); border-radius: 3px; padding: 1.4rem 1.6rem 1.4rem 3.4rem; box-shadow: 0 2px 0 var(--line), 0 12px 30px rgb(60 40 10 / .10);
+  .jr-bar .jr-listwrap { position: absolute; z-index: 6; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(42rem, 100%); max-height: 50vh; overflow-y: auto; overscroll-behavior: contain; box-sizing: border-box; }
+  .jr-btn[aria-expanded="true"] { text-decoration: underline; }
+  .jr-listwrap { max-width: 42rem; margin: 0 auto; background-color: var(--paper); border-radius: 3px; padding: 1.4rem 1.6rem 1.4rem 3.4rem; box-shadow: 0 2px 0 var(--line), 0 12px 30px rgb(60 40 10 / .10);
     background-image: linear-gradient(90deg, transparent 2.3rem, var(--margin) 2.3rem, var(--margin) calc(2.3rem + 2px), transparent calc(2.3rem + 2px)), repeating-linear-gradient(transparent 0, transparent 1.75rem, var(--rule) 1.75rem, var(--rule) calc(1.75rem + 1px)); }
   .jr-list { list-style: none; margin: 0; padding: 0; }
   .jr-list a { display: flex; gap: 1rem; align-items: center; padding: .7rem 0; text-decoration: none; color: var(--ink); border-bottom: 1px dashed var(--line); }
@@ -158,7 +160,6 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
   .jr-lwip svg { color: var(--gold); }
   /* the river */
   .journey { position: relative; padding: 110px 0 40px; }
-  .journey.is-list { display: none; }
   .jr-stream { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
   .jr-water { fill: none; stroke: var(--stream); stroke-width: 14; stroke-linecap: round; opacity: .9; }
   .jr-snote { position: absolute; z-index: 3; transform: translate(-50%, -50%); background: var(--beige); color: var(--beige-ink); font: 700 1.55rem var(--hand); padding: .55rem 1.3rem .65rem; box-shadow: 0 6px 14px rgb(60 40 10 / .18); white-space: nowrap; }
@@ -218,6 +219,7 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
     .jr-piece { width: 44px; height: 53px; }
     .jr-piece-big { width: 64px; height: 77px; }
     .jr-listwrap { padding-left: 2.6rem; }
+    .jr-bar .jr-listwrap { left: 0; right: 0; width: auto; transform: none; margin-inline: -.2rem; }
     .jr-lthumb { width: 4rem; }
   }
 </style>
@@ -425,9 +427,9 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
     bar.classList.toggle('stuck', stuck);
     bNew.classList.toggle('off', !stuck);
     const openWrap = !listWrap.hidden ? listWrap : !msWrap.hidden ? msWrap : null;
+    // "Oldest" always follows the river (also while a list is open): hidden when the oldest story is on screen
     let lastSeen = false;
-    if (openWrap) { const li = openWrap.querySelector('li:last-child'); if (li) lastSeen = li.getBoundingClientRect().top < innerHeight; }
-    else { const first = document.getElementById('jr-first'); if (first && !first.hidden) lastSeen = first.getBoundingClientRect().top < innerHeight - 80; }
+    const first = document.getElementById('jr-first'); if (first && !first.hidden) lastSeen = first.getBoundingClientRect().top < innerHeight - 80;
     bOld.classList.toggle('off', lastSeen);
     // "Swim forward": only on the river, once the bar is stuck, and not when the newest stop is on screen
     const firstRow = box.querySelector<HTMLElement>('[data-row]');
@@ -466,11 +468,20 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
   const bMs = bar.querySelector<HTMLElement>('[data-ms]')!;
   function openList(which: 'all' | 'ms' | null) {
     listWrap.hidden = which !== 'all'; msWrap.hidden = which !== 'ms';
-    box.classList.toggle('is-list', which !== null);
-    bAll.innerHTML = which === 'all' ? 'Back to the river' : '<span class="lg">All Fishy Stories</span><span class="sm">All stories</span>';
-    bMs.textContent = which === 'ms' ? 'Back to the river' : 'Milestones';
-    if (which === null) draw(); else updateBar();
+    bAll.setAttribute('aria-expanded', String(which === 'all'));
+    bMs.setAttribute('aria-expanded', String(which === 'ms'));
+    if (which === 'all') listWrap.scrollTop = 0;
+    if (which === 'ms') msWrap.scrollTop = 0;
+    updateBar();
   }
+  // a list closes with Esc or a click anywhere outside it (and outside its button)
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && (!listWrap.hidden || !msWrap.hidden)) openList(null); });
+  document.addEventListener('click', (e) => {
+    if (listWrap.hidden && msWrap.hidden) return;
+    const t = e.target as HTMLElement;
+    if (t.closest('.jr-listwrap, [data-all], [data-ms]')) return;
+    openList(null);
+  });
   bAll.addEventListener('click', () => openList(listWrap.hidden ? 'all' : null));
   bMs.addEventListener('click', () => openList(msWrap.hidden ? 'ms' : null));
   msWrap.querySelectorAll<HTMLElement>('[data-goto]').forEach((a) => a.addEventListener('click', (e) => {
