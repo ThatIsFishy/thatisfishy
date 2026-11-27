@@ -26,3 +26,7 @@ Main text test{{notice:coming|Notice message}}
 {{note:yellow|justify|full}}
 text
 {{/note}}
+
+{{note:green|right|left}}
+Text
+{{/note}}
