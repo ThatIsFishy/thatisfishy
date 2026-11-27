@@ -78,6 +78,9 @@ const journal = defineCollection({
     title: z.string(),
     date: z.coerce.date(),
     ...shared,
+    milestone: optionalBool,             // a wooden milestone board on the river (Fishy Stories page)
+    milestoneText: optionalText,         // the text on the board
+    signoff: optionalText,               // the handwritten line at the end ("Stay fishy," when empty)
   }),
 });
 

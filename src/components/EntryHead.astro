@@ -16,8 +16,9 @@ interface Props {
   noticeMessage?: string;          // used when the notice has no message of its own
   labelBase?: string;              // where the label links go (Knowledge Center by default)
   body?: string;                   // the Main text as written, to spot an inserted notice card ("In progress")
+  diary?: boolean;                 // Fishy Stories (diary style): the dates handwritten, the heading photo in a white frame
 }
-const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/', body = '' } = Astro.props;
+const { data, labels = [], showDateByDefault = false, noticeFallback, noticeMessage, labelBase = '/knowledge-center/label/', body = '', diary = false } = Astro.props;
 const notice = noticeOf(data, noticeFallback);
 const intro = await introHtml(data.intro);
 const published = (data.showDate ?? showDateByDefault) && data.date ? fmtDate(data.date) : '';
@@ -26,11 +27,17 @@ const cover = coverOf(data);
 // Only when the page itself is not a notice: then the Main text is shown and a card inside it means "partly ready".
 const inProgress = !notice && hasTextNotice(body);
 const dateLine = [published && `Published ${published}`, updated && `Updated ${updated}`].filter(Boolean).join(' · ');
+// Diary style: the long month ("17 November 2026"), the published date on top and "Updated …" under it
+const long = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const handDates = diary ? { published: published ? long(data.date) : '', updated: updated ? long(data.updated) : '' } : undefined;
 ---
 <div class:list={['head', { 'has-photo': cover }]}>
   <div class="head-text">
     {intro && <div class="lead" set:html={intro} />}
-    {(published || updated) && (
+    {handDates && (handDates.published || handDates.updated) && (
+      <p class="dates hand" data-pagefind-ignore>{handDates.published}{handDates.updated && <span class="upd">Updated {handDates.updated}</span>}</p>
+    )}
+    {!handDates && (published || updated) && (
       <p class="dates" data-pagefind-ignore>
         {published && <span>Published {published}</span>}
         {published && updated && <span class="sep" aria-hidden="true"> · </span>}
@@ -49,7 +56,7 @@ const dateLine = [published && `Published ${published}`, updated && `Updated ${u
       </p>
     )}
   </div>
-  {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}
+  {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} handDates={handDates} caption={diary ? data.cover?.alt : undefined} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}
 </div>
 <Break1 />
 {notice && <ComingSoon kind={notice} message={data.comingSoonMessage ?? noticeMessage} recommend />}

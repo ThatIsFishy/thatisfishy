@@ -1,0 +1,106 @@
+/* ===== Fishy Stories in DIARY STYLE: the river page (/fishy-stories/) and every story =====
+   Loaded only by those two pages (with the Caveat handwriting font), so no other page changes.
+   A page joins in with a wrapper that has the class "diary". */
+
+/* Colours: warm cream, gold accent. Links and buttons stay blue; top bar, logo and footer text keep their look. */
+:root:has(.diary) {
+  --bg: #FBF4E6; --line: #EADBBF; --gold: #E0961A; --stream: #9FD3EE;
+  --beige: #EEDDBC; --beige-ink: #4A3B28; --note-ink: #3A3226;
+  --paper: #FFFDF7; --frame: #FFFFFF; --margin: rgb(224 150 26 / .45); --rule: rgb(159 211 238 / .32);
+  --hand: Caveat, cursive;
+}
+:root[data-theme="dark"]:has(.diary) {
+  --bg: #2E2620; --surface: #3A3029; --line: #54463A; --ink: #F3EAD9; --muted: #C4B49A; --gold: #F4A81D; --stream: #2F6F92;
+  --beige: #E8DCC4; --beige-ink: #3A2E20; --paper: #4A3D32; --frame: #EFE7D8; --margin: rgb(244 168 29 / .35); --rule: rgb(159 211 238 / .10);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]):has(.diary) {
+    --bg: #2E2620; --surface: #3A3029; --line: #54463A; --ink: #F3EAD9; --muted: #C4B49A; --gold: #F4A81D; --stream: #2F6F92;
+    --beige: #E8DCC4; --beige-ink: #3A2E20; --paper: #4A3D32; --frame: #EFE7D8; --margin: rgb(244 168 29 / .35); --rule: rgb(159 211 238 / .10);
+  }
+}
+/* very subtle paper grain on the background */
+body:has(.diary) { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .45  0 0 0 0 .35  0 0 0 0 .2  0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)'/%3E%3C/svg%3E"); }
+
+/* ALL bubbles are gold here: line with a bubble, three bubbles, side bubbles, footer. The bubble in a source label stays white. */
+:root:has(.diary) .bub, :root:has(.diary) .brk3, :root:has(.diary) #sb .sbb { color: var(--gold); }
+:root:has(.diary) .src .srcb { color: #fff; }
+
+/* SOURCE LABEL on photos: a small sticky note in the source colour, slightly tilted */
+.diary .src, .lb.diary .src { border-radius: 2px; font-size: .78rem; transform: rotate(-3deg); box-shadow: 0 3px 6px rgb(40 25 5 / .35); padding: .35rem .7rem .35rem .5rem; }
+.lb.diary .src.inline { box-shadow: 0 2px 4px rgb(40 25 5 / .3); }
+
+/* ===== Story page: heading ===== */
+/* The title keeps the normal heading rules; the "Entry" note sits half over its top line and takes no room. */
+.diary .st-titlewrap { position: relative; }
+.column:has(> .head.has-photo) > .st-titlewrap { width: var(--top-w); max-width: none; margin-left: calc((100% - var(--top-w)) / 2); margin-right: calc((100% - var(--top-w)) / 2); }
+.diary .st-titlewrap > h1 { text-align: center; }
+/* room for the Entry note on the left (and the same on the right, so the title stays centred) */
+@media (min-width: 44rem) { .diary .st-titlewrap > h1 { padding-inline: 7.5rem; } }
+.st-entry {
+  position: absolute; left: 0; top: 1.3rem; z-index: 2; margin: 0; font: 700 1.45rem/1 var(--hand); color: var(--note-ink);
+  background: var(--beige); padding: .45rem 1rem .5rem; transform: translateY(-50%) rotate(-8deg); box-shadow: 0 5px 12px rgb(60 40 10 / .18);
+}
+@media (max-width: 44rem) { .st-entry { left: auto; right: 0; top: -1.1rem; font-size: 1.2rem; padding: .35rem .8rem .4rem; } }
+
+/* Dates in handwriting under the introduction; "Updated" smaller on its own line */
+.diary .dates.hand { font: 700 1.55rem/1.1 var(--hand); color: var(--gold); margin: .2rem 0 .5rem; }
+.dates.hand .upd { display: block; font-size: 1.15rem; font-weight: 600; color: var(--muted); }
+@media (max-width: 44rem) { .diary .dates.hand { font-size: 1.35rem; } }
+
+/* Heading photo: the white photo frame (description in the bottom strip), slightly tilted */
+.diary .hp-btn { aspect-ratio: auto; height: auto; padding: 10px 10px 0; background: var(--frame); border: 0; border-radius: 3px; overflow: visible; transform: rotate(1.6deg); box-shadow: 0 6px 16px rgb(60 40 10 / .18); }
+.diary .hp-btn img { aspect-ratio: 4 / 3; height: auto; border: 3px solid var(--line); border-radius: 3px; box-sizing: border-box; }
+.diary .hp-btn[data-src="own"] img { border-color: var(--src-own); }
+.diary .hp-btn[data-src="ai"] img { border-color: var(--src-ai); }
+.diary .hp-btn[data-src="external"] img { border-color: var(--src-external); }
+.diary .hp-btn .src { top: calc(10px + .5rem); left: calc(10px + .5rem); }
+.diary .hp-btn:hover, .diary .hp-btn:focus-visible { transform: rotate(0) scale(1.03); box-shadow: 0 14px 28px rgb(60 40 10 / .22); }
+@media (prefers-reduced-motion: reduce) { .diary .hp-btn:hover, .diary .hp-btn:focus-visible { transform: rotate(1.6deg); } }
+
+/* The handwritten strip under a photo: description, then the credit (smaller) */
+.hand-cap { display: block; font: 600 1.3rem/1.2 var(--hand); color: #5A4A36; text-align: center; padding: .55rem .4rem .7rem; min-height: 30px; box-sizing: border-box; hyphens: manual; }
+.hand-cap .hand-credit, .diary .prose figure.photo .photo-credit { display: block; font-size: 1rem; color: #8A7658; margin-top: .2rem; overflow-wrap: anywhere; }
+.hand-cap a, .diary .prose figure.photo .photo-credit a { color: inherit; }
+
+/* Heading photo big view: the photo in its white frame, next to it a beige sticky note with the information */
+.lb.diary { background: rgb(46 38 32 / .55); }
+.lb.diary .lb-photo { margin: 0; padding: 12px 12px 0; background: var(--frame); border-radius: 3px; transform: rotate(-.8deg); box-shadow: 0 10px 26px rgb(0 0 0 / .3); }
+.lb.diary .lb-imgwrap .lb-img { border-radius: 3px; }
+.lb.diary .lb-text { background: var(--beige); color: var(--note-ink); border: 0; border-radius: 2px; transform: rotate(.6deg); box-shadow: 0 10px 26px rgb(0 0 0 / .25); }
+.lb.diary .lb-text h2, .lb.diary .lb-text p, .lb.diary .lb-text li, .lb.diary .lb-text .lead { color: var(--note-ink); }
+.lb.diary .lb-text .dates.hand { font: 700 1.4rem/1.1 var(--hand); color: #B26D0E; margin: .4rem 0 0; }
+.lb.diary .lb-text .dates.hand .upd { color: #7A6650; }
+.lb.diary .lb-text .brk1 .ln { background: #C9A46A; }
+.lb.diary .lb-text .credit, .lb.diary .lb-text .credit a { color: #6B5A44; }
+.lb.diary .lb-close { background: rgb(255 255 255 / .6); color: var(--note-ink); }
+
+/* ===== Story page: the text on a plain paper page with the gold line at the side ===== */
+.st-sheet { position: relative; background: var(--paper); border-radius: 4px; padding: 1.6rem 1.8rem 1.4rem 3.2rem; margin: 1.8rem 0 .6rem; box-shadow: 0 6px 18px rgb(60 40 10 / .10); }
+.st-sheet::before { content: ''; position: absolute; top: 0; bottom: 0; left: 2.1rem; width: 2px; background: var(--margin); }
+@media (max-width: 44rem) { .st-sheet { padding: 1.2rem 1rem 1rem 1.9rem; margin-inline: -.4rem; } .st-sheet::before { left: 1.1rem; } }
+
+/* Photos in the text: white frame, slightly tilted, description and credit handwritten in the bottom strip */
+.diary .prose figure.photo { padding: 10px 10px 0; background: var(--frame); border-radius: 3px; box-shadow: 0 6px 16px rgb(60 40 10 / .18); margin-block: 1.8rem; transform: rotate(-1.2deg); }
+.diary .prose figure.photo:nth-of-type(even) { transform: rotate(1deg); }
+.diary .prose figure.photo:nth-of-type(3n) { transform: rotate(-.6deg); }
+.diary .prose figure.photo img { border-radius: 3px; box-sizing: border-box; }
+.diary .prose figure.photo figcaption { font: 600 1.3rem/1.2 var(--hand); color: #5A4A36; text-align: center; padding: .55rem .4rem .7rem; margin: 0; hyphens: manual; }
+.diary .prose figure.photo:not(:has(figcaption))::after { content: ''; display: block; height: 30px; }
+.diary .photo-row figure { padding: 8px 8px 0; background: var(--frame); box-shadow: 0 6px 16px rgb(60 40 10 / .18); }
+.diary .photo-row figcaption { font: 600 1.2rem/1.2 var(--hand); color: #5A4A36; text-align: center; padding: .4rem .3rem .6rem; margin: 0; }
+
+/* Sticky notes (the side notes on story pages): side note colours, softer; slightly tilted; text justified */
+.diary .sidenote { --nb: #FCEDA8; border: 0; border-radius: 0; color: var(--note-ink); background: var(--nb); padding: .9rem 1.1rem; margin: 1.8rem 0; box-shadow: 0 6px 14px rgb(60 40 10 / .16); transform: rotate(.5deg); }
+.diary .sidenote[data-c="green"] { --nb: #CFEBDD; }
+.diary .sidenote[data-c="orange"] { --nb: #FBD5C8; }
+.diary .sidenote[data-c="blue"] { --nb: #D2E5F3; }
+.diary .sidenote :is(p, li) { color: var(--note-ink); }
+.diary .sidenote a { color: #0a5a8c; }
+.diary .sidenote[data-pos="left"] { transform: rotate(-1.4deg); }
+.diary .sidenote[data-pos="right"] { transform: rotate(1.4deg); }
+.diary .sidenote[data-pos="middle"] { transform: rotate(-.8deg); }
+
+/* Sign-off */
+.st-sign { font: 700 2rem/1.1 var(--hand); color: var(--gold); margin: 2rem 0 .2rem; }
+.st-sign span { display: block; font-size: 1.6rem; color: var(--muted); margin-left: 1.2rem; }

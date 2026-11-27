@@ -7,16 +7,28 @@ import Sources from './Sources.astro';
 // With `before`, three bubbles also come first: use it when something else (cards, photos) sits above the text.
 // With 3 or more headings (H2/H3) the text starts with "On this page" (a table of contents, see Toc.astro).
 // Sources and useful links (if any) end the text, before the three bubbles (see Sources.astro).
-interface Props { hasBody?: boolean; before?: boolean; headings?: { depth: number; slug: string; text: string }[]; title?: string; }
-const { hasBody = true, before = false, headings = [], title = '' } = Astro.props;
+// With `signoff` (Fishy Stories, diary style) the text sits on a paper page and ends with the handwritten sign-off.
+interface Props { hasBody?: boolean; before?: boolean; headings?: { depth: number; slug: string; text: string }[]; title?: string; signoff?: string; }
+const { hasBody = true, before = false, headings = [], title = '', signoff } = Astro.props;
+const sheet = signoff !== undefined;
 ---
 {hasBody && (
   <Fragment>
     {before && <Break3 />}
-    <div class="main-text">
-      <Toc headings={headings} title={title} />
-      <div class="prose"><slot /></div>
-    </div>
+    {sheet ? (
+      <article class="st-sheet">
+        <div class="main-text">
+          <Toc headings={headings} title={title} />
+          <div class="prose"><slot /></div>
+        </div>
+        <p class="st-sign" data-pagefind-ignore>{signoff || 'Stay fishy,'}<span>Adam</span></p>
+      </article>
+    ) : (
+      <div class="main-text">
+        <Toc headings={headings} title={title} />
+        <div class="prose"><slot /></div>
+      </div>
+    )}
     <Sources />
     <Break3 />
   </Fragment>

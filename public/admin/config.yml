@@ -62,7 +62,7 @@ collections:
         hint: "Pick one or more labels, or none (then the article only shows under All). You can also add a new label here with Add Label."
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The article. Use Insert for Photo, Section break, Coming soon and Source." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "The article. Use Insert for Photo, Section break, Coming soon and Source." }
       - label: Sources and useful links
         name: references
         widget: list
@@ -100,6 +100,8 @@ collections:
       - { label: Date published, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true, default: "{{now}}", hint: "Pick a date even if you do not show it. Articles and stories are sorted by it, newest first." }
       - { label: Show the updated date, name: showUpdated, widget: boolean, default: true, required: false, hint: "Switch on to show Updated next to the published date. It only shows when a date is picked below." }
       - { label: Date updated, name: updated, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "Optional. Pick it when you change the text later." }
+      - { label: Milestone, name: milestone, widget: boolean, default: false, required: false, hint: "Tick it to show a wooden milestone board next to this story on the river (Fishy Stories page) and in the Milestones list. Untick it to remove the board." }
+      - { label: Milestone text, name: milestoneText, widget: string, required: false, hint: "Short, it is written on the board (for example: First fish). Only used when Milestone is ticked." }
       - label: Heading photo
         name: cover
         widget: object
@@ -108,7 +110,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used." }
+          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used. On the story page it is also written by hand in the white strip under the photo." }
           - label: Source of the photo
             name: source
             widget: select
@@ -123,7 +125,7 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The story. Use Insert for Photo, Section break, Coming soon and Source." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "The story. Use Insert for Photo, Section break, Coming soon and Source." }
       - label: Sources and useful links
         name: references
         widget: list
@@ -144,6 +146,7 @@ collections:
           - { label: Your note, name: note, widget: string, required: false, hint: "Optional. A short line under the source, e.g. Good pictures of the test colours." }
           - { label: Link, name: link, widget: string, required: false, hint: "The address of the paper or page, starting with https://" }
       - { label: Heading for the useful links, name: useful_heading, widget: string, required: false, hint: "Optional. The heading above the sources without a number (papers, YouTube videos, websites…). Empty: More on this topic." }
+      - { label: Sign-off, name: signoff, widget: string, required: false, default: "Stay fishy,", hint: "The handwritten line at the end of the story. Adam is always written on the next line. Empty: Stay fishy," }
 
   - name: gallery
     label: Gallery
@@ -192,7 +195,7 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The explanation. Shown on the right when someone clicks the photo, and under the photos on the photo's own page." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "The explanation. Shown on the right when someone clicks the photo, and under the photos on the photo's own page." }
       - label: Sources and useful links
         name: references
         widget: list
@@ -269,7 +272,7 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break, Coming soon and Source." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "Shown under the line with a bubble, above the articles. Use Insert for Photo, Section break, Coming soon and Source." }
       - label: Sources and useful links
         name: references
         widget: list
@@ -332,7 +335,7 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break, Coming soon and Source." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "Shown under the line with a bubble, above the photos. Use Insert for Photo, Section break, Coming soon and Source." }
       - label: Sources and useful links
         name: references
         widget: list
@@ -427,7 +430,7 @@ collections:
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
-      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break, Coming soon and Source." }
+      - { label: Main text, name: body, widget: markdown, buttons: [bold, italic, strikethrough, code, link, heading-two, heading-three, quote, bulleted-list, numbered-list], required: false, editor_components: [photo, section-break, notice-coming, side-note, source-ref], hint: "The main text of the page, between the line with a bubble and the footer. Use Insert for Photo, Section break, Coming soon and Source." }
       - label: Sources and useful links
         name: references
         widget: list

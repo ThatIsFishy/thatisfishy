@@ -1,5 +1,8 @@
 ---
 import { getCollection, render } from 'astro:content';
+import '@fontsource/caveat/600.css';
+import '@fontsource/caveat/700.css';
+import '../../styles/diary.css';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
@@ -15,22 +18,26 @@ export async function getStaticPaths() {
     params: { slug: entry.id },
     props: {
       entry,
+      entryNo: i + 1,                  // "Entry 13": its place among all stories, oldest = 1
       // The nearest story before / after this one that is not set to "Nothing here yet".
       prev: ordered.slice(0, i).reverse().find((s) => !noticeOf(s.data)),
       next: ordered.slice(i + 1).find((s) => !noticeOf(s.data)),
     },
   }));
 }
-const { entry, prev, next } = Astro.props;
+const { entry, entryNo, prev, next } = Astro.props;
 const { Content, headings } = await render(entry);
 ---
 <Base title={entry.data.title} description={entry.data.description ?? entry.data.intro} index kind="Story" image={coverOf(entry.data)?.image}
   status={noticeOf(entry.data) ? 'empty' : hasTextNotice(entry.body) ? 'wip' : undefined}>
-  <div class="column">
+  <div class="column diary">
     <p class="back" data-pagefind-ignore><a href="/fishy-stories/">← All Fishy Stories</a></p>
-    <h1>{entry.data.title}</h1>
-    <EntryHead data={entry.data} body={entry.body} showDateByDefault />
-    <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)} headings={headings} title={entry.data.title}><Content /></MainText>
+    <div class="st-titlewrap">
+      <p class="st-entry" data-pagefind-ignore>Entry {entryNo}</p>
+      <h1>{entry.data.title}</h1>
+    </div>
+    <EntryHead data={entry.data} body={entry.body} showDateByDefault diary />
+    <MainText hasBody={Boolean(entry.body?.trim()) && !noticeOf(entry.data)} headings={headings} title={entry.data.title} signoff={entry.data.signoff ?? ''}><Content /></MainText>
     <StoryNav prev={prev} next={next} />
     {/* Always the last block of the page: new modules go above this line. */}
     {!noticeOf(entry.data) && <Related kind="story" id={entry.id} exclude={[prev?.id, next?.id].filter(Boolean) as string[]} />}

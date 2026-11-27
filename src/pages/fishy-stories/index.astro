@@ -1,20 +1,489 @@
 ---
 import { getCollection } from 'astro:content';
+import '@fontsource/caveat/600.css';
+import '@fontsource/caveat/700.css';
+import '../../styles/diary.css';
 import Base from '../../layouts/Base.astro';
 import EntryHead from '../../components/EntryHead.astro';
 import MainText from '../../components/MainText.astro';
-import StoryCard from '../../components/StoryCard.astro';
-import { getPage, noticeOf, coverOf } from '../../lib/content';
+import PIECES from '../../data/nature-pieces.json';
+import { getPage, noticeOf, coverOf, hasTextNotice, plainText, fmtDate } from '../../lib/content';
 
-const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+// Fishy Stories: the river. Every story is a card at a stop on a winding river, newest at the top.
+// Stops hold 1–4 stories ("random but fixed": filled from the oldest story upwards, so old stops never change).
+// The phone groups its own stops (2–4 stories) in the script below. Wooden nature pieces and milestone boards
+// are placed by the script too, and never move. See claude/fishy-stories-redesign.md (project docs) for all decisions.
+const entries = (await getCollection('journal')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf() || b.id.localeCompare(a.id));
 const { data, Content, hasBody, body, headings } = await getPage('fishy-stories');
 const notice = noticeOf(data);
+
+const stories = entries.map((e) => {
+  const empty = Boolean(noticeOf(e.data));
+  return {
+    t: e.data.title,
+    d: fmtDate(e.data.date),
+    u: (e.data.showUpdated ?? true) && e.data.updated ? fmtDate(e.data.updated) : '',
+    i: plainText(e.data.intro ?? e.data.description ?? ''),
+    w: empty ? 'empty' : hasTextNotice(e.body) ? 'wip' : '',          // Nothing here yet / Readable, more coming
+    m: e.data.milestone && e.data.milestoneText?.trim() ? e.data.milestoneText.trim() : '',
+    img: coverOf(e.data)?.image ?? '',
+    href: `/fishy-stories/${e.id}/`,
+    seed: e.id,
+  };
+});
+// Stops: "random but fixed", filled from the oldest story upwards. 4 = 40%, 3 = 35%, 2 = 17%, 1 = 8%.
+const hash = (t: string) => { let h = 2166136261; for (const ch of t) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
+const sizeFor = (seed: string) => { const r = hash(seed); return r < 0.40 ? 4 : r < 0.75 ? 3 : r < 0.92 ? 2 : 1; };
+const oldestFirst = [...stories].reverse();
+const groups: (typeof stories)[] = [];
+for (let i = 0; i < oldestFirst.length; ) { const size = sizeFor(oldestFirst[i].seed); groups.push(oldestFirst.slice(i, i + size)); i += size; }
+const stops = groups.reverse().map((g) => g.reverse());
+const FIRST = 3;
+const milestones = stories.filter((s) => s.m);
+const wipText = { wip: 'Readable, more coming…', empty: 'Nothing here yet…' } as Record<string, string>;
+const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
 ---
 <Base title={data.title} description={data.description ?? data.intro} image={coverOf(data)?.image}>
-  <h1>{data.title}</h1>
-  <EntryHead data={data} body={body} />
-  <div class="grid">
-    {entries.map((e) => <StoryCard story={e} />)}
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="wood" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.02 0.42" numOctaves="2" seed="4" result="n" />
+        <feColorMatrix in="n" type="matrix" values="0 0 0 0 0.30  0 0 0 0 0.19  0 0 0 0 0.07  0 0 0 1.1 -0.42" result="g" />
+        <feComposite in="g" in2="SourceAlpha" operator="in" result="gm" />
+        <feMerge><feMergeNode in="SourceGraphic" /><feMergeNode in="gm" /></feMerge>
+      </filter>
+    </defs>
+  </svg>
+  <div class="column wide jr-page diary" style="max-width:74rem">
+    <h1>{data.title}</h1>
+    <EntryHead data={data} body={body} />
+    {stories.length > 0 && (<Fragment>
+
+    <div class="jr-bar" data-bar data-pagefind-ignore>
+      <button type="button" class="jr-btn jr-newest" data-newest><span class="lg">Swim to the newest stories</span><span class="sm">Newest</span></button>
+      <button type="button" class="jr-btn jr-all" data-all><span class="lg">All Fishy Stories</span><span class="sm">All stories</span></button>
+      <button type="button" class="jr-btn jr-ms" data-ms>Milestones</button>
+      <button type="button" class="jr-btn jr-oldest" data-oldest><span class="lg">Swim to the oldest stories</span><span class="sm">Oldest</span></button>
+      <button type="button" class="jr-btn jr-fwd off" data-fwd>Swim forward</button>
+    </div>
+
+    <div class="jr-listwrap" hidden data-list data-pagefind-ignore="all">
+      <ol class="jr-list">
+        {stories.map((s) => (
+          <li><a href={s.href}>
+            {s.img ? <img class="jr-lthumb" src={s.img} alt="" loading="lazy" /> : <span class="jr-lthumb jr-nophoto"><img src="/images/gourami-piece.svg" alt="" loading="lazy" /></span>}
+            <span class="jr-ltext"><span class="jr-date">{s.d}{s.u && <Fragment> · Updated {s.u}</Fragment>}</span><span class="jr-ltitle">{s.t}</span>{s.i && <span class="jr-lintro">{s.i}</span>}</span>
+            {s.w && <span class="jr-lwip"><svg width="30" height="30" aria-hidden="true"><use href={wipLogo(s.w)} width="100%" height="100%" /></svg><span>{wipText[s.w]}</span></span>}
+          </a></li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="jr-listwrap" hidden data-mslist data-pagefind-ignore="all">
+      <ol class="jr-list jr-mslist">
+        {milestones.map((m) => (
+          <li><a href={m.href} data-goto={m.seed}>
+            <span class="jr-board">{m.m}</span>
+            <span class="jr-ltext"><span class="jr-date">{m.d}</span><span class="jr-ltitle">{m.t}</span></span>
+          </a></li>
+        ))}
+      </ol>
+    </div>
+
+    <div class="journey" data-journey>
+      <svg class="jr-stream" aria-hidden="true"><path class="jr-water" /></svg>
+      <div class="jr-snote jr-snote-top" data-pagefind-ignore>The journey continues…</div>
+      {stops.map((stop, i) => (
+        <section class="jr-row" data-row hidden={i >= FIRST} data-key={stop[stop.length - 1].seed} data-milestone={stop.map((s) => s.m).filter(Boolean).join(' · ')} id={i === stops.length - 1 ? 'jr-first' : undefined}>
+          {stop.map((s, j) => (
+            <a class="jr-card" href={s.href} data-seed={s.seed} data-m={s.m}>
+              <span class="jr-photo" style={`--r:${[-2.2, 1.8, -1.2, 2.4, -1.6, 1.4][(i + j) % 6]}deg`}>
+                {s.img ? <img src={s.img} alt="" loading="lazy" /> : <span class="jr-nophoto"><img src="/images/gourami-piece.svg" alt="" loading="lazy" /></span>}
+                <span class="jr-strip" data-pagefind-ignore>{s.d}{s.u && <span class="jr-upd">Updated {s.u}</span>}</span>
+                {i === 0 && j === 0 && <span class="jr-new" data-pagefind-ignore>Latest</span>}
+              </span>
+              <span class="jr-note">
+                <span class="jr-nt"><span class="jr-title">{s.t}</span>{s.i && <span class="jr-intro">{s.i}</span>}</span>
+                {s.w && <svg class="jr-wip" width="34" height="34" aria-label={wipText[s.w]} role="img"><use href={wipLogo(s.w)} width="100%" height="100%" /></svg>}
+              </span>
+            </a>
+          ))}
+        </section>
+      ))}
+      <div class="jr-snote jr-snote-end" hidden data-pagefind-ignore>Where it all began</div>
+      <div class="jr-more" data-pagefind-ignore><button type="button" class="jr-btn" data-more>Swim back</button></div>
+      <svg class="jr-token" viewBox="0 0 200 285" aria-hidden="true">
+        <ellipse cx="100" cy="262" rx="52" ry="15" fill="#B8956A"/><rect x="48" y="250" width="104" height="12" fill="#B8956A"/>
+        <ellipse cx="100" cy="250" rx="52" ry="15" fill="#EED8B0"/><ellipse cx="100" cy="250" rx="36" ry="9" fill="none" stroke="#DDBF8E" stroke-width="2"/>
+        <rect x="93" y="150" width="14" height="102" rx="4" fill="#D2B17F"/>
+        <circle cx="100" cy="94" r="70" fill="#B8956A"/><circle cx="100" cy="88" r="70" fill="#EED8B0"/>
+        <g fill="none" stroke="#DDBF8E" stroke-width="2.2"><path d="M34 46 Q100 32 166 50"/><path d="M30 76 Q100 64 170 82"/><path d="M30 116 Q100 104 170 122"/><path d="M40 144 Q100 132 160 150"/></g>
+        <circle cx="100" cy="88" r="67" fill="none" stroke="#D2B17F" stroke-width="3"/>
+        <image href="/images/gourami-piece.svg" x="40" y="52" width="120" height="76"/>
+      </svg>
+    </div>
+    </Fragment>)}
+    <MainText hasBody={hasBody && !notice} before={stories.length > 0} headings={headings} title={data.title}><Content /></MainText>
   </div>
-  <MainText hasBody={hasBody && !notice} before={entries.length > 0} headings={headings} title={data.title}><Content /></MainText>
+  {stories.length > 0 && <script is:inline define:vars={{ PIECES }}>window.__PIECES = PIECES;</script>}
 </Base>
+
+<style is:global>
+  .jr-page > h1 { margin-bottom: .3rem; }
+  /* the sticky bar */
+  .jr-bar { position: sticky; top: var(--top-h, 64px); z-index: 5; display: grid; grid-template-columns: 1fr auto auto 1fr; gap: 1.4rem; align-items: center; padding: .35rem 0; margin: 0 0 1.2rem; transition: background-color .2s; }
+  .jr-bar.stuck { background: color-mix(in srgb, var(--bg) 94%, transparent); box-shadow: 0 6px 12px -8px rgb(60 40 10 / .25); }
+  .jr-btn { font: 700 1.45rem var(--hand); color: var(--gold); background: none; border: 0; cursor: pointer; padding: .1rem .3rem; text-decoration: none; text-decoration-thickness: 1px; text-underline-offset: 4px; }
+  @media (hover: hover) { .jr-btn:hover { text-decoration: underline; } }
+  .jr-btn:hover { color: color-mix(in srgb, var(--gold) 75%, var(--ink)); }
+  .jr-newest { justify-self: end; } .jr-oldest { justify-self: start; }
+  .jr-btn.off { visibility: hidden; }
+  /* "Swim forward": just under the bar, sticks with it */
+  .jr-bar .jr-btn.jr-fwd { position: absolute; top: calc(100% + 4px); left: 50%; transform: translateX(-50%); background: var(--bg); border-radius: 10px; padding: 0 1.1rem .15rem .9rem !important; overflow: visible; box-shadow: 0 6px 12px -8px rgb(60 40 10 / .25); white-space: nowrap; }
+  .jr-btn .sm { display: none; }
+  /* list view on a notebook page */
+  .jr-listwrap[hidden] { display: none; }
+  .jr-listwrap { max-width: 42rem; margin: 0 auto 2.5rem; background-color: var(--paper); border-radius: 3px; padding: 1.4rem 1.6rem 1.4rem 3.4rem; box-shadow: 0 2px 0 var(--line), 0 12px 30px rgb(60 40 10 / .10);
+    background-image: linear-gradient(90deg, transparent 2.3rem, var(--margin) 2.3rem, var(--margin) calc(2.3rem + 2px), transparent calc(2.3rem + 2px)), repeating-linear-gradient(transparent 0, transparent 1.75rem, var(--rule) 1.75rem, var(--rule) calc(1.75rem + 1px)); }
+  .jr-list { list-style: none; margin: 0; padding: 0; }
+  .jr-list a { display: flex; gap: 1rem; align-items: center; padding: .7rem 0; text-decoration: none; color: var(--ink); border-bottom: 1px dashed var(--line); }
+  .jr-lthumb { flex: none; width: 5.2rem; aspect-ratio: 4 / 3; object-fit: cover; border: 3px solid #fff; box-shadow: 0 3px 8px rgb(60 40 10 / .2); }
+  .jr-ltext { flex: 1; display: grid; gap: .1rem; min-width: 0; }
+  .jr-list .jr-date { font: 600 1.25rem/1 var(--hand); color: var(--gold); }
+  .jr-ltitle { font: 600 1.08rem var(--head); }
+  .jr-list a:hover .jr-ltitle { text-decoration: underline; text-decoration-color: var(--gold); }
+  .jr-lintro { color: var(--muted); font-size: .9rem; }
+  .jr-board { flex: none; width: 9rem; display: grid; place-items: center; padding: .45rem .4rem; text-align: center; font: 700 1.3rem/1 var(--hand); color: #B26D0E; background: #EED8B0; border: 2px solid #D2B17F; border-radius: 5px; box-shadow: 0 3px 0 #B8956A; }
+  .jr-lwip { flex: none; width: 5.6rem; display: grid; justify-items: center; gap: .1rem; border-left: 1px solid var(--line); padding-left: .6rem; font: 600 1rem/1.1 var(--hand); color: var(--muted); text-align: center; }
+  .jr-lwip svg { color: var(--gold); }
+  /* the river */
+  .journey { position: relative; padding: 110px 0 40px; }
+  .journey.is-list { display: none; }
+  .jr-stream { position: absolute; left: 0; top: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+  .jr-water { fill: none; stroke: var(--stream); stroke-width: 14; stroke-linecap: round; opacity: .9; }
+  .jr-snote { position: absolute; z-index: 3; transform: translate(-50%, -50%); background: var(--beige); color: var(--beige-ink); font: 700 1.55rem var(--hand); padding: .55rem 1.3rem .65rem; box-shadow: 0 6px 14px rgb(60 40 10 / .18); white-space: nowrap; }
+  .jr-snote[hidden] { display: none; }
+  .jr-row { position: relative; margin: 0 0 120px; min-height: 22rem; z-index: 2; }
+  .jr-row[hidden] { display: none; }
+  .jr-row .jr-card { position: absolute; top: 0; }
+  .jr-mark { position: absolute; z-index: 1; width: 34px; height: 34px; margin: -17px 0 0 -17px; border-radius: 50%; background: var(--bg); color: var(--gold); pointer-events: none; }
+  .jr-card { width: 13.8rem; display: grid; justify-items: stretch; text-decoration: none; color: var(--ink); }
+  .jr-photo { position: relative; z-index: 2; display: block; width: 100%; padding: .5rem .5rem 0; background: var(--frame); box-shadow: 0 6px 16px rgb(60 40 10 / .18); transform: rotate(var(--r)); transition: transform .25s; }
+  .jr-photo img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  /* a story without a heading photo: the gold gourami on cream */
+  .jr-nophoto { display: grid; place-items: center; aspect-ratio: 4 / 3; background: #F6EBD3; }
+  .jr-photo .jr-nophoto img, .jr-lthumb.jr-nophoto img { width: 62%; aspect-ratio: auto; object-fit: contain; }
+  .jr-lthumb.jr-nophoto { display: grid; }
+  .jr-upd { display: block; font-size: 1rem; color: color-mix(in srgb, var(--gold) 70%, var(--muted)); }
+  .jr-strip { display: block; padding: .45rem .1rem .55rem; font: 600 1.25rem/1.15 var(--hand); color: var(--gold); text-align: center; }
+  .jr-card:hover .jr-photo { transform: rotate(0deg) scale(1.04); }
+  .jr-new { position: absolute; top: -10px; left: -14px; font: 700 1.2rem var(--hand); color: #fff; background: var(--gold); padding: 0 .55rem; border-radius: 6px; transform: rotate(-12deg); box-shadow: 0 3px 6px rgb(60 40 10 / .2); }
+  .jr-note { position: relative; z-index: 1; display: flex; gap: .5rem; align-items: center; margin: -14px .4rem 0; padding: 1.4rem .9rem .9rem; background: var(--beige); color: var(--beige-ink); box-shadow: 0 5px 12px rgb(60 40 10 / .16); }
+  .jr-nt { flex: 1; display: grid; gap: .2rem; min-width: 0; }
+  .jr-title { font: 600 1.1rem/1.25 var(--head); color: var(--beige-ink); }
+  .jr-card:hover .jr-title { text-decoration: underline; text-decoration-color: var(--gold); }
+  .jr-intro { font-size: .88rem; line-height: 1.45; color: color-mix(in srgb, var(--beige-ink) 75%, transparent); }
+  .jr-wip { flex: none; align-self: center; color: #B97A12; }
+  .jr-more { display: flex; justify-content: center; margin: -30px 0 10px; position: relative; z-index: 3; }
+  .jr-more[hidden] { display: none; }
+  .jr-token { position: absolute; left: 0; top: 0; width: 58px; height: 83px; pointer-events: none; z-index: 4; transition: transform .35s ease-out; }
+  @media (prefers-reduced-motion: reduce) { .jr-token { transition: none; } .jr-card:hover .jr-photo { transform: rotate(var(--r)); } }
+  .jr-token { filter: drop-shadow(0 4px 4px rgb(60 40 10 / .25)); }
+  /* nature pieces and milestone boards: fixed, never move */
+  .jr-piece { position: absolute; z-index: 1; width: 64px; height: 77px; pointer-events: none; }
+  .jr-sign { position: absolute; z-index: 1; width: 128px; height: 98px; pointer-events: none; }
+  .jr-sign .t { position: absolute; left: 6px; right: 6px; top: 12px; height: 46px; display: grid; place-items: center; text-align: center; font: 700 1.25rem/1 var(--hand); color: #B26D0E; }
+  @media (max-width: 44rem) {
+    .jr-btn .lg { display: none; } .jr-btn .sm { display: inline; }
+    .jr-bar { gap: .6rem; }
+    .jr-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem .8rem; padding: 0 0 0 52px; margin-bottom: 150px; min-height: 0; }
+    .jr-row .jr-card { position: static; }
+    .jr-card { width: 100%; }
+    .jr-photo { padding: .3rem .3rem 0; }
+    .jr-strip { font-size: 1rem; padding: .3rem 0 .4rem; }
+    .jr-upd { font-size: .85rem; }
+    .jr-note { margin: -10px .2rem 0; padding: 1rem .55rem .6rem; }
+    .jr-title { font-size: .92rem; }
+    .jr-intro { font-size: .78rem; }
+    .jr-wip { width: 24px; height: 24px; }
+    .jr-new { font-size: 1rem; left: -8px; }
+    .jr-bar { display: flex; align-items: center; justify-content: space-evenly; gap: 0; padding-inline: 0; }
+    .jr-bar .jr-btn { font-size: 1.28rem; padding: .1rem 0; }
+    .jr-snote { font-size: 1.3rem; }
+    .jr-token { width: 44px; height: 63px; }
+    .jr-piece { width: 44px; height: 53px; }
+    .jr-piece-big { width: 64px; height: 77px; }
+    .jr-listwrap { padding-left: 2.6rem; }
+    .jr-lthumb { width: 4rem; }
+  }
+</style>
+
+<script>
+  // Everything runs only when there is at least one story (the river exists).
+  function river() {
+  const box = document.querySelector<HTMLElement>('[data-journey]')!;
+  const svg = box.querySelector<SVGSVGElement>('.jr-stream')!;
+  const water = svg.querySelector<SVGPathElement>('.jr-water')!;
+  const token = box.querySelector<SVGSVGElement>('.jr-token')!;
+  const topNote = box.querySelector<HTMLElement>('.jr-snote-top')!;
+  const endNote = box.querySelector<HTMLElement>('.jr-snote-end')!;
+  const bar = document.querySelector<HTMLElement>('[data-bar]')!;
+  const listWrap = document.querySelector<HTMLElement>('[data-list]')!;
+  const bNew = bar.querySelector<HTMLElement>('[data-newest]')!, bAll = bar.querySelector<HTMLElement>('[data-all]')!, bOld = bar.querySelector<HTMLElement>('[data-oldest]')!;
+  const PIECES = (window as any).__PIECES as Record<string, string>;
+  const NAMES = Object.keys(PIECES);
+  const narrow = matchMedia('(max-width: 44rem)');
+  const topBar = document.querySelector<HTMLElement>('.top');
+  const topH = () => topBar?.offsetHeight ?? 64;
+  const setTop = () => document.documentElement.style.setProperty('--top-h', `${topH()}px`);
+  const rows = () => Array.from(box.querySelectorAll<HTMLElement>('[data-row]')).filter((r) => !r.hidden);
+  const hash = (t: string) => { let h = 2166136261; for (const ch of t) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; };
+
+  const sizeFor = (seed: string, phone: boolean) => { const r = hash(seed); return r < 0.40 ? 4 : r < (phone ? 0.83 : 0.75) ? 3 : (phone || r < 0.92) ? 2 : 1; };
+  const allCards = Array.from(box.querySelectorAll<HTMLElement>('.jr-card'));   // newest first
+  let grouping = '';
+  function regroup() {
+    const phone = narrow.matches, mode = phone ? 'phone' : 'pc';
+    if (mode === grouping) return;
+    const wasAll = grouping && !box.querySelector('[data-row][hidden]');
+    grouping = mode;
+    const oldest = [...allCards].reverse(), groups: HTMLElement[][] = [];
+    for (let i = 0; i < oldest.length; ) { const n = sizeFor(oldest[i].dataset.seed!, phone); groups.push(oldest.slice(i, i + n)); i += n; }
+    const stopsNow = groups.reverse().map((g) => g.reverse());
+    box.querySelectorAll('[data-row]').forEach((r) => r.remove());
+    const before = box.querySelector('.jr-snote-end')!;
+    stopsNow.forEach((cards, i) => {
+      const row = document.createElement('section');
+      row.className = 'jr-row'; row.setAttribute('data-row', '');
+      row.dataset.key = cards[cards.length - 1].dataset.seed!;
+      row.dataset.milestone = cards.map((c) => c.dataset.m).filter(Boolean).join(' · ');
+      if (i === stopsNow.length - 1) row.id = 'jr-first';
+      row.hidden = !wasAll && i >= 3;
+      cards.forEach((c) => row.appendChild(c));
+      box.insertBefore(row, before);
+    });
+    box.querySelector<HTMLElement>('.jr-more')!.hidden = !box.querySelector('[data-row][hidden]');
+  }
+  let threes = 0;
+  const split = (n: number) => n === 4 ? [3, 1] : n === 3 ? ((threes++ % 2 === 0) ? [3, 0] : [2, 1]) : [n, 0];
+  const OFF = { 1: 0.08, 2: 0.14, 3: 0.2 } as Record<number, number>;
+  const EXTRA = 0.07, BULGE = 0.045;
+  function layout() {
+    const W = box.clientWidth; const xs: number[] = []; threes = 0;
+    rows().forEach((row, i) => {
+      const cards = Array.from(row.querySelectorAll<HTMLElement>('.jr-card'));
+      if (narrow.matches) { row.style.height = ''; xs.push(24); return; }
+      const left = i % 2 === 0; const [nm, no] = split(cards.length);
+      const cw = cards[0].offsetWidth, gap = 24, pad = 58, edge = 12;
+      const groupW = (k: number) => k * cw + Math.max(0, k - 1) * gap;
+      const need = edge + groupW(nm) + pad;
+      const base = left ? Math.max(W * (0.5 + OFF[nm]), need) : Math.min(W * (0.5 - OFF[nm]), W - need);
+      let x = base + (left ? 1 : -1) * W * EXTRA;
+      if (no) { const room = edge + groupW(no) + pad + W * BULGE; x = left ? Math.min(x, W - room) : Math.max(x, room); }
+      const slots: number[] = [];
+      for (let k = 0; k < nm; k++) slots.push(left ? base - pad - groupW(nm) + k * (cw + gap) : base + pad + k * (cw + gap));
+      for (let k = 0; k < no; k++) slots.push(left ? x + W * BULGE + pad + k * (cw + gap) : x - W * BULGE - pad - groupW(no) + k * (cw + gap));
+      slots.sort((a, b) => a - b).forEach((sx, k) => { cards[k].style.left = `${sx}px`; });
+      row.style.height = `${Math.max(...cards.map((c) => c.offsetHeight))}px`;
+      xs.push(x);
+    });
+    return xs;
+  }
+
+  function draw() {
+    regroup();
+    box.querySelectorAll('.jr-mark, .jr-piece, .jr-sign').forEach((m) => m.remove());
+    const xs = layout();
+    const W = box.clientWidth, H = box.scrollHeight, W2 = W / 2;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    const list = rows();
+    const pts = list.map((row, i) => {
+      const x = xs[i], t = row.offsetTop, h = row.offsetHeight, inward = narrow.matches ? 0 : (x > W2 ? -1 : 1) * Math.abs(x - W2) * 0.22;
+      const bulge = narrow.matches ? 0 : (x > W2 ? 1 : -1) * W * BULGE;
+      return { x: x + bulge, y: t + h * 0.42, top: { x: x + inward, y: t - 10 }, bot: { x: x + inward, y: t + h + 10 } };
+    });
+    const sx = narrow.matches ? 24 : W2, startY = list[0].offsetTop - 70;
+    const last = list[list.length - 1], allShown = !box.querySelector('[data-row][hidden]');
+    const endY = last.offsetTop + last.offsetHeight + (allShown ? 90 : 60);
+    const P = [{ x: sx, y: startY }];
+    pts.forEach((p) => P.push(p.top, { x: p.x, y: p.y }, p.bot));
+    P.push({ x: sx, y: endY });
+    let d = `M${P[0].x} ${P[0].y}`;
+    for (let i = 0; i < P.length - 1; i++) {
+      const p0 = P[i - 1] ?? P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] ?? p2;
+      d += ` C${p1.x + (p2.x - p0.x) / 6} ${p1.y + (p2.y - p0.y) / 6} ${p2.x - (p3.x - p1.x) / 6} ${p2.y - (p3.y - p1.y) / 6} ${p2.x} ${p2.y}`;
+    }
+    water.setAttribute('d', d);
+    // the notes cover the start and the end of the river
+    topNote.style.left = `${narrow.matches ? Math.max(sx + 90, 110) : sx}px`; topNote.style.top = `${startY}px`;
+    if (narrow.matches) topNote.style.left = `${sx + topNote.offsetWidth / 2 - 14}px`;
+    endNote.hidden = !allShown;
+    if (allShown) { endNote.style.left = narrow.matches ? `${sx + endNote.offsetWidth / 2 - 14}px` : `${sx}px`; endNote.style.top = `${endY}px`; }
+    pts.forEach((p) => {
+      const m = document.createElement('span'); m.className = 'jr-mark';
+      m.innerHTML = '<svg viewBox="0 0 28 28" width="34" height="34"><use href="#bub"></use></svg>';
+      m.style.left = `${p.x}px`; m.style.top = `${p.y}px`; box.appendChild(m);
+    });
+    decorate(list, pts);
+    place(true);
+  }
+
+  // Nature pieces (1–2 per stop) and milestone boards in free space. Fixed: chosen from the stop's own number.
+  function decorate(list: HTMLElement[], pts: { x: number; y: number }[]) {
+    const W = box.clientWidth;
+    const len = water.getTotalLength();
+    const river: { x: number; y: number }[] = [];
+    for (let s = 0; s <= len; s += 18) river.push(water.getPointAtLength(s));
+    const taken: DOMRect[] = [];
+    const boxR = box.getBoundingClientRect();
+    const rel = (r: DOMRect) => new DOMRect(r.left - boxR.left, r.top - boxR.top, r.width, r.height);
+    box.querySelectorAll<HTMLElement>('.jr-card, .jr-snote:not([hidden]), .jr-more:not([hidden])').forEach((c) => taken.push(rel(c.getBoundingClientRect())));
+    const free = (x: number, y: number, w: number, h: number, m = 14) => {
+      if (x < 4 || x + w > W - 4) return false;
+      for (const r of taken) if (x < r.right + m && x + w > r.left - m && y < r.bottom + m && y + h > r.top - m) return false;
+      for (const p of river) if (p.x > x - 22 && p.x < x + w + 22 && p.y > y - 22 && p.y < y + h + 22) return false;
+      return true;
+    };
+    const pw = narrow.matches ? 44 : 64, ph = narrow.matches ? 53 : 77;
+    const recent: string[] = [];
+    list.forEach((row, i) => {
+      const key = row.dataset.key ?? String(i);
+      const t = narrow.matches ? row.offsetTop - 145 : row.offsetTop - 60, b = narrow.matches ? row.offsetTop - 4 : row.offsetTop + row.offsetHeight + 90;
+      const spots: { x: number; y: number }[] = [];
+      for (let y = t; y < b - ph; y += narrow.matches ? 10 : 22) for (let x = 6; x < W - pw; x += narrow.matches ? 10 : 22) spots.push({ x, y });
+      // milestone board first, as close to the stop's bubble as possible
+      const ms = row.dataset.milestone;
+      if (ms) {
+        const sw = 128, sh = 98, p = pts[i];
+        const cand = spots.map((s) => ({ ...s, d: Math.hypot(s.x + sw / 2 - p.x, s.y + sh / 2 - p.y) })).sort((a, b) => a.d - b.d);
+        let s = cand.find((c) => free(c.x, c.y, sw, sh));
+        // a full stop: look a bit further up and down (into the gaps between the stops)
+        if (!s && !narrow.matches) {
+          const wide: { x: number; y: number; d: number }[] = [];
+          for (let y = row.offsetTop - 130; y < row.offsetTop + row.offsetHeight + 130 - sh; y += 10) for (let x = 6; x < W - sw; x += 16) wide.push({ x, y, d: Math.hypot(x + sw / 2 - p.x, y + sh / 2 - p.y) });
+          s = wide.sort((a, b) => a.d - b.d).find((c) => free(c.x, c.y, sw, sh, 8));
+        }
+        if (s) {
+          const el = document.createElement('div'); el.className = 'jr-sign';
+          el.innerHTML = `<svg viewBox="0 0 128 98" width="128" height="98"><g filter="url(#wood)"><rect x="60" y="50" width="8" height="40" fill="#B8956A"/><ellipse cx="64" cy="92" rx="20" ry="5" fill="#B8956A"/><ellipse cx="64" cy="89" rx="20" ry="5" fill="#EED8B0"/><rect x="2" y="10" width="124" height="50" rx="5" fill="#B8956A"/><rect x="2" y="6" width="124" height="50" rx="5" fill="#EED8B0"/><rect x="2" y="6" width="124" height="50" rx="5" fill="none" stroke="#D2B17F" stroke-width="2"/><circle cx="12" cy="16" r="2" fill="#B8956A"/><circle cx="116" cy="16" r="2" fill="#B8956A"/></g></svg><span class="t">${ms}</span>`;
+          el.dataset.key = key; el.style.left = `${s.x}px`; el.style.top = `${s.y}px`; box.appendChild(el);
+          taken.push(new DOMRect(s.x, s.y, sw, sh));
+        }
+      }
+      // phone: a stop with 1 or 3 stories leaves an empty place next to the last story: one more piece goes there
+      if (narrow.matches) {
+        const cards = Array.from(row.querySelectorAll<HTMLElement>('.jr-card'));
+        if (cards.length % 2 === 1) {
+          const last = cards[cards.length - 1];
+          const cx = last.offsetLeft + last.offsetWidth + 12 + last.offsetWidth / 2, cy = row.offsetTop + last.offsetTop + last.offsetHeight / 2;
+          let n0 = Math.floor(hash(key + 'odd') * NAMES.length), name = NAMES[n0];
+          while (recent.includes(name)) { n0 = (n0 + 7) % NAMES.length; name = NAMES[n0]; }
+          recent.push(name);
+          const el = document.createElement('div'); el.className = 'jr-piece jr-piece-big';
+          el.innerHTML = `<svg viewBox="0 0 60 72" width="64" height="77">${PIECES[name]}</svg>`;
+          el.style.left = `${cx - 32}px`; el.style.top = `${cy - 38}px`; box.appendChild(el);
+        }
+      }
+      const count = narrow.matches ? (hash(key + 'n') < 0.5 ? 1 : 2) : (hash(key + 'n') < 0.5 ? 2 : 3);
+      for (let k = 0; k < count; k++) {
+        let n0 = Math.floor(hash(key + 'p' + k) * NAMES.length), name = NAMES[n0];
+        while (recent.includes(name)) { n0 = (n0 + 7) % NAMES.length; name = NAMES[n0]; }
+        recent.push(name); if (recent.length > 8) recent.shift();
+        const ok = spots.filter((s) => free(s.x, s.y, pw, ph));
+        if (!ok.length) continue;
+        const s = ok[Math.floor(hash(key + 's' + k) * ok.length)];
+        const el = document.createElement('div'); el.className = 'jr-piece';
+        el.innerHTML = `<svg viewBox="0 0 60 72" width="${pw}" height="${ph}">${PIECES[name]}</svg>`;
+        el.style.left = `${s.x}px`; el.style.top = `${s.y}px`; box.appendChild(el);
+        taken.push(new DOMRect(s.x, s.y, pw, ph));
+      }
+    });
+  }
+
+  // the gourami game piece stands on the river near the middle of the screen
+  let placed = false;
+  function place(force = false) {
+    // reduce motion: the gourami stays where it is while scrolling (first: the newest stop)
+    if (still.matches && placed && force !== true) { updateBar(); return; }
+    placed = true;
+    const r = box.getBoundingClientRect(), total = water.getTotalLength();
+    const target = Math.min(Math.max(innerHeight * 0.55 - r.top, 120), box.scrollHeight - 120);
+    let lo = 0, hi = total;
+    for (let k = 0; k < 26; k++) { const mid = (lo + hi) / 2; (water.getPointAtLength(mid).y < target ? (lo = mid) : (hi = mid)); }
+    const p = water.getPointAtLength(lo);
+    token.style.transform = `translate(${p.x - token.clientWidth / 2}px, ${p.y - token.clientHeight * 0.93}px)`;
+    updateBar();
+  }
+
+  // the bar: sticky; "newest" hidden at the very top, "oldest" hidden when the first story is on screen
+  function updateBar() {
+    const stuck = bar.getBoundingClientRect().top <= topH() + 1 && scrollY > 0;
+    bar.classList.toggle('stuck', stuck);
+    bNew.classList.toggle('off', !stuck);
+    const openWrap = !listWrap.hidden ? listWrap : !msWrap.hidden ? msWrap : null;
+    let lastSeen = false;
+    if (openWrap) { const li = openWrap.querySelector('li:last-child'); if (li) lastSeen = li.getBoundingClientRect().top < innerHeight; }
+    else { const first = document.getElementById('jr-first'); if (first && !first.hidden) lastSeen = first.getBoundingClientRect().top < innerHeight - 80; }
+    bOld.classList.toggle('off', lastSeen);
+    // "Swim forward": only on the river, once the bar is stuck, and not when the newest stop is on screen
+    const firstRow = box.querySelector<HTMLElement>('[data-row]');
+    const newestSeen = !firstRow || firstRow.getBoundingClientRect().bottom > barBottom() + 30;
+    bFwd.classList.toggle('off', !stuck || !!openWrap || newestSeen);
+  }
+  const bFwd = bar.querySelector<HTMLElement>('[data-fwd]')!;
+  // reduce motion: no gliding, and the gourami only jumps when a button is used
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const go = (top: number) => { scrollTo({ top, behavior: still.matches ? 'auto' : 'smooth' }); if (still.matches) requestAnimationFrame(() => place(true)); };
+  bFwd.addEventListener('click', () => {
+    const rows = Array.from(box.querySelectorAll<HTMLElement>('[data-row]:not([hidden])'));
+    let idx = rows.findIndex((r) => r.getBoundingClientRect().bottom > barBottom() + 40);
+    if (idx < 0) idx = rows.length - 1;
+    const target = rows[Math.max(0, idx - 3)];
+    go(target === rows[0] ? 0 : target.getBoundingClientRect().top + scrollY - barBottom() - 40);
+  });
+  const barBottom = () => topH() + bar.offsetHeight + 12;
+  function showMore(all = false) {
+    const hidden = Array.from(box.querySelectorAll<HTMLElement>('[data-row][hidden]'));
+    const shown = hidden.slice(0, all ? hidden.length : 3); shown.forEach((r) => (r.hidden = false));
+    box.querySelector<HTMLElement>('.jr-more')!.hidden = !box.querySelector('[data-row][hidden]');
+    draw();
+    return shown[0];
+  }
+  box.querySelector('[data-more]')!.addEventListener('click', () => {
+    const first = showMore();
+    if (first) go(first.getBoundingClientRect().top + scrollY - barBottom() - 40);
+  });
+  bOld.addEventListener('click', () => {
+    if (listWrap.hidden && msWrap.hidden) showMore(true);
+    go(document.documentElement.scrollHeight);
+  });
+  bNew.addEventListener('click', () => go(0));
+  const msWrap = document.querySelector<HTMLElement>('[data-mslist]')!;
+  const bMs = bar.querySelector<HTMLElement>('[data-ms]')!;
+  function openList(which: 'all' | 'ms' | null) {
+    listWrap.hidden = which !== 'all'; msWrap.hidden = which !== 'ms';
+    box.classList.toggle('is-list', which !== null);
+    bAll.innerHTML = which === 'all' ? 'Back to the river' : '<span class="lg">All Fishy Stories</span><span class="sm">All stories</span>';
+    bMs.textContent = which === 'ms' ? 'Back to the river' : 'Milestones';
+    if (which === null) draw(); else updateBar();
+  }
+  bAll.addEventListener('click', () => openList(listWrap.hidden ? 'all' : null));
+  bMs.addEventListener('click', () => openList(msWrap.hidden ? 'ms' : null));
+  msWrap.querySelectorAll<HTMLElement>('[data-goto]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    openList(null);
+    const all = Array.from(box.querySelectorAll<HTMLElement>('[data-row]'));
+    const row = box.querySelector<HTMLElement>(`.jr-card[data-seed="${CSS.escape(a.dataset.goto!)}"]`)!.closest<HTMLElement>('[data-row]')!;
+    const idx = all.indexOf(row), key = row.dataset.key!;
+    all.slice(0, idx + 1).forEach((r) => (r.hidden = false));
+    box.querySelector<HTMLElement>('.jr-more')!.hidden = !box.querySelector('[data-row][hidden]');
+    draw();
+    const sign = box.querySelector<HTMLElement>(`.jr-sign[data-key="${CSS.escape(key)}"]`) ?? row;
+    go(sign.getBoundingClientRect().top + scrollY - innerHeight / 2 + 60);
+  }));
+  setTop(); if (topBar && 'ResizeObserver' in window) new ResizeObserver(setTop).observe(topBar);
+  addEventListener('scroll', () => place(), { passive: true }); addEventListener('resize', draw);
+  addEventListener('load', draw); draw();
+  }
+  if (document.querySelector('[data-journey]')) river();
+</script>

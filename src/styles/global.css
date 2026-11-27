@@ -359,14 +359,21 @@ html.lb-open { overflow: hidden; }
 .prose figure { margin: 1.4rem 0; }
 .prose figure img, .photo-row img { width: 100%; height: auto; border-radius: 10px; display: block; }
 .prose figcaption { font-size: .9rem; color: var(--muted); margin-top: .4rem; }
-.photo-small { max-width: 50%; margin-inline: auto !important; }
-@media (min-width: 40rem) {
-  .photo-left { float: left; width: 45%; margin: .3rem 1.4rem 1rem 0 !important; }
-  .photo-right { float: right; width: 45%; margin: .3rem 0 1rem 1.4rem !important; }
-}
+/* Size (Photo button): about 40 / 60 / 80 / 100% of the text width. Position: left, right or middle.
+   A photo always sits between two paragraphs; the text never wraps around it. */
+.prose figure.photo { --w: 100%; width: var(--w); box-sizing: border-box; }
+.prose figure.photo[data-size="small"] { --w: 40%; }
+.prose figure.photo[data-size="medium"] { --w: 60%; }
+.prose figure.photo[data-size="large"] { --w: 80%; }
+.prose figure.photo[data-pos="middle"] { margin-inline: auto; }
+.prose figure.photo[data-pos="right"] { margin-left: auto; }
+/* Phones: small photos a bit bigger, the others the full width */
+@media (max-width: 40rem) { .prose figure.photo { --w: 100% !important; } .prose figure.photo[data-size="small"] { --w: 62% !important; } }
+.prose figcaption .photo-cap { display: block; }
+.prose figcaption .photo-credit { display: block; font-size: .85em; margin-top: .1rem; overflow-wrap: anywhere; }
 .photo-row { display: grid; grid-template-columns: repeat(var(--n), minmax(0, 1fr)); gap: .8rem; margin: 1.4rem 0; }
 .photo-row figure { margin: 0 !important; }
-@media (max-width: 40rem) { .photo-row { grid-template-columns: 1fr; } .photo-small { max-width: 100%; } }
+@media (max-width: 40rem) { .photo-row { grid-template-columns: 1fr; } }
 .prose::after { content: ""; display: block; clear: both; }
 
 /* Search: magnifier in the menu, bar sliding down under the header */
@@ -661,10 +668,18 @@ a.card:has(.card-photo) { display: flex; flex-direction: column; }
 
 /* Side notes written in the Main text (Insert > Side note): muted text with a coloured line on the left.
    Justified like all other text (not on phones); Left, Centre or Right when chosen in the editor. */
-.sidenote { border-left: 4px solid var(--sand); padding: .2rem 1rem; margin: 1.2rem 0; color: var(--muted); }
-.sidenote[data-c="green"] { border-left-color: var(--plant); }
-.sidenote[data-c="orange"] { border-left-color: var(--warn); }
-.sidenote[data-c="blue"] { border-left-color: var(--water); }
+.sidenote {
+  --lc: var(--sand); border-left: 4px solid var(--lc); padding: .7rem 1rem; margin: 1.4rem 0; color: var(--ink);
+  background: color-mix(in srgb, var(--lc) 14%, var(--bg)); border-radius: 0 8px 8px 0; box-sizing: border-box;
+}
+.sidenote[data-c="green"] { --lc: var(--plant); }
+.sidenote[data-c="orange"] { --lc: var(--warn); }
+.sidenote[data-c="blue"] { --lc: var(--water); }
+/* Position (Side note button): half the text width on the left, right or in the middle, or the full width */
+.sidenote[data-pos="left"], .sidenote[data-pos="right"], .sidenote[data-pos="middle"] { width: 50%; }
+.sidenote[data-pos="right"] { margin-left: auto; }
+.sidenote[data-pos="middle"] { margin-inline: auto; }
+@media (max-width: 40rem) { .sidenote[data-pos] { width: auto; } }
 .sidenote > :first-child { margin-top: 0; }
 .sidenote > :last-child { margin-bottom: 0; }
 .prose .sidenote[data-a="left"] :is(p, li) { text-align: left; }

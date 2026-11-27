@@ -1,44 +1,48 @@
-// Turns photo lines in articles into nicely positioned figures with a source label.
+// Turns photo lines in the Main text into figures with a source label.
 //
-// In the CMS use the "Photo" button in the editor toolbar: it has drop-downs for the layout and the
+// In the CMS use the "Photo" button in the editor toolbar: it has drop-downs for the position, size and
 // source. Under the hood it writes this, which you can also type by hand:
 //
-//   ![{left, ai | My caption} Description of the photo](/images/uploads/photo.jpg)
+//   ![{left, medium, ai | My caption | Credit or https://link} Description of the photo](/images/uploads/photo.jpg)
 //
 // Between the curly brackets, separated by commas:
-//   layout:  left | right | center | small
-//     left / right  the photo sits at the side and the text wraps around it
-//     center        the photo sits in the middle on its own line (the default)
-//     small         a smaller photo in the middle
-//   source:  own | ai | external      (my photo, AI generated, external source)
-//   Then, after a bar |, an optional caption.
+//   position: left | right | middle      where the photo sits; it ALWAYS sits between two paragraphs
+//                                        (the text never wraps around it). "center" means middle.
+//   size:     small | medium | large | full   about 40 / 60 / 80 / 100% of the text width
+//   source:   own | ai | external        (my photo, AI generated, external source)
+//   Then, after a bar |, an optional caption, and after a second bar | an optional credit (a name or a link).
+// Older photos keep working: "left"/"right" alone are medium size, "center" is full size, "small" is small in the middle.
 // The same text may also be put in the image "title" instead of the curly brackets.
 //
 // Two or more photos in the SAME paragraph (one directly under the other, no empty line)
 // are shown side by side in one row.
 
-const LAYOUTS = ['left', 'right', 'center', 'small'];
+const POSITIONS = { left: 'left', right: 'right', middle: 'middle', center: 'middle' };
+const SIZES = ['small', 'medium', 'large', 'full'];
 const SOURCES = { own: 'My photo', ai: 'AI generated', external: 'External source' };
 
 const esc = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
-// Reads "left, ai | caption" into { layout, source, caption }
+// Reads "left, medium, ai | caption | credit" into { pos, size, source, caption, credit }
 function parseToken(raw) {
   const text = String(raw ?? '');
-  const bar = text.indexOf('|');
-  const wordsPart = bar === -1 ? text : text.slice(0, bar);
-  const words = wordsPart.split(/[\s,]+/).map((w) => w.trim().toLowerCase()).filter(Boolean);
-  const known = words.every((w) => LAYOUTS.includes(w) || w in SOURCES);
-  if (!known) return { layout: 'center', source: '', caption: text.trim() };
+  const parts = text.split('|');
+  const words = parts[0].split(/[\s,]+/).map((w) => w.trim().toLowerCase()).filter(Boolean);
+  const known = words.every((w) => w in POSITIONS || SIZES.includes(w) || w in SOURCES);
+  if (!known) return { pos: 'middle', size: 'full', source: '', caption: text.trim(), credit: '' };
+  const posWord = words.find((w) => w in POSITIONS);
+  const pos = posWord ? POSITIONS[posWord] : 'middle';
+  const size = words.find((w) => SIZES.includes(w)) ?? (pos === 'left' || pos === 'right' ? 'medium' : 'full');
   return {
-    layout: words.find((w) => LAYOUTS.includes(w)) ?? 'center',
+    pos, size,
     source: words.find((w) => w in SOURCES) ?? '',
-    caption: bar === -1 ? '' : text.slice(bar + 1).trim(),
+    caption: (parts[1] ?? '').trim(),
+    credit: parts.slice(2).join('|').trim(),
   };
 }
 
-// Finds the layout token for one image node: the title wins, else a {…} prefix in the alt text.
+// Finds the token for one image node: the title wins, else a {…} prefix in the alt text.
 function describe(img) {
   let alt = img.alt ?? '';
   let token = img.title ?? '';
@@ -57,14 +61,23 @@ const badge = (p) =>
 const imgTag = (p) =>
   `<span class="imgwrap" data-src="${p.source}"><img src="${esc(p.src)}" alt="${esc(p.alt)}" loading="lazy" decoding="async">${badge(p)}</span>`;
 
+// Caption and credit under the photo (the credit a bit smaller; a web address becomes a link)
+function caption(p) {
+  if (!p.caption && !p.credit) return '';
+  const link = /^https?:\/\//i.test(p.credit);
+  const credit = p.credit
+    ? `<span class="photo-credit" data-pagefind-ignore>Credit: ${link ? `<a href="${esc(p.credit)}" rel="noopener">${esc(p.credit)}</a>` : esc(p.credit)}</span>`
+    : '';
+  return `<figcaption>${p.caption ? `<span class="photo-cap">${esc(p.caption)}</span>` : ''}${credit}</figcaption>`;
+}
+
 function figure(p) {
-  const cap = p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : '';
-  return `<figure class="photo photo-${p.layout}">${imgTag(p)}${cap}</figure>`;
+  return `<figure class="photo" data-pos="${p.pos}" data-size="${p.size}">${imgTag(p)}${caption(p)}</figure>`;
 }
 
 function row(list) {
   const items = list
-    .map((p) => `<figure>${imgTag(p)}${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ''}</figure>`)
+    .map((p) => `<figure>${imgTag(p)}${caption(p)}</figure>`)
     .join('');
   return `<div class="photo-row" style="--n:${list.length}">${items}</div>`;
 }
@@ -121,10 +134,11 @@ function splitMarkers(par) {
   return out;
 }
 
-// A side note (Insert > Side note): {{note:yellow|justify}} … {{/note}}, each marker on its own line.
-// Colours: yellow, green, orange, blue. Alignment: justify, left, center, right.
+// A side note (Insert > Side note): {{note:yellow|justify|left}} … {{/note}}, each marker on its own line.
+// Colours: yellow, green, orange, blue. Alignment of the text: justify, left, center, right.
+// Position of the note: left, right, middle (half the text width) or full (the whole width, the default).
 // Everything between the two markers is normal Main text (bold, links, lists, more paragraphs).
-const NOTE_START = /^\{\{note:(yellow|green|orange|blue)(?:\|(justify|left|center|right))?\}\}$/;
+const NOTE_START = /^\{\{note:(yellow|green|orange|blue)(?:\|(justify|left|center|right))?(?:\|(left|right|middle|full))?\}\}$/;
 const NOTE_END = /^\{\{\/note\}\}$/;
 const onlyText = (n) => n.type === 'paragraph' && n.children?.length === 1 && n.children[0].type === 'text' ? n.children[0].value.trim() : null;
 function wrapNotes(children) {
@@ -135,7 +149,7 @@ function wrapNotes(children) {
     const m = t && t.match(NOTE_START);
     if (m) {
       if (open) out.push({ type: 'html', value: '</div>' });
-      out.push({ type: 'html', value: `<div class="sidenote" data-c="${m[1]}" data-a="${m[2] || 'justify'}">` });
+      out.push({ type: 'html', value: `<div class="sidenote" data-c="${m[1]}" data-a="${m[2] || 'justify'}" data-pos="${m[3] || 'full'}">` });
       open = true;
       continue;
     }
