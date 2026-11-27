@@ -320,7 +320,8 @@ footer.site::before { content: ""; display: block; border-top: 1px solid var(--l
   position: absolute; top: 0; bottom: 0; width: 28%; border: 0; background: none; cursor: pointer;
   color: #fff; font: 400 3rem/1 var(--head); display: flex; align-items: center; opacity: .0; transition: opacity .15s;
 }
-.lb-nav span { background: rgb(7 26 46 / .55); border-radius: 50%; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; line-height: 1; padding-bottom: .3rem; }
+.lb-nav span { background: rgb(7 26 46 / .55); border-radius: 50%; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; line-height: 0; }  /* a drawn arrow: always in the middle */
+.lb-nav span svg { display: block; }
 .lb-prev { left: 3px; justify-content: flex-start; padding-left: .6rem; }
 .lb-next { right: 3px; justify-content: flex-end; padding-right: .6rem; }
 .lb-photo:hover .lb-nav, .lb-nav:focus-visible { opacity: 1; }
