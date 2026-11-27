@@ -178,14 +178,15 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
   .jr-strip { display: block; padding: .45rem .1rem .55rem; font: 600 1.25rem/1.15 var(--hand); color: var(--gold); text-align: center; }
   .jr-card:hover .jr-photo { transform: rotate(0deg) scale(1.04); }
   .jr-new { position: absolute; top: -10px; left: -14px; font: 700 1.2rem var(--hand); color: #fff; background: var(--gold); padding: 0 .55rem; border-radius: 6px; transform: rotate(-12deg); box-shadow: 0 3px 6px rgb(60 40 10 / .2); }
-  .jr-note { position: relative; z-index: 1; display: flex; gap: .5rem; align-items: center; margin: -14px .4rem 0; padding: 1.4rem .9rem .9rem; background: var(--beige); color: var(--beige-ink); box-shadow: 0 5px 12px rgb(60 40 10 / .16); }
+  .jr-note { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 0; margin: -14px .4rem 0; padding: 1.4rem .9rem .9rem; background: var(--beige); color: var(--beige-ink); box-shadow: 0 5px 12px rgb(60 40 10 / .16); }
   .jr-nt { flex: 1; display: grid; gap: .2rem; min-width: 0; }
   .jr-title { font: 600 1.1rem/1.25 var(--head); color: var(--beige-ink); }
   .jr-card:hover .jr-title { text-decoration: underline; text-decoration-color: var(--gold); }
   .jr-intro { font-size: .88rem; line-height: 1.45; color: color-mix(in srgb, var(--beige-ink) 75%, transparent); }
-  .jr-wipbox { flex: none; width: 4.6rem; display: grid; justify-items: center; gap: .1rem; align-self: center; text-align: center; }
-  .jr-wip { flex: none; color: #B97A12; }
-  .jr-wiptxt { font: 600 .95rem/1.05 var(--hand); color: color-mix(in srgb, var(--beige-ink) 80%, transparent); }
+  /* unfinished story: a line across the whole note, then the shrimp (or curtain) and its text side by side */
+  .jr-wipbox { display: flex; align-items: center; justify-content: center; gap: .4rem; margin: .7rem -.9rem -.35rem; padding: .45rem .9rem 0; border-top: 1px solid color-mix(in srgb, var(--beige-ink) 22%, transparent); }
+  .jr-wip { flex: none; width: 26px; height: 26px; color: #B97A12; }
+  .jr-wiptxt { font: 600 1.1rem/1.05 var(--hand); color: color-mix(in srgb, var(--beige-ink) 80%, transparent); }
   .jr-more { display: flex; justify-content: center; margin: -30px 0 10px; position: relative; z-index: 3; }
   .jr-more[hidden] { display: none; }
   .jr-token { position: absolute; left: 0; top: 0; width: 58px; height: 83px; pointer-events: none; z-index: 4; transition: transform .35s ease-out; }
@@ -207,8 +208,8 @@ const wipLogo = (w: string) => (w === 'empty' ? '#nl-curtain' : '#nl-base');
     .jr-note { margin: -10px .2rem 0; padding: 1rem .55rem .6rem; }
     .jr-title { font-size: .92rem; }
     .jr-intro { font-size: .78rem; }
-    .jr-wip { width: 24px; height: 24px; }
-    .jr-wipbox { width: 3.4rem; } .jr-wiptxt { font-size: .8rem; }
+    .jr-wip { width: 20px; height: 20px; }
+    .jr-wipbox { margin: .5rem -.55rem -.2rem; padding: .35rem .3rem 0; gap: .25rem; } .jr-wiptxt { font-size: .9rem; }
     .jr-new { font-size: 1rem; left: -8px; }
     .jr-bar { display: flex; align-items: center; justify-content: space-evenly; gap: 0; padding-inline: 0; }
     .jr-bar .jr-btn { font-size: 1.28rem; padding: .1rem 0; }
