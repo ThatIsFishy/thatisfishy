@@ -13,8 +13,8 @@ cover:
   alt: Alt text
   source: own
   credit: credit
-  intro: introduction
   body: main text
+  intro: introduction
 notice: none
 comingSoonMessage: ''
 references:
@@ -40,6 +40,10 @@ useful_heading: other useful link
 signoff: Stay fishy,
 ---
 
+## 1heading
+
+### 2 heading
+
 Main text{{ref:1.}} before this text the source should be there.{{ref:Short name}}
 
 {{note:yellow|justify|full}}
@@ -48,6 +52,8 @@ Note message
 
 {{/note}}
 
-![{middle, medium, own | Caption | Credit} Photo description](/images/uploads/sample-tank-1.svg)
+![{middle, medium, own | | Credit} Photo description](/images/uploads/sample-tank-1.svg)
 
 {{notice:coming|Notice message}}
+
+## 3 heading
