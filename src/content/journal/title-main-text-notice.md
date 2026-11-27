@@ -49,3 +49,5 @@ Note message
 {{/note}}
 
 ![{middle, medium, own | Caption | Credit} Photo description](/images/uploads/sample-tank-1.svg)
+
+{{notice:coming|Notice message}}
