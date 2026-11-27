@@ -3,14 +3,15 @@
 // In the CMS use the "Photo" button in the editor toolbar: it has drop-downs for the position, size and
 // source. Under the hood it writes this, which you can also type by hand:
 //
-//   ![{left, medium, ai | My caption | Credit or https://link} Description of the photo](/images/uploads/photo.jpg)
+//   ![{left, medium, ai | | Credit or https://link} Description of the photo](/images/uploads/photo.jpg)
 //
 // Between the curly brackets, separated by commas:
 //   position: left | right | middle      where the photo sits; it ALWAYS sits between two paragraphs
 //                                        (the text never wraps around it). "center" means middle.
 //   size:     small | medium | large | full   about 40 / 60 / 80 / 100% of the text width
 //   source:   own | ai | external        (my photo, AI generated, external source)
-//   Then, after a bar |, an optional caption, and after a second bar | an optional credit (a name or a link).
+//   Then, after a second bar |, an optional credit (a name or a link). The space between the two bars held a
+//   caption in older photos; it is no longer used: the photo DESCRIPTION is shown under the photo instead.
 // Older photos keep working: "left"/"right" alone are medium size, "center" is full size, "small" is small in the middle.
 // The same text may also be put in the image "title" instead of the curly brackets.
 //
@@ -61,14 +62,14 @@ const badge = (p) =>
 const imgTag = (p) =>
   `<span class="imgwrap" data-src="${p.source}"><img src="${esc(p.src)}" alt="${esc(p.alt)}" loading="lazy" decoding="async">${badge(p)}</span>`;
 
-// Caption and credit under the photo (the credit a bit smaller; a web address becomes a link)
+// Under the photo: the photo description, then the credit (a bit smaller; a web address becomes a link)
 function caption(p) {
-  if (!p.caption && !p.credit) return '';
+  if (!p.alt && !p.credit) return '';
   const link = /^https?:\/\//i.test(p.credit);
   const credit = p.credit
     ? `<span class="photo-credit" data-pagefind-ignore>Credit: ${link ? `<a href="${esc(p.credit)}" rel="noopener">${esc(p.credit)}</a>` : esc(p.credit)}</span>`
     : '';
-  return `<figcaption>${p.caption ? `<span class="photo-cap">${esc(p.caption)}</span>` : ''}${credit}</figcaption>`;
+  return `<figcaption>${p.alt ? `<span class="photo-cap">${esc(p.alt)}</span>` : ''}${credit}</figcaption>`;
 }
 
 function figure(p) {
@@ -134,17 +135,60 @@ function splitMarkers(par) {
   return out;
 }
 
-// A side note (Insert > Side note): {{note:yellow|justify|left}} … {{/note}}, each marker on its own line.
+// A side note (Insert > Side note). The CMS writes it as ONE block (no empty lines, so the editor can open it again):
+//   {{note:yellow|justify|left}}
+//   First paragraph
+//   {{br}}
+//   Second paragraph
+//   {{/note}}
+// ({{br}} = a new paragraph). Older notes with empty lines between the markers keep working too.
 // Colours: yellow, green, orange, blue. Alignment of the text: justify, left, center, right.
 // Position of the note: left, right, middle (half the text width) or full (the whole width, the default).
 // Everything between the two markers is normal Main text (bold, links, lists, more paragraphs).
 const NOTE_START = /^\{\{note:(yellow|green|orange|blue)(?:\|(justify|left|center|right))?(?:\|(left|right|middle|full))?\}\}$/;
 const NOTE_END = /^\{\{\/note\}\}$/;
 const onlyText = (n) => n.type === 'paragraph' && n.children?.length === 1 && n.children[0].type === 'text' ? n.children[0].value.trim() : null;
+// One-block note: a paragraph that starts with {{note:…}} and ends with {{/note}}
+const ONE_START = /^\{\{note:(yellow|green|orange|blue)(?:\|(justify|left|center|right))?(?:\|(left|right|middle|full))?\}\}\s*/;
+const ONE_END = /\s*\{\{\/note\}\}$/;
+function oneBlockNote(par) {
+  const kids = par.children ?? [];
+  const first = kids[0], last = kids[kids.length - 1];
+  if (!first || first.type !== 'text' || !last || last.type !== 'text') return null;
+  const m = first.value.match(ONE_START);
+  if (!m || !ONE_END.test(last.value)) return null;
+  const inner = kids.map((k) => ({ ...k }));
+  inner[0].value = inner[0].value.slice(m[0].length);
+  const end = inner[inner.length - 1];
+  end.value = end.value.replace(ONE_END, '');
+  // split into paragraphs at {{br}}
+  const paras = [[]];
+  for (const k of inner) {
+    if (k.type !== 'text') { paras[paras.length - 1].push(k); continue; }
+    const pieces = k.value.split(/\s*\{\{br\}\}\s*/);
+    pieces.forEach((t, n) => {
+      if (n > 0) paras.push([]);
+      if (t) paras[paras.length - 1].push({ type: 'text', value: t });
+    });
+  }
+  const clean = (list) => {
+    while (list.length && ((list[0].type === 'text' && !list[0].value.trim()) || list[0].type === 'break')) list.shift();
+    while (list.length && ((list.at(-1).type === 'text' && !list.at(-1).value.trim()) || list.at(-1).type === 'break')) list.pop();
+    return list;
+  };
+  return [
+    { type: 'html', value: `<div class="sidenote" data-c="${m[1]}" data-a="${m[2] || 'justify'}" data-pos="${m[3] || 'full'}">` },
+    ...paras.map(clean).filter((l) => l.length).map((children) => ({ type: 'paragraph', children })),
+    { type: 'html', value: '</div>' },
+  ];
+}
+
 function wrapNotes(children) {
   const out = [];
   let open = false;
   for (const child of children) {
+    const one = child.type === 'paragraph' ? oneBlockNote(child) : null;
+    if (one) { out.push(...one); continue; }
     const t = onlyText(child);
     const m = t && t.match(NOTE_START);
     if (m) {

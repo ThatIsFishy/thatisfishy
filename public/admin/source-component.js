@@ -8,7 +8,7 @@
   window.CMS.registerEditorComponent({
     id: 'source-ref',
     label: 'Source',
-    fields: [{ name: 'key', label: 'Short name (or title) of the source', widget: 'string', hint: 'As written in Sources and useful links, e.g. Smith 2020. Not shown on the site.' }],
+    fields: [{ name: 'key', label: 'Short name of the source (as written in the list)', widget: 'string', hint: 'Type the Short name exactly as in Sources and useful links under the Main text (e.g. Smith 2020), or its place in that list (1 = the first source). Not shown on the site.' }],
     pattern: /^\{\{ref:([^}]*)\}\}$/,
     fromBlock: function (m) { return { key: (m[1] || '').trim() }; },
     toBlock: function (o) { return '{{ref:' + String(o.key || '').replace(/[{}\n]/g, ' ').trim() + '}}'; },

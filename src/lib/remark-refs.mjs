@@ -2,7 +2,8 @@
 //
 // In the CMS each page has a list "Sources and useful links" under the Main text. In the Main text a source is
 // marked with Insert > Source (or typed by hand anywhere in a sentence): {{ref:Smith 2020}}
-// The text after "ref:" is the source's Short name (or its title). The site turns the marker into a small number:
+// The text after "ref:" is the source's Short name (or its title, or its place in the list: 1 = the first).
+// The site turns the marker into a small number:
 //   - numbers are given in the order the sources are FIRST used in the Main text (the first one is 1);
 //   - the same source used again keeps its number;
 //   - a marker on its own line (Insert puts it there) joins the end of the paragraph above it;
@@ -21,6 +22,9 @@ function finder(refs) {
   return (key) => {
     const k = norm(key);
     if (!k) return -1;
+    // A number (1, 2, 3…, also "1.") means that place in the list: 1 = the first source.
+    const num = k.match(/^(\d+)\.?$/);
+    if (num) { const n = Number(num[1]) - 1; return n >= 0 && n < refs.length ? n : -1; }
     let i = refs.findIndex((r) => norm(r.short) === k);
     if (i < 0) i = refs.findIndex((r) => norm(r.title) === k);
     if (i < 0 && k.length >= 3) i = refs.findIndex((r) => norm(r.title).startsWith(k));
@@ -69,7 +73,7 @@ function box(refs, order, heading) {
     + `<span class="refs-label">Sources and useful links</span><span class="refs-count">${count}</span><span class="refs-arrow" aria-hidden="true"></span></summary>`
     + `<div class="refs-body">`
     + (numbered ? `<ol class="refs-list">${numbered}</ol>` : '')
-    + (useful ? `${numbered ? `<h4 class="refs-sub">${esc(heading || 'More on this topic')}</h4>` : ''}<ul class="refs-list refs-useful">${useful}</ul>` : '')
+    + (useful ? `<h4 class="refs-sub">${esc(heading || 'More on this topic')}</h4><ul class="refs-list refs-useful">${useful}</ul>` : '')
     + `</div></details>`;
 }
 

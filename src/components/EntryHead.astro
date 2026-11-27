@@ -56,7 +56,7 @@ const handDates = diary ? { published: published ? long(data.date) : '', updated
       </p>
     )}
   </div>
-  {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} handDates={handDates} caption={diary ? data.cover?.alt : undefined} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}
+  {cover && <HeadPhoto cover={cover} title={data.title ?? data.name ?? ''} dates={dateLine} handDates={handDates} description={data.cover?.alt} labels={labels.map((l) => ({ name: l.data.name, color: colorOf(l), href: `${labelBase}${l.id}/` }))} />}
 </div>
 <Break1 />
 {notice && <ComingSoon kind={notice} message={data.comingSoonMessage ?? noticeMessage} recommend />}

@@ -36,7 +36,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used." }
+          - { label: Photo description, name: alt, widget: text, required: false, hint: "What is in the photo. Shown in the big photo view (in the text box, under the source label) and read out for people who cannot see the photo. If you leave it empty, the title is read out." }
           - label: Source of the photo
             name: source
             widget: select
@@ -47,7 +47,6 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-          - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - label: Labels
         name: labels
@@ -110,7 +109,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used. On the story page it is also written by hand in the white strip under the photo." }
+          - { label: Photo description, name: alt, widget: text, required: false, hint: "What is in the photo. Shown in the big photo view (in the text box, under the source label) and read out for people who cannot see the photo. If you leave it empty, the title is read out." }
           - label: Source of the photo
             name: source
             widget: select
@@ -121,7 +120,6 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-          - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
@@ -257,7 +255,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used." }
+          - { label: Photo description, name: alt, widget: text, required: false, hint: "What is in the photo. Shown in the big photo view (in the text box, under the source label) and read out for people who cannot see the photo. If you leave it empty, the title is read out." }
           - label: Source of the photo
             name: source
             widget: select
@@ -268,7 +266,6 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-          - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and articles (you can still edit them). None shows the Main text and the articles." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
@@ -320,7 +317,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used." }
+          - { label: Photo description, name: alt, widget: text, required: false, hint: "What is in the photo. Shown in the big photo view (in the text box, under the source label) and read out for people who cannot see the photo. If you leave it empty, the title is read out." }
           - label: Source of the photo
             name: source
             widget: select
@@ -331,7 +328,6 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-          - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble, with three things to read below it, and hides the Main text and photos (you can still edit them). None shows the Main text and the photos." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }
@@ -415,7 +411,7 @@ collections:
         hint: "Optional. One photo on the right of the heading, between the title and the line with a bubble. It also shows at the bottom of the cards, in search results and when someone shares the link. Visitors can click it to see it big with its own text."
         fields:
           - { label: Photo, name: image, widget: image, required: false, hint: "Resize it to about 1600 pixels wide before uploading. It is shown in the gallery shape (4 by 3); the big view shows the whole photo." }
-          - { label: "What is in the photo (alt text)", name: alt, widget: string, required: false, hint: "Short and plain, for people who cannot see the photo and for search engines. If you leave it empty, the title is used." }
+          - { label: Photo description, name: alt, widget: text, required: false, hint: "What is in the photo. Shown in the big photo view (in the text box, under the source label) and read out for people who cannot see the photo. If you leave it empty, the title is read out." }
           - label: Source of the photo
             name: source
             widget: select
@@ -426,7 +422,6 @@ collections:
               - { label: "External source (orange)", value: external }
             hint: "Required. Shown as a coloured frame and label on the photo."
           - { label: "Credit or link (external photos)", name: credit, widget: string, required: false, hint: "Who made it, or a web address starting with https://. Shown under the photo." }
-          - { label: Photo introduction, name: intro, widget: text, required: false, hint: "Optional. Shown in the big photo view, under the title." }
           - { label: Photo main text, name: body, widget: markdown, required: false, buttons: [bold, italic, link, bulleted-list, numbered-list], editor_components: [], hint: "Optional. Shown in the big photo view, under the line with a bubble." }
       - { label: Notice, name: notice, widget: select, default: none, options: [{ label: "None", value: none }, { label: "Nothing here yet", value: empty }], hint: "Nothing here yet shows a card (with the curtain) under the line with a bubble and hides the Main text on the page (you can still edit it). None shows the Main text. For a text that is only partly ready, use Insert > Coming soon in the Main text instead." }
       - { label: Notice message, name: comingSoonMessage, widget: text, required: false, hint: "Optional. The sentence inside the notice card. Leave empty for the standard sentence." }

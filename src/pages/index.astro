@@ -32,7 +32,7 @@ const cover = coverOf(data);
           <a class="btn alt" href="/fishy-stories/">Read my Fishy Stories</a>
         </div>
       </div>
-      {cover && <HeadPhoto cover={cover} title={data.title} />}
+      {cover && <HeadPhoto cover={cover} title={data.title} description={data.cover?.alt} />}
     </div>
   </div>
   <Break1 />

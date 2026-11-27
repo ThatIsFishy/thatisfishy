@@ -1,3 +1,5 @@
+// Markdown version: 2. When src/lib/remark-photos.mjs or remark-refs.mjs changes, raise this number: any change in
+// this file makes the build render every page again (otherwise a cached build can keep the old photo or note look).
 import { defineCollection } from 'astro:content';
 import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';

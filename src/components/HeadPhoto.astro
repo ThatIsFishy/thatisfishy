@@ -11,12 +11,15 @@ interface Props {
   title: string;
   dates?: string;                                   // "Published … · Updated …", as on the page
   labels?: { name: string; color: string; href: string }[];
-  // Fishy Stories (diary style): the photo in a white frame with the description (and credit) handwritten
-  // in the bottom strip; the big view's text box is a beige sticky note with the dates handwritten.
+  // The photo description (one text for the photo: shown in the big view's text box, under the source label).
+  // Older photos may still have a separate "Photo introduction": it is used when there is no description.
+  description?: string;
+  // Fishy Stories (diary style): the photo in a white frame (the credit handwritten in the bottom strip);
+  // the big view's text box is a beige sticky note with the dates handwritten.
   handDates?: { published: string; updated: string };
-  caption?: string;
 }
-const { cover, title, dates = '', labels = [], handDates, caption = '' } = Astro.props;
+const { cover, title, dates = '', labels = [], description, handDates } = Astro.props;
+const desc = (description ?? '').trim() || (cover.intro ?? '').trim();
 const diary = Boolean(handDates);
 const bodyHtml = await coverBodyHtml(cover);
 const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
@@ -26,7 +29,7 @@ const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
     <img src={cover.image} alt={cover.alt} decoding="async" />
     <SourceBadge source={cover.source} />
     {diary && (
-      <span class="hand-cap">{caption}{cover.credit && <span class="hand-credit" data-pagefind-ignore>Credit: {cover.credit}</span>}</span>
+      <span class="hand-cap">{cover.credit && <span class="hand-credit" data-pagefind-ignore>Credit: {cover.credit}</span>}</span>
     )}
   </button>
   {!diary && cover.credit && <p class="hp-credit" data-pagefind-ignore>Credit: {isLink ? <a href={cover.credit} rel="noopener">{cover.credit}</a> : cover.credit}</p>}
@@ -38,13 +41,12 @@ const isLink = cover.credit && /^https?:\/\//i.test(cover.credit);
       <div class="lb-imgwrap">
         <img class="lb-img" data-src={cover.source} src={cover.image} alt={cover.alt} loading="lazy" decoding="async" />
       </div>
-      {diary && <figcaption class="hand-cap">{caption}</figcaption>}
     </figure>
     <aside class="lb-text">
       <button class="lb-close" type="button" aria-label="Close photo" data-hp-close>×</button>
       <h2 id="hp-title">{title}</h2>
       {cover.source && <p class="src-line"><SourceBadge source={cover.source} inline /></p>}
-      {cover.intro && <div class="lead">{cover.intro.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
+      {desc && <div class="lead">{desc.split(/\n{2,}/).map((p) => <p>{p}</p>)}</div>}
       {handDates && (handDates.published || handDates.updated) && <p class="dates hand">{handDates.published}{handDates.updated && <span class="upd">Updated {handDates.updated}</span>}</p>}
       {!handDates && dates && <p class="dates">{dates}</p>}
       {labels.length > 0 && (
