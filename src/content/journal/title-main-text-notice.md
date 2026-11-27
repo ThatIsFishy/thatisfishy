@@ -36,6 +36,15 @@ references:
     summary: desription
     note: my note
     link: link
+  - short: AI test
+    author: ''
+    authors: ''
+    title: ''
+    source: ''
+    published: ''
+    summary: ''
+    note: ''
+    link: ''
 useful_heading: other useful link
 signoff: Stay fishy,
 ---
@@ -57,3 +66,5 @@ Note message
 {{notice:coming|Notice message}}
 
 ## 3 heading
+
+reference goes here{{ref:AI test}}
